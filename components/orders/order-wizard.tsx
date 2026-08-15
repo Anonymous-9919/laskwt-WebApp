@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { DEFAULT_STYLES } from "@/lib/pricing/calculator";
 import { CustomerStep } from "@/components/orders/steps/customer-step";
 import { MeasurementForm } from "@/components/measurement/measurement-form";
+import { StyleSelector } from "@/components/styles/style-selector";
 import type { Customer, Measurement, Measurements, SelectedStyles } from "@/types";
 import type { DraftOrderPayload } from "@/lib/orders/draft-types";
 
@@ -38,7 +39,7 @@ const STEPS = [
 type StepKey = (typeof STEPS)[number]["key"];
 
 export function OrderWizard() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const searchParams = useSearchParams();
   const { repo } = useRepository();
   const { userId } = useCurrentUserId();
@@ -231,8 +232,14 @@ export function OrderWizard() {
         ))}
 
       {step === "style" && (
-        <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
-          {t.order.stepStyle}
+        <div className="space-y-6">
+          <div>
+            <h2 className="font-serif text-xl font-semibold">{t.order.stepStyle}</h2>
+            <p className="text-sm text-muted-foreground">
+              {lang === "ar" ? "اختر الستايل المطلوب لكل جزء" : "Choose the desired style for each part"}
+            </p>
+          </div>
+          <StyleSelector value={styles} onChange={setStyles} />
         </div>
       )}
 
