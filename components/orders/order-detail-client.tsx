@@ -27,6 +27,7 @@ import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { formatKWD, formatDate } from "@/lib/utils";
 import { downloadInvoice } from "@/lib/invoice/generate";
 import { buildWhatsAppUrl } from "@/lib/whatsapp/message";
+import { SyncToShopifyButton } from "@/components/orders/sync-button";
 import type { Customer, Order } from "@/types";
 
 export function OrderDetailClient({ orderId }: { orderId: string }) {
@@ -93,6 +94,9 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
             </Badge>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{formatDate(order.created_at, lang)}</p>
+          <div className="mt-3">
+            <SyncToShopifyButton order={order} onSynced={setOrder} />
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => window.print()}>

@@ -173,6 +173,8 @@ export type Dict = {
     retrySync: string;
     syncToShopify: string;
     viewInShopify: string;
+    shopifyNotConfigured: string;
+    shopifySyncSuccess: string;
     productType: string;
     product_dascha: string;
     product_thobe: string;
@@ -375,6 +377,8 @@ const ar: Dict = {
     retrySync: "إعادة المحاولة",
     syncToShopify: "مزامنة مع شوبيفاي",
     viewInShopify: "عرض في شوبيفاي",
+    shopifyNotConfigured: "شوبيفاي غير مهيأ بعد — أضف بيانات الاعتماد في الإعدادات",
+    shopifySyncSuccess: "تمت مزامنة الطلب مع شوبيفاي",
     productType: "نوع المنتج",
     product_dascha: "درعية",
     product_thobe: "ثوب",
@@ -577,6 +581,8 @@ const en: Dict = {
     retrySync: "Retry sync",
     syncToShopify: "Sync to Shopify",
     viewInShopify: "View in Shopify",
+    shopifyNotConfigured: "Shopify not configured — add credentials in Settings",
+    shopifySyncSuccess: "Order synced with Shopify",
     productType: "Product type",
     product_dascha: "Dascha",
     product_thobe: "Thobe",
