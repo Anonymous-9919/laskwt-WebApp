@@ -69,6 +69,8 @@ export type Dict = {
     historyMeasurements: string;
     newOrderFor: string;
     lastVisit: string;
+    search: string;
+    new: string;
   };
   measurement: {
     title: string;
@@ -153,8 +155,10 @@ export type Dict = {
     status_completed: string;
     status_cancelled: string;
     selectCustomer: string;
+    selectCustomerHint: string;
     stepCustomer: string;
     stepMeasurement: string;
+    stepStyle: string;
     stepReview: string;
     createOrder: string;
     completeOrder: string;
@@ -267,6 +271,8 @@ const ar: Dict = {
     historyMeasurements: "سجل القياسات",
     newOrderFor: "طلب جديد لـ",
     lastVisit: "آخر زيارة",
+    search: "بحث",
+    new: "جديد",
   },
   measurement: {
     title: "القياسات",
@@ -351,8 +357,10 @@ const ar: Dict = {
     status_completed: "مكتمل",
     status_cancelled: "ملغي",
     selectCustomer: "اختر العميل",
+    selectCustomerHint: "اختر العميل لبدء الطلب الجديد",
     stepCustomer: "العميل",
     stepMeasurement: "القياس والستايل",
+    stepStyle: "الستايل",
     stepReview: "المراجعة والتسعير",
     createOrder: "إنشاء الطلب",
     completeOrder: "إكمال الطلب ومزامنته",
@@ -465,6 +473,8 @@ const en: Dict = {
     historyMeasurements: "Measurement History",
     newOrderFor: "New order for",
     lastVisit: "Last visit",
+    search: "Search",
+    new: "New",
   },
   measurement: {
     title: "Measurements",
@@ -549,8 +559,10 @@ const en: Dict = {
     status_completed: "Completed",
     status_cancelled: "Cancelled",
     selectCustomer: "Select a customer",
+    selectCustomerHint: "Select the customer to start the new order",
     stepCustomer: "Customer",
     stepMeasurement: "Measurement & Style",
+    stepStyle: "Style",
     stepReview: "Review & Price",
     createOrder: "Create Order",
     completeOrder: "Complete & Sync Order",

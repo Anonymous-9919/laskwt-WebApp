@@ -310,23 +310,50 @@ export function getMockRepository(): Repository {
     },
 
     async saveDraft(userId, kind, payload) {
-      drafts.set(`${userId}:${kind}`, {
+      const draft = {
         id: nextId("draft"),
         user_id: userId,
         kind,
         payload,
         updated_at: nowIso(),
-      });
-      persist();
+      };
+      drafts.set(`${userId}:${kind}`, draft);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("laskwt.mock.draft." + userId + "." + kind, JSON.stringify(draft));
+        } catch {
+          /* ignore */
+        }
+      }
     },
 
     async getDraft(userId, kind) {
-      return drafts.get(`${userId}:${kind}`) ?? null;
+      const existing = drafts.get(`${userId}:${kind}`);
+      if (existing) return existing;
+      if (typeof window !== "undefined") {
+        try {
+          const raw = localStorage.getItem("laskwt.mock.draft." + userId + "." + kind);
+          if (raw) {
+            const restored = JSON.parse(raw) as Draft;
+            drafts.set(`${userId}:${kind}`, restored);
+            return restored;
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+      return null;
     },
 
     async clearDraft(userId, kind) {
       drafts.delete(`${userId}:${kind}`);
-      persist();
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("laskwt.mock.draft." + userId + "." + kind);
+        } catch {
+          /* ignore */
+        }
+      }
     },
 
     async getProfile(userId) {
