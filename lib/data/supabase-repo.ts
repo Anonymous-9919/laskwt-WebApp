@@ -247,9 +247,3 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
     },
   };
 }
-
-export async function getSupabaseRepository(): Promise<Repository> {
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
-  return createSupabaseRepository(supabase as unknown as SupabaseClient);
-}

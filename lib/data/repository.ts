@@ -1,19 +1,14 @@
 import type { Repository } from "./types";
 import { getMockRepository } from "./mock";
-
-export function hasSupabaseEnv(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
-}
+import { hasSupabaseEnv } from "./env";
 
 export async function getRepository(): Promise<Repository> {
   if (!hasSupabaseEnv()) {
     return getMockRepository();
   }
 
-  const { getSupabaseRepository } = await import("./supabase-repo");
+  const { getSupabaseRepository } = await import("./server-repository");
   return getSupabaseRepository();
 }
 
-export { isMockMode } from "./mock";
+export { hasSupabaseEnv, isMockMode } from "./env";

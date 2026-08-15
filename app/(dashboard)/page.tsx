@@ -3,7 +3,7 @@ import { Plus, Users, ReceiptText, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getCurrentProfileServer } from "@/lib/auth/permissions";
+import { getCurrentProfileServer } from "@/lib/auth/server-auth";
 import { getRepository } from "@/lib/data/repository";
 import { getOrderStatusMeta } from "@/lib/orders/status";
 import { formatKWD } from "@/lib/utils";

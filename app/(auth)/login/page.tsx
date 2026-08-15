@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { LoginForm } from "@/components/auth/login-form";
-import { hasSupabaseEnv } from "@/lib/data/repository";
+import { hasSupabaseEnv } from "@/lib/data/env";
 
 export const metadata: Metadata = {
   title: "Sign in — Laskwt",

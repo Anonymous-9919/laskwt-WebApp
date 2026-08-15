@@ -1,7 +1,7 @@
 import { Providers } from "@/app/providers";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
-import { getCurrentProfileServer } from "@/lib/auth/permissions";
+import { getCurrentProfileServer } from "@/lib/auth/server-auth";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
