@@ -6,7 +6,9 @@ import {
   ArrowRight,
   CalendarClock,
   ClipboardList,
+  Download,
   Loader2,
+  MessageCircle,
   Package,
   Printer,
   ReceiptText,
@@ -23,14 +25,17 @@ import { getOrderStatusMeta } from "@/lib/orders/status";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { formatKWD, formatDate } from "@/lib/utils";
-import type { Order } from "@/types";
+import { downloadInvoice } from "@/lib/invoice/generate";
+import { buildWhatsAppUrl } from "@/lib/whatsapp/message";
+import type { Customer, Order } from "@/types";
 
 export function OrderDetailClient({ orderId }: { orderId: string }) {
   const { t, lang } = useLanguage();
   const { repo } = useRepository();
   const [order, setOrder] = useState<Order | null>(null);
-  const [customerName, setCustomerName] = useState<string | null>(null);
+  const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<"pdf" | "whatsapp" | null>(null);
 
   useEffect(() => {
     if (!repo) return;
@@ -40,8 +45,8 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
       if (!mounted) return;
       setOrder(o);
       if (o) {
-        const c = await repo.getCustomer(o.customer_id);
-        if (mounted) setCustomerName(c?.full_name ?? null);
+        const c = o.customer_id ? await repo.getCustomer(o.customer_id) : null;
+        if (mounted) setCustomer(c);
       }
       setLoading(false);
     })();
@@ -89,10 +94,37 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{formatDate(order.created_at, lang)}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={() => window.print()}>
             <Printer className="h-4 w-4" />
             {t.order.print}
+          </Button>
+          <Button
+            variant="outline"
+            disabled={busy === "pdf"}
+            onClick={async () => {
+              setBusy("pdf");
+              try {
+                await downloadInvoice(order, customer, lang);
+              } finally {
+                setBusy(null);
+              }
+            }}
+          >
+            <Download className="h-4 w-4" />
+            {t.order.download} PDF
+          </Button>
+          <Button
+            variant="outline"
+            disabled={busy === "whatsapp"}
+            onClick={() => {
+              setBusy("whatsapp");
+              window.open(buildWhatsAppUrl(order, customer, lang), "_blank", "noopener");
+              setBusy(null);
+            }}
+          >
+            <MessageCircle className="h-4 w-4" />
+            {t.order.sendWhatsApp}
           </Button>
           <Button asChild>
             <Link href="/orders/new">
@@ -113,7 +145,8 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-medium">{customerName}</p>
+            <p className="font-medium">{customer?.full_name}</p>
+            {customer?.phone && <p className="text-sm text-muted-foreground">{customer.phone}</p>}
             <Link
               href={`/customers/${order.customer_id}`}
               className="text-sm text-gold-foreground hover:underline"
