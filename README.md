@@ -1,44 +1,41 @@
-# Starter Config — Copy-Paste Boilerplate
+# Las Kwt — Tailoring Management Web App
 
-Copy the relevant files from each folder into your new project root:
+A production-ready tailoring management web app for a Kuwaiti Dascha/Thobe business.
+Bilingual (Arabic / English) with full RTL/LTR support, dual premium themes, and
+Shopify Admin API sync for walk-in orders.
 
-## Quick Setup
+## Stack
+
+- **Framework:** Next.js 15 (App Router) + TypeScript
+- **UI:** Tailwind CSS + shadcn/ui
+- **Backend:** Supabase (Auth, Postgres, Storage)
+- **PDF:** `@react-pdf/renderer` (server-rendered)
+- **Messaging:** WhatsApp (wa.me deep link with signed PDF URL)
+- **Commerce sync:** Shopify Admin REST API
+- **i18n:** Custom LanguageProvider (ar/en + RTL/LTR)
+- **Themes:** Dual premium (dark-gold / light-cream) via `next-themes`
+
+## Local Development
 
 ```bash
-# 1. Copy all config files to your new project
-copy "_starter-config\nodejs\package.json" ".\"
-copy "_starter-config\env\.env.example" ".\"
-copy "_starter-config\github\.gitignore" ".\"
-copy "_starter-config\vercel\vercel.json" ".\"
-copy "_starter-config\vercel\.vercelignore" ".\"
-
-# 2. Copy Supabase files
-copy "_starter-config\supabase\migration.sql" ".\"
-copy "_starter-config\supabase\storage.sql" ".\"
-
-# 3. Copy lib folder (create lib\ first)
-mkdir lib
-copy "_starter-config\supabase\supabase-client.js" "lib\supabase.js"
-
-# 4. Install dependencies
 npm install
+cp .env.example .env.local
+# fill in Supabase + Shopify credentials
+npm run dev
 ```
 
-## What Each File Does
+The app runs on `http://localhost:3000`.
 
-| Folder | File | Purpose |
-|--------|------|---------|
-| `nodejs/` | `package.json` | Node.js deps (Express, Supabase, Google GenAI, Busboy, Vercel CLI) |
-| `env/` | `.env.example` | Template for Supabase URL + keys, rename to `.env.local` |
-| `github/` | `.gitignore` | Ignores `node_modules/`, `.vercel/`, `.env*`, `*.local` |
-| `vercel/` | `vercel.json` | Static + serverless function routing config |
-| `vercel/` | `.vercelignore` | Excludes `node_modules`, `.git`, `.env*` from deploy |
-| `supabase/` | `migration.sql` | Full DB schema: profiles, websites, pages, assets, contacts, etc. |
-| `supabase/` | `storage.sql` | Supabase Storage setup (placeholder) |
-| `supabase/` | `supabase-client.js` | Exports `supabase` (anon) + `supabaseAdmin` (service role) clients |
+## Environment Variables
 
-## After Copying
+See `.env.example` for the full list. Required for production:
 
-1. **Rename `.env.example` → `.env.local`** and fill in your Supabase credentials
-2. **Run `migration.sql`** in Supabase SQL Editor
-3. **Deploy** via `npx vercel --prod`
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+  `SUPABASE_SERVICE_ROLE_KEY`
+- `SHOPIFY_SHOP`, `SHOPIFY_ADMIN_API_ACCESS_TOKEN`, `SHOPIFY_API_VERSION`
+- `NEXT_PUBLIC_APP_URL`, `INVOICE_BUCKET`
+
+## Deploy
+
+Connected to Vercel via the GitHub repo and auto-deploys on push.
+Production URL: https://laskwt-webapp.vercel.app

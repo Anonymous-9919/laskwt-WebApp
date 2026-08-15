@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light premium — cream + olive-gold */
+    --background: 36 33% 96%;          /* #FAF7F0 */
+    --foreground: 24 18% 12%;          /* #1F1A14 */
+    --card: 0 0% 100%;                 /* #FFFFFF */
+    --card-foreground: 24 18% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 18% 12%;
+    --primary: 33 49% 42%;             /* #9C7A3C */
+    --primary-foreground: 36 33% 97%;
+    --secondary: 36 22% 90%;
+    --secondary-foreground: 24 18% 12%;
+    --muted: 36 22% 92%;
+    --muted-foreground: 24 8% 38%;
+    --accent: 33 49% 42%;
+    --accent-foreground: 36 33% 97%;
+    --destructive: 0 72% 42%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 33 18% 84%;
+    --input: 33 18% 84%;
+    --ring: 33 49% 42%;
+    --gold: 33 49% 42%;
+    --gold-foreground: 36 33% 97%;
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    /* Dark premium — near-black + gold */
+    --background: 240 12% 6%;          /* #0B0B0F */
+    --foreground: 36 25% 94%;          /* #F4F1EA */
+    --card: 240 10% 12%;               /* #1A1A22 */
+    --card-foreground: 36 25% 94%;
+    --popover: 240 10% 12%;
+    --popover-foreground: 36 25% 94%;
+    --primary: 38 56% 54%;             /* #C9A24A */
+    --primary-foreground: 240 12% 6%;
+    --secondary: 240 8% 16%;
+    --secondary-foreground: 36 25% 94%;
+    --muted: 240 8% 16%;
+    --muted-foreground: 36 8% 65%;
+    --accent: 38 56% 54%;
+    --accent-foreground: 240 12% 6%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 8% 20%;
+    --input: 240 8% 20%;
+    --ring: 38 56% 54%;
+    --gold: 38 56% 54%;
+    --gold-foreground: 240 12% 6%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html, body {
+    @apply bg-background text-foreground antialiased;
+  }
+  html[dir="rtl"] body {
+    font-family: var(--font-arabic), var(--font-sans), system-ui, sans-serif;
+  }
+  /* Keep numeric inputs LTR even when page is RTL */
+  input[type="number"], .ltr-num {
+    direction: ltr;
+    unicode-bidi: embed;
+    text-align: start;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
