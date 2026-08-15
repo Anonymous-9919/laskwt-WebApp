@@ -1,4 +1,5 @@
 import type { Customer, Measurements, SelectedStyles } from "@/types";
+import type { DiscountType } from "@/types";
 
 export type DraftOrderPayload = {
   customer: Customer | null;
@@ -7,6 +8,8 @@ export type DraftOrderPayload = {
   measurementLabel: string;
   productType: "dascha" | "thobe";
   quantity: number;
+  discountType: DiscountType;
+  discountValue: number;
   notes: string;
   dueDate: string;
 };

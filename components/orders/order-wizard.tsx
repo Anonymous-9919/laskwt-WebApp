@@ -26,7 +26,8 @@ import { DEFAULT_STYLES } from "@/lib/pricing/calculator";
 import { CustomerStep } from "@/components/orders/steps/customer-step";
 import { MeasurementForm } from "@/components/measurement/measurement-form";
 import { StyleSelector } from "@/components/styles/style-selector";
-import type { Customer, Measurement, Measurements, SelectedStyles } from "@/types";
+import { ReviewStep } from "@/components/orders/steps/review-step";
+import type { Customer, Measurement, Measurements, SelectedStyles, DiscountType } from "@/types";
 import type { DraftOrderPayload } from "@/lib/orders/draft-types";
 
 const STEPS = [
@@ -51,6 +52,8 @@ export function OrderWizard() {
   const [measurementLabel, setMeasurementLabel] = useState("");
   const [productType, setProductType] = useState<"dascha" | "thobe">("dascha");
   const [quantity, setQuantity] = useState(1);
+  const [discountType, setDiscountType] = useState<DiscountType>("percent");
+  const [discountValue, setDiscountValue] = useState(0);
   const [notes, setNotes] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [showDraftBanner, setShowDraftBanner] = useState(false);
@@ -93,6 +96,8 @@ export function OrderWizard() {
           if (p.measurementLabel !== undefined) setMeasurementLabel(p.measurementLabel);
           if (p.productType) setProductType(p.productType);
           if (p.quantity) setQuantity(p.quantity);
+          if (p.discountType) setDiscountType(p.discountType);
+          if (p.discountValue !== undefined) setDiscountValue(p.discountValue);
           if (p.notes) setNotes(p.notes);
           if (p.dueDate) setDueDate(p.dueDate);
           setResumeDraft(true);
@@ -110,10 +115,12 @@ export function OrderWizard() {
       measurementLabel,
       productType,
       quantity,
+      discountType,
+      discountValue,
       notes,
       dueDate,
     }),
-    [customer, measurements, styles, measurementLabel, productType, quantity, notes, dueDate]
+    [customer, measurements, styles, measurementLabel, productType, quantity, discountType, discountValue, notes, dueDate]
   );
 
   const savedAt = useAutosave({ repo, userId, enabled: !!customer, payload: draftPayload });
@@ -244,9 +251,28 @@ export function OrderWizard() {
       )}
 
       {step === "review" && (
-        <div className="rounded-xl border border-dashed p-10 text-center text-muted-foreground">
-          {t.order.stepReview}
-        </div>
+        <ReviewStep
+          customer={customer}
+          measurements={measurements}
+          styles={styles}
+          productType={productType}
+          onProductTypeChange={setProductType}
+          quantity={quantity}
+          onQuantityChange={setQuantity}
+          discountType={discountType}
+          onDiscountTypeChange={setDiscountType}
+          discountValue={discountValue}
+          onDiscountValueChange={setDiscountValue}
+          notes={notes}
+          onNotesChange={setNotes}
+          dueDate={dueDate}
+          onDueDateChange={setDueDate}
+          measurementLabel={measurementLabel}
+          onCreated={async () => {
+            if (repo && userId) await repo.clearDraft(userId, "order");
+            setShowDraftBanner(false);
+          }}
+        />
       )}
 
       {/* Footer nav */}
