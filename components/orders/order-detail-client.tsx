@@ -19,24 +19,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRepository } from "@/lib/data/use-repository";
 import { useLanguage } from "@/lib/i18n/context";
-import { getOrderStatusMeta } from "@/lib/orders/status";
+import { useSettings } from "@/lib/settings/context";
+import { getOrderStatusMeta, getSyncStatusMeta } from "@/lib/orders/status";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { formatKWD, formatDate } from "@/lib/utils";
 import { downloadInvoice } from "@/lib/invoice/generate";
 import { buildWhatsAppUrl } from "@/lib/whatsapp/message";
 import { SyncToShopifyButton } from "@/components/orders/sync-button";
-import type { Customer, Order } from "@/types";
+import type { Customer, Order, OrderStatus } from "@/types";
 
 export function OrderDetailClient({ orderId }: { orderId: string }) {
-  const { t, lang } = useLanguage();
+   const { t, lang } = useLanguage();
   const { repo } = useRepository();
+  const { logAudit } = useSettings();
   const [order, setOrder] = useState<Order | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<"pdf" | "whatsapp" | null>(null);
+  const [statusSaving, setStatusSaving] = useState(false);
+  const [newStatus, setNewStatus] = useState<OrderStatus>(order?.status ?? "confirmed");
 
   useEffect(() => {
     if (!repo) return;
@@ -46,6 +51,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
       if (!mounted) return;
       setOrder(o);
       if (o) {
+        setNewStatus(o.status);
         const c = o.customer_id ? await repo.getCustomer(o.customer_id) : null;
         if (mounted) setCustomer(c);
       }
@@ -138,6 +144,55 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
           </Button>
         </div>
       </div>
+
+      {/* Status update */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{t.order[`status_${order.status}`]}</CardTitle>
+          <CardDescription className="text-xs">{t.order.orderNumber}: {order.number}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+              setStatusSaving(true);
+              try {
+                const updated = await repo.updateOrder(order.id, { status: newStatus });
+                if (updated) {
+                  setOrder(updated);
+                  await logAudit("status_change", "order", order.id, {
+                    from: order.status,
+                    to: newStatus,
+                  });
+                }
+              } finally {
+                setStatusSaving(false);
+              }
+            }}
+            className="flex flex-wrap items-end gap-3"
+          >
+            <div className="space-y-1.5">
+              <Select
+                value={newStatus}
+                onValueChange={(v) => setNewStatus(v as OrderStatus)}
+                disabled={statusSaving}
+              >
+                <SelectTrigger className="w-48">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(["quotation", "confirmed", "completed", "cancelled"] as OrderStatus[]).map((s) => (
+                    <SelectItem key={s} value={s}>{t.order[`status_${s}`]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button type="submit" size="sm" disabled={statusSaving}>
+              {statusSaving ? t.common.saving : t.common.save}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
 
       {/* Customer + item */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

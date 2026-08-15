@@ -52,6 +52,7 @@ export type Dict = {
     date: string;
     yes: string;
     no: string;
+    saving: string;
   };
   customer: {
     title: string;
@@ -147,6 +148,7 @@ export type Dict = {
   };
   order: {
     title: string;
+    all: string;
     newOrder: string;
     orderNumber: string;
     status_draft: string;
@@ -256,6 +258,7 @@ const ar: Dict = {
     date: "التاريخ",
     yes: "نعم",
     no: "لا",
+    saving: "جاري الحفظ",
   },
   customer: {
     title: "العملاء",
@@ -351,6 +354,7 @@ const ar: Dict = {
   },
   order: {
     title: "الطلبات",
+    all: "الكل",
     newOrder: "طلب جديد",
     orderNumber: "رقم الطلب",
     status_draft: "مسودة",
@@ -460,6 +464,7 @@ const en: Dict = {
     date: "Date",
     yes: "Yes",
     no: "No",
+    saving: "Saving...",
   },
   customer: {
     title: "Customers",
@@ -555,6 +560,7 @@ const en: Dict = {
   },
   order: {
     title: "Orders",
+    all: "All",
     newOrder: "New Order",
     orderNumber: "Order #",
     status_draft: "Draft",

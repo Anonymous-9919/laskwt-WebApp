@@ -6,7 +6,8 @@ import {
   StyleSheet,
   Text,
   View,
-} from "@react-pdf/renderer";import type { Customer, Order } from "@/types";
+} from "@react-pdf/renderer";
+import type { BusinessProfile, Customer, Order } from "@/types";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { dictionaries } from "@/lib/i18n/dict";
@@ -206,26 +207,35 @@ export function InvoiceDocument({
   order: Order;
   customer: Customer | null;
   lang: "ar" | "en";
-  business?: { nameAr: string; nameEn: string; footerAr?: string; footerEn?: string } | null;
+  business?: BusinessProfile | null;
 }) {
   const t = dictionaries[lang];
   const isAr = lang === "ar";
   const fontStyle = isAr ? styles.arabic : {};
   const item = order.items[0];
-  const filledMeasurements = MEASUREMENT_FIELDS.filter(
+  const filledMeasurement = MEASUREMENT_FIELDS.filter(
     (f) => order.measurements[f.key] !== undefined && order.measurements[f.key] !== null
   );
+  const businessName = isAr
+    ? business?.name_ar ?? t.invoice.businessName
+    : business?.name_en ?? "Laskwt";
+  const footer = isAr
+    ? business?.footer_note_ar ?? t.invoice.thankYou
+    : business?.footer_note_en ?? t.invoice.thankYou;
 
   return (
     <Document title={`${order.number}`}>
       <Page size="A4" style={styles.page}>
         {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={isAr ? styles.brandAr : styles.brand}>{business?.nameAr ?? t.invoice.businessName}</Text>
-            <Text style={[styles.brandSub, fontStyle]}>{business?.nameEn ?? "Laskwt"}</Text>
-            {business?.footerAr && <Text style={[styles.brandSub, fontStyle]}>{business.footerAr}</Text>}
-          </View>
+      <View style={styles.header}>
+        <View>
+          <Text style={isAr ? styles.brandAr : styles.brand}>{businessName}</Text>
+          {business?.address && <Text style={[styles.brandSub, fontStyle]}>{business.address}</Text>}
+          {business?.phone && <Text style={[styles.brandSub, fontStyle]}>{business.phone}</Text>}
+          {business?.vat_number && (
+            <Text style={[styles.brandSub, fontStyle]}>{business.vat_number}</Text>
+          )}
+        </View>
           <View>
             <Text style={[styles.orderNo, fontStyle]}>{order.number}</Text>
             <Text style={[styles.brandSub, fontStyle]}>
@@ -264,11 +274,11 @@ export function InvoiceDocument({
         </View>
 
         {/* Measurements */}
-        {filledMeasurements.length > 0 && (
+        {filledMeasurement.length > 0 && (
           <>
             <Text style={isAr ? styles.sectionTitleAr : styles.sectionTitle}>{t.invoice.measurements}</Text>
             <View style={styles.grid}>
-              {filledMeasurements.map((f) => (
+              {filledMeasurement.map((f) => (
                 <View key={f.key} style={styles.cell}>
                   <Text style={[styles.styleName, fontStyle]}>{isAr ? f.labelAr : f.labelEn}</Text>
                   <Text style={[styles.cellValue, fontStyle]}>
@@ -319,7 +329,7 @@ export function InvoiceDocument({
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text style={fontStyle}>{isAr ? (business?.footerAr ?? t.invoice.thankYou) : (business?.footerEn ?? t.invoice.thankYou)}</Text>
+          <Text style={fontStyle}>{footer}</Text>
         </View>
       </Page>
     </Document>
