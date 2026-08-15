@@ -1,0 +1,24 @@
+
+> laskwt-webapp@0.1.0 dev
+> next dev
+
+   ▲ Next.js 15.5.23
+   - Local:        http://localhost:3000
+   - Network:      http://172.21.128.1:3000
+   - Experiments (use with caution):
+     · serverActions
+
+ ✓ Starting...
+ ✓ Ready in 7.3s
+ ○ Compiling /middleware ...
+ ✓ Compiled /middleware in 3.4s (171 modules)
+ ○ Compiling /login ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (107kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (258kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled /login in 18.5s (911 modules)
+ GET /login 200 in 20442ms
+ ○ Compiling / ...
+ ✓ Compiled / in 5.7s (1133 modules)
+ GET / 200 in 8466ms
+ GET / 200 in 113ms
+ GET / 200 in 176ms
