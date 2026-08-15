@@ -1,0 +1,255 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type {
+  Customer,
+  Draft,
+  Measurement,
+  Order,
+  OrderStatus,
+  Profile,
+  StyleOption,
+} from "@/types";
+import type {
+  CustomerInput,
+  MeasurementInput,
+  OrderInput,
+  OrderUpdate,
+  Repository,
+  SyncResult,
+} from "./types";
+
+function toCustomer(row: any): Customer {
+  return row;
+}
+function toMeasurement(row: any): Measurement {
+  return row;
+}
+function toOrder(row: any): Order {
+  return row;
+}
+function toProfile(row: any): Profile {
+  return row;
+}
+function toStyleOption(row: any): StyleOption {
+  return row;
+}
+
+export function createSupabaseRepository(client: SupabaseClient): Repository {
+  const ordersTable = () => client.from("orders");
+  const customersTable = () => client.from("customers");
+  const measurementsTable = () => client.from("measurements");
+  const draftsTable = () => client.from("drafts");
+  const profilesTable = () => client.from("profiles");
+  const styleTable = () => client.from("style_options");
+
+  const unwrap = <T,>(r: { data: T | null; error: any }, fallback: T): T => {
+    if (r.error) {
+      throw new Error(r.error.message);
+    }
+    return r.data ?? fallback;
+  };
+
+  return {
+    async listCustomers(search?: string) {
+      let query = customersTable().select("*").order("created_at", { ascending: false });
+      if (search?.trim()) {
+        const q = search.trim();
+        query = query.or(`full_name.ilike.%${q}%,phone.ilike.%${q}%,whatsapp.ilike.%${q}%`);
+      }
+      const r = await query;
+      return unwrap(r, []).map(toCustomer);
+    },
+
+    async getCustomer(id) {
+      const r = await customersTable().select("*").eq("id", id).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toCustomer(r.data) : null;
+    },
+
+    async createCustomer(input: CustomerInput, userId: string) {
+      const r = await customersTable()
+        .insert({
+          full_name: input.full_name,
+          phone: input.phone,
+          whatsapp: input.whatsapp ?? input.phone,
+          email: input.email ?? null,
+          notes: input.notes ?? null,
+          created_by: userId,
+        })
+        .select()
+        .single();
+      return unwrap(r, {} as Customer);
+    },
+
+    async updateCustomer(id, input) {
+      const r = await customersTable()
+        .update({
+          ...input,
+          whatsapp: input.whatsapp ?? undefined,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toCustomer(r.data) : null;
+    },
+
+    async listMeasurements(customerId) {
+      const r = await measurementsTable()
+        .select("*")
+        .eq("customer_id", customerId)
+        .order("created_at", { ascending: false });
+      return unwrap(r, []).map(toMeasurement);
+    },
+
+    async createMeasurement(input: MeasurementInput, userId: string) {
+      const r = await measurementsTable()
+        .insert({
+          customer_id: input.customer_id,
+          created_by: userId,
+          label: input.label ?? null,
+          values: input.values,
+        })
+        .select()
+        .single();
+      return unwrap(r, {} as Measurement);
+    },
+
+    async updateMeasurement(id, input) {
+      const r = await measurementsTable()
+        .update({
+          label: input.label !== undefined ? input.label : undefined,
+          values: input.values,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toMeasurement(r.data) : null;
+    },
+
+    async createOrder(input: OrderInput, userId: string) {
+      const rpc = await client.rpc("create_order", {
+        customer_id: input.customer_id,
+        status: input.status,
+        subtotal: input.subtotal,
+        customization_total: input.customization_total,
+        discount_type: input.discount_type,
+        discount_value: input.discount_value,
+        discount_amount: input.discount_amount,
+        total: input.total,
+        measurement_id: input.measurement_id ?? null,
+        measurements: input.measurements,
+        items: input.items as any,
+        notes: input.notes ?? null,
+        due_date: input.due_date ?? null,
+        created_by: userId,
+      });
+
+      if (rpc.error) {
+        // Fall back to insert + next_order_number via direct call
+        const num = await client.rpc("next_order_number");
+        const number = (num.data ?? "LK-0001") as string;
+        const r = await ordersTable()
+          .insert({
+            number,
+            customer_id: input.customer_id,
+            status: input.status,
+            subtotal: input.subtotal,
+            customization_total: input.customization_total,
+            discount_type: input.discount_type,
+            discount_value: input.discount_value,
+            discount_amount: input.discount_amount,
+            total: input.total,
+            measurement_id: input.measurement_id ?? null,
+            measurements: input.measurements,
+            items: input.items as any,
+            notes: input.notes ?? null,
+            due_date: input.due_date ?? null,
+            created_by: userId,
+          })
+          .select()
+          .single();
+        return unwrap(r, {} as Order);
+      }
+
+      const r = await ordersTable().select("*").eq("number", rpc.data).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toOrder(r.data) : ({} as Order);
+    },
+
+    async getOrder(id) {
+      const r = await ordersTable().select("*").eq("id", id).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toOrder(r.data) : null;
+    },
+
+    async getOrderByNumber(number) {
+      const r = await ordersTable().select("*").eq("number", number).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toOrder(r.data) : null;
+    },
+
+    async listOrders() {
+      const r = await ordersTable().select("*").order("created_at", { ascending: false });
+      return unwrap(r, []).map(toOrder);
+    },
+
+    async updateOrder(id, input: OrderUpdate) {
+      const r = await ordersTable().update({ ...input }).eq("id", id).select().single();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toOrder(r.data) : null;
+    },
+
+    async setShopifySync(id, result: SyncResult) {
+      const r = await ordersTable()
+        .update({
+          shopify_sync_status: result.status,
+          shopify_order_id: result.shopify_order_id ?? null,
+          shopify_synced_at: result.status === "synced" ? new Date().toISOString() : null,
+        })
+        .eq("id", id)
+        .select()
+        .single();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toOrder(r.data) : null;
+    },
+
+    async listStyleOptions() {
+      const r = await styleTable().select("*").order("sort_order", { ascending: true });
+      return unwrap(r, []).map(toStyleOption);
+    },
+
+    async saveDraft(userId, kind, payload) {
+      await draftsTable()
+        .upsert({ user_id: userId, kind, payload, updated_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .eq("kind", kind);
+    },
+
+    async getDraft(userId, kind) {
+      const r = await draftsTable()
+        .select("*")
+        .eq("user_id", userId)
+        .eq("kind", kind)
+        .maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? (r.data as Draft) : null;
+    },
+
+    async clearDraft(userId, kind) {
+      await draftsTable().delete().eq("user_id", userId).eq("kind", kind);
+    },
+
+    async getProfile(userId) {
+      const r = await profilesTable().select("*").eq("id", userId).maybeSingle();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toProfile(r.data) : null;
+    },
+  };
+}
+
+export async function getSupabaseRepository(): Promise<Repository> {
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
+  return createSupabaseRepository(supabase as unknown as SupabaseClient);
+}
