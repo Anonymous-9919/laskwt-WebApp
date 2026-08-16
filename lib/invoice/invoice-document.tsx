@@ -31,24 +31,64 @@ let fontsRegistered = false;
 export async function registerInvoiceFonts() {
   if (fontsRegistered) return;
   fontsRegistered = true;
-  let base: (name: string) => string;
+
+  const register = (
+    family: string,
+    name: string,
+    opts?: { fontWeight?: 500 | 600 | 700 }
+  ) => {
+    const file =
+      typeof window === "undefined" ? null : `/fonts/${name}`;
+    if (file) {
+      Font.register({ family, src: file, ...(opts ?? {}) });
+    }
+  };
+
   if (typeof window === "undefined") {
-    const path = (await import("node:path")).default;
-    const fontsDir = path.join(process.cwd(), "public", "fonts");
-    base = (name: string) => path.join(fontsDir, name);
+    const [fs, path] = await Promise.all([
+      import("node:fs"),
+      import("node:path"),
+    ]);
+    const read = (name: string) =>
+      `data:font/ttf;base64,${fs
+        .readFileSync(path.join(process.cwd(), "public", "fonts", name))
+        .toString("base64")}`;
+    const inter = [
+      ["regular", undefined],
+      [500, 500],
+      [600, 600],
+      [700, 700],
+    ] as const;
+    for (const [weight, num] of inter) {
+      Font.register({
+        family: "Inter",
+        src: read(`inter-${weight}.ttf`),
+        ...(num ? { fontWeight: num } : {}),
+      });
+    }
+    const cairo = [
+      ["regular", undefined],
+      [500, 500],
+      [600, 600],
+      [700, 700],
+    ] as const;
+    for (const [weight, num] of cairo) {
+      Font.register({
+        family: "Cairo",
+        src: read(`cairo-${weight}.ttf`),
+        ...(num ? { fontWeight: num } : {}),
+      });
+    }
   } else {
-    base = (name: string) => `/fonts/${name}`;
+    register("Inter", INTER_FONT_FILES.regular);
+    register("Inter", INTER_FONT_FILES[700], { fontWeight: 700 });
+    register("Inter", INTER_FONT_FILES[600], { fontWeight: 600 });
+    register("Inter", INTER_FONT_FILES[500], { fontWeight: 500 });
+    register("Cairo", CAIRO_FONT_FILES.regular);
+    register("Cairo", CAIRO_FONT_FILES[700], { fontWeight: 700 });
+    register("Cairo", CAIRO_FONT_FILES[600], { fontWeight: 600 });
+    register("Cairo", CAIRO_FONT_FILES[500], { fontWeight: 500 });
   }
-
-  Font.register({ family: "Inter", src: base(INTER_FONT_FILES.regular) });
-  Font.register({ family: "Inter", src: base(INTER_FONT_FILES[700]), fontWeight: 700 });
-  Font.register({ family: "Inter", src: base(INTER_FONT_FILES[600]), fontWeight: 600 });
-  Font.register({ family: "Inter", src: base(INTER_FONT_FILES[500]), fontWeight: 500 });
-
-  Font.register({ family: "Cairo", src: base(CAIRO_FONT_FILES.regular) });
-  Font.register({ family: "Cairo", src: base(CAIRO_FONT_FILES[700]), fontWeight: 700 });
-  Font.register({ family: "Cairo", src: base(CAIRO_FONT_FILES[600]), fontWeight: 600 });
-  Font.register({ family: "Cairo", src: base(CAIRO_FONT_FILES[500]), fontWeight: 500 });
 }
 
 const GOLD = "#9C7A3C";
