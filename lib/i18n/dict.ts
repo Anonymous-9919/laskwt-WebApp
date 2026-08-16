@@ -9,6 +9,9 @@ export type Dict = {
     newOrder: string;
     settings: string;
     signOut: string;
+    team: string;
+    sell: string;
+    mySales: string;
   };
   auth: {
     signIn: string;
@@ -18,6 +21,9 @@ export type Dict = {
     submitting: string;
     invalidCredentials: string;
     employeeLogin: string;
+    adminLogin: string;
+    phone: string;
+    pin: string;
     or: string;
     forgotPassword: string;
   };
@@ -84,6 +90,7 @@ export type Dict = {
     load: string;
     editAsNew: string;
     autosavedAt: string;
+    required: string;
     fields: {
       length: string;
       shoulder: string;
@@ -160,6 +167,7 @@ export type Dict = {
     selectCustomerHint: string;
     stepCustomer: string;
     stepMeasurement: string;
+    stepProduct: string;
     stepStyle: string;
     stepReview: string;
     createOrder: string;
@@ -215,6 +223,9 @@ const ar: Dict = {
     newOrder: "طلب جديد",
     settings: "الإعدادات",
     signOut: "تسجيل الخروج",
+    team: "الفريق",
+    sell: "بيع",
+    mySales: "مبيعاتي",
   },
   auth: {
     signIn: "تسجيل الدخول",
@@ -224,6 +235,9 @@ const ar: Dict = {
     submitting: "جارٍ الدخول...",
     invalidCredentials: "بيانات الدخول غير صحيحة",
     employeeLogin: "دخول الموظفين",
+    adminLogin: "دخول الإدارة",
+    phone: "رقم الهاتف",
+    pin: "الرمز السري",
     or: "أو",
     forgotPassword: "نسيت كلمة المرور؟",
   },
@@ -290,6 +304,7 @@ const ar: Dict = {
     load: "تحميل",
     editAsNew: "تعديل كجديد",
     autosavedAt: "تم الحفظ التلقائي",
+    required: "الحقول المطلوبة ناقصة",
     fields: {
       length: "الطول الكلي",
       shoulder: "الكتف",
@@ -352,7 +367,7 @@ const ar: Dict = {
     perUnit: "للقطعة",
     pricePreview: "ملخص السعر",
   },
-  order: {
+order: {
     title: "الطلبات",
     all: "الكل",
     newOrder: "طلب جديد",
@@ -365,9 +380,10 @@ const ar: Dict = {
     selectCustomer: "اختر العميل",
     selectCustomerHint: "اختر العميل لبدء الطلب الجديد",
     stepCustomer: "العميل",
-    stepMeasurement: "القياس والستايل",
+    stepProduct: "المنتج",
+    stepMeasurement: "القياس",
     stepStyle: "الستايل",
-    stepReview: "المراجعة والتسعير",
+    stepReview: "المراجعة",
     createOrder: "إنشاء الطلب",
     completeOrder: "إكمال الطلب ومزامنته",
     createInvoice: "إنشاء الفاتورة",
@@ -421,6 +437,9 @@ const en: Dict = {
     newOrder: "New Order",
     settings: "Settings",
     signOut: "Sign out",
+    team: "Team",
+    sell: "Sell",
+    mySales: "My Sales",
   },
   auth: {
     signIn: "Sign in",
@@ -430,6 +449,9 @@ const en: Dict = {
     submitting: "Signing in...",
     invalidCredentials: "Invalid email or password",
     employeeLogin: "Employee sign in",
+    adminLogin: "Admin sign in",
+    phone: "Phone number",
+    pin: "PIN",
     or: "or",
     forgotPassword: "Forgot password?",
   },
@@ -496,6 +518,7 @@ const en: Dict = {
     load: "Load",
     editAsNew: "Edit as new",
     autosavedAt: "Autosaved",
+    required: "Required fields missing",
     fields: {
       length: "Overall Length",
       shoulder: "Shoulder",
@@ -571,9 +594,10 @@ const en: Dict = {
     selectCustomer: "Select a customer",
     selectCustomerHint: "Select the customer to start the new order",
     stepCustomer: "Customer",
-    stepMeasurement: "Measurement & Style",
+    stepProduct: "Product",
+    stepMeasurement: "Measurement",
     stepStyle: "Style",
-    stepReview: "Review & Price",
+    stepReview: "Review",
     createOrder: "Create Order",
     completeOrder: "Complete & Sync Order",
     createInvoice: "Create Invoice",

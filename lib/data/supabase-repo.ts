@@ -7,6 +7,7 @@ import type {
   OrderStatus,
   Profile,
   StyleOption,
+  Role,
 } from "@/types";
 import type {
   CustomerInput,
@@ -15,6 +16,7 @@ import type {
   OrderUpdate,
   Repository,
   SyncResult,
+  EmployeeSales,
 } from "./types";
 
 function toCustomer(row: any): Customer {
@@ -244,6 +246,79 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
       const r = await profilesTable().select("*").eq("id", userId).maybeSingle();
       if (r.error) throw new Error(r.error.message);
       return r.data ? toProfile(r.data) : null;
+    },
+
+    async listProfiles() {
+      const r = await profilesTable()
+        .select("*")
+        .order("role", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (r.error) throw new Error(r.error.message);
+      return (r.data ?? []).map(toProfile);
+    },
+
+    async createProfile(input: { full_name: string; phone: string; role?: Role }) {
+      const r = await profilesTable()
+        .insert({
+          full_name: input.full_name,
+          phone: input.phone,
+          role: input.role ?? "employee",
+          active: true,
+        })
+        .select()
+        .single();
+      if (r.error) throw new Error(r.error.message);
+      return toProfile(r.data);
+    },
+
+    async updateProfile(id, input) {
+      const r = await profilesTable()
+        .update({ ...input, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .select()
+        .single();
+      if (r.error) throw new Error(r.error.message);
+      return r.data ? toProfile(r.data) : null;
+    },
+
+    async getEmployeeSales(employeeId, rangeDays) {
+      let query = ordersTable()
+        .select("created_at,total,status,currency,items")
+        .eq("created_by", employeeId);
+      if (rangeDays && rangeDays > 0) {
+        const from = new Date(Date.now() - rangeDays * 24 * 3600 * 1000).toISOString();
+        query = query.gte("created_at", from);
+      }
+      const r = await query;
+      if (r.error) throw new Error(r.error.message);
+      const rows = r.data ?? [];
+      const total = rows.reduce((s: number, o: any) => Number(s) + Number(o.total ?? 0), 0);
+      const byProduct = rows.reduce(
+        (acc: { dascha: number; thobe: number }, o: any) => {
+          const items: any[] = o.items ?? [];
+          const line = items[0];
+          if (!line) return acc;
+          const pt = line.product_type;
+          if (pt === "thobe") acc.thobe += Number(line.quantity ?? 0);
+          else acc.dascha += Number(line.quantity ?? 0);
+          return acc;
+        },
+        { dascha: 0, thobe: 0 }
+      );
+      const dats = rows.map((o: any) => o.created_at).filter(Boolean) as string[];
+      const sales: EmployeeSales = {
+        employeeId,
+        orderCount: rows.length,
+        totalKwd: total,
+        averageKwd: rows.length ? total / rows.length : 0,
+        cancelledCount: rows.filter((o: any) => o.status === "cancelled").length,
+        confirmedCount: rows.filter((o: any) => o.status === "confirmed").length,
+        completedCount: rows.filter((o: any) => o.status === "completed").length,
+        byProduct,
+        firstAt: dats.length ? (dats.reduce((a, b) => (b < a ? b : a)) as string) : null,
+        lastAt: dats.length ? (dats.reduce((a, b) => (b > a ? b : a)) as string) : null,
+      };
+      return sales;
     },
   };
 }

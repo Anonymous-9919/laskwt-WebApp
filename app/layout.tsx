@@ -1,21 +1,22 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant, IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
+import { Cormorant_Garamond, Manrope, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+const notoArabic = Noto_Sans_Arabic({
   weight: ["300", "400", "500", "600", "700"],
   subsets: ["arabic"],
   variable: "--font-arabic",
   display: "swap",
 });
 
-const cormorant = Cormorant({
+const cormorant = Cormorant_Garamond({
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
@@ -37,10 +38,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="ar"
-      dir="rtl"
+      lang="en"
+      dir="ltr"
       suppressHydrationWarning
-      className={`${inter.variable} ${ibmPlexArabic.variable} ${cormorant.variable}`}
+      className={`${manrope.variable} ${notoArabic.variable} ${cormorant.variable}`}
     >
       <body className="font-sans min-h-screen">{children}</body>
     </html>

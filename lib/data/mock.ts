@@ -1,4 +1,5 @@
-import type { Customer, Draft, Measurement, Order, OrderStatus, Profile, StyleOption } from "@/types";
+import type { Customer, Draft, Measurement, Order, OrderStatus, Profile, StyleOption, Role } from "@/types";
+import type { EmployeeSales } from "@/lib/data/types";
 import { STYLE_CATALOG } from "@/lib/styles/catalog";
 import { BASE_PRICES } from "@/lib/pricing/calculator";
 import type {
@@ -155,6 +156,15 @@ const profiles: Profile[] = [
     active: true,
     created_at: "2026-01-01T00:00:00.000Z",
     updated_at: "2026-01-01T00:00:00.000Z",
+  },
+  {
+    id: "mock-emp-1",
+    full_name: "سعيد العنازي",
+    phone: "96550001111",
+    role: "employee",
+    active: true,
+    created_at: "2026-05-01T00:00:00.000Z",
+    updated_at: "2026-05-01T00:00:00.000Z",
   },
 ];
 
@@ -358,6 +368,62 @@ export function getMockRepository(): Repository {
 
     async getProfile(userId) {
       return profiles.find((p) => p.id === userId) ?? null;
+    },
+
+    async listProfiles() {
+      return profiles.slice().sort((a, b) => (a.role === b.role ? 0 : a.role === "admin" ? 1 : -1));
+    },
+
+    async createProfile(input: { full_name: string; phone: string; role?: Role }) {
+      const created: Profile = {
+        id: `mock-emp-${Date.now()}`,
+        full_name: input.full_name,
+        phone: input.phone,
+        role: input.role ?? "employee",
+        active: true,
+        created_at: nowIso(),
+        updated_at: nowIso(),
+      };
+      profiles.push(created);
+      return created;
+    },
+
+    async updateProfile(id, input) {
+      const p = profiles.find((x) => x.id === id);
+      if (!p) return null;
+      Object.assign(p, input, { updated_at: nowIso() });
+      return p;
+    },
+
+    async getEmployeeSales(employeeId, rangeDays) {
+      let rows = orders.filter((o) => o.created_by === employeeId);
+      if (rangeDays && rangeDays > 0) {
+        const cutoff = Date.now() - rangeDays * 24 * 3600 * 1000;
+        rows = rows.filter((o) => new Date(o.created_at).getTime() >= cutoff);
+      }
+      const total = rows.reduce((s, o) => s + o.total, 0);
+      const byProduct = rows.reduce(
+        (acc, o) => {
+          const pt = (o.items[0]?.product_type ?? "dascha") as "dascha" | "thobe";
+          if (pt === "thobe") acc.thobe += o.items[0]?.quantity ?? 0;
+          else acc.dascha += o.items[0]?.quantity ?? 0;
+          return acc;
+        },
+        { dascha: 0, thobe: 0 }
+      );
+      const sales: EmployeeSales = {
+        employeeId,
+        orderCount: rows.length,
+        totalKwd: total,
+        averageKwd: rows.length ? total / rows.length : 0,
+        cancelledCount: rows.filter((o) => o.status === "cancelled").length,
+        confirmedCount: rows.filter((o) => o.status === "confirmed").length,
+        completedCount: rows.filter((o) => o.status === "completed").length,
+        byProduct,
+        firstAt: rows.length ? rows.reduce((a, o) => (o.created_at < a ? o.created_at : a), rows[0].created_at) : null,
+        lastAt: rows.length ? rows.reduce((a, o) => (o.created_at > a ? o.created_at : a), rows[0].created_at) : null,
+      };
+      return sales;
     },
   };
 }
