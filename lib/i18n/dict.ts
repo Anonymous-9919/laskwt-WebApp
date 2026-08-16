@@ -193,6 +193,7 @@ export type Dict = {
     noOrders: string;
   };
   invoice: {
+    invoice: string;
     businessName: string;
     customer: string;
     measurements: string;
@@ -407,6 +408,7 @@ order: {
     noOrders: "لا توجد طلبات بعد",
   },
   invoice: {
+    invoice: "فاتورة",
     businessName: "لاسكويت",
     customer: "العميل",
     measurements: "القياسات",
@@ -621,6 +623,7 @@ const en: Dict = {
     noOrders: "No orders yet",
   },
   invoice: {
+    invoice: "Invoice",
     businessName: "Laskwt",
     customer: "Customer",
     measurements: "Measurements",

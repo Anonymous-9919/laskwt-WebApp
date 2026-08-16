@@ -23,6 +23,13 @@ export function formatDate(value: Date | string, lang: "ar" | "en" = "en") {
   }).format(d);
 }
 
+export function todayDateString() {
+  const now = new Date();
+  const offset = now.getTimezoneOffset();
+  const local = new Date(now.getTime() - offset * 60 * 1000);
+  return local.toISOString().slice(0, 10);
+}
+
 export function normalizePhone(input: string) {
   // Strip everything but digits and leading plus; default Kuwaiti prefix
   const cleaned = input.replace(/[^\d+]/g, "");

@@ -64,7 +64,7 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         arabic: ["var(--font-arabic)", "var(--font-sans)", "sans-serif"],
-        serif: ["var(--font-serif)", "serif"],
+        serif: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

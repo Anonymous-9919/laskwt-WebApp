@@ -27,8 +27,7 @@ import { getOrderStatusMeta, getSyncStatusMeta } from "@/lib/orders/status";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { formatKWD, formatDate } from "@/lib/utils";
-import { downloadInvoice } from "@/lib/invoice/generate";
-import { buildWhatsAppUrl } from "@/lib/whatsapp/message";
+import { downloadInvoice, shareInvoiceViaWhatsApp } from "@/lib/invoice/generate";
 import { SyncToShopifyButton } from "@/components/orders/sync-button";
 import type { Customer, Order, OrderStatus } from "@/types";
 
@@ -127,10 +126,13 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
           <Button
             variant="outline"
             disabled={busy === "whatsapp"}
-            onClick={() => {
+            onClick={async () => {
               setBusy("whatsapp");
-              window.open(buildWhatsAppUrl(order, customer, lang), "_blank", "noopener");
-              setBusy(null);
+              try {
+                await shareInvoiceViaWhatsApp(order, customer, lang);
+              } finally {
+                setBusy(null);
+              }
             }}
           >
             <MessageCircle className="h-4 w-4" />

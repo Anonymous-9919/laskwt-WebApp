@@ -31,3 +31,36 @@ export async function downloadInvoice(
   a.remove();
   URL.revokeObjectURL(url);
 }
+
+export async function shareInvoiceViaWhatsApp(
+  order: Order,
+  customer: Customer | null,
+  lang: InvoiceLang
+): Promise<"shared" | "fallback"> {
+  const blob = await generateInvoiceBlob(order, customer, lang);
+  const fileName = `${order.number}-invoice.pdf`;
+  const file = new File([blob], fileName, { type: "application/pdf" });
+
+  const nav = navigator as Navigator & {
+    canShare?: (data: { files: File[] }) => boolean;
+  };
+
+  if (nav.share && typeof nav.canShare === "function" && nav.canShare({ files: [file] })) {
+    try {
+      await nav.share({
+        files: [file],
+        title: `${order.number} — Invoice`,
+        text: `Invoice ${order.number}${customer ? ` · ${customer.full_name}` : ""}`,
+      });
+      return "shared";
+    } catch (err) {
+      if ((err as Error).name === "AbortError") return "fallback";
+    }
+  }
+
+  const url = `/api/pdf?order=${encodeURIComponent(order.id)}&lang=${lang}`;
+  const phone = (customer?.phone ?? "").replace(/\D/g, "");
+  const message = encodeURIComponent(`Invoice ${order.number}: ${window.location.origin}${url}`);
+  window.open(`https://wa.me/${phone}?text=${message}`, "_blank", "noopener");
+  return "fallback";
+}

@@ -14,12 +14,11 @@ import { useAutosave } from "@/lib/data/use-autosave";
 import { useCurrentUserId } from "@/lib/auth/use-current-user";
 import { useLanguage } from "@/lib/i18n/context";
 import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
+import { cn, formatKWD, todayDateString } from "@/lib/utils";
 import type { Customer, Measurements, SelectedStyles } from "@/types";
 import { BASE_PRICES, DEFAULT_STYLES, computeOrderTotals } from "@/lib/pricing/calculator";
 import { STYLE_CATALOG, STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS, labelFor, hasAllRequired } from "@/lib/measurements/fields";
-import { formatKWD } from "@/lib/utils";
 import type { DraftOrderPayload } from "@/lib/orders/draft-types";
 
 const STEPS = [
@@ -51,6 +50,7 @@ export function SellPageClient({ profile }: { profile: any }) {
   const [styles, setStyles] = useState<SelectedStyles>(DEFAULT_STYLES);
   const [quantity, setQuantity] = useState(1);
   const [notes, setNotes] = useState("");
+  const [dueDate, setDueDate] = useState(todayDateString());
   const [showDraftBanner, setShowDraftBanner] = useState(false);
   const [resumeDraft, setResumeDraft] = useState(false);
   const [loadingCustomers, setLoadingCustomers] = useState(true);
@@ -65,7 +65,7 @@ export function SellPageClient({ profile }: { profile: any }) {
     discountType: "percent",
     discountValue: 0,
     notes,
-    dueDate: "",
+    dueDate,
   };
 
   const savedAt = useAutosave({ repo, userId, enabled: !!customer, payload: draftPayload });
@@ -90,6 +90,7 @@ export function SellPageClient({ profile }: { profile: any }) {
         if (p.productType) setProductType(p.productType);
         if (p.quantity) setQuantity(p.quantity);
         if (p.notes) setNotes(p.notes);
+        if (p.dueDate) setDueDate(p.dueDate);
         setResumeDraft(true);
         setShowDraftBanner(true);
       }
@@ -133,7 +134,7 @@ export function SellPageClient({ profile }: { profile: any }) {
           measurements,
           items: [{ product_type: productType, quantity, base_price: totals.basePrice, styles, customization_total: totals.customization * quantity, line_total: totals.total }],
           notes,
-          due_date: null,
+          due_date: dueDate || null,
         },
         userId
       );
@@ -277,6 +278,7 @@ export function SellPageClient({ profile }: { profile: any }) {
             onQuantityChange={setQuantity}
             notes={notes}
             onNotesChange={setNotes}
+            dueDate={dueDate}
             onSubmit={createOrder}
             lang={lang}
           />
@@ -453,6 +455,7 @@ function ReviewStep({
   onQuantityChange,
   notes,
   onNotesChange,
+  dueDate,
   onSubmit,
   lang,
 }: {
@@ -464,6 +467,7 @@ function ReviewStep({
   onQuantityChange: (v: number) => void;
   notes: string;
   onNotesChange: (v: string) => void;
+  dueDate: string;
   onSubmit: () => void;
   lang: "ar" | "en";
 }) {
@@ -492,6 +496,12 @@ function ReviewStep({
             <Button variant="outline" size="icon" onClick={() => onQuantityChange(quantity + 1)}>+</Button>
           </div>
         </div>
+        {dueDate && (
+          <div className="flex items-center justify-between border-t pt-2 text-sm">
+            <span className="text-muted-foreground">{lang === "ar" ? "تاريخ التسليم" : "Delivery date"}</span>
+            <span className="font-medium" dir="ltr">{dueDate}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between border-t pt-2">
           <span className="font-medium">Total</span>
           <span className="font-bold text-lg font-mono">{formatKWD(totals.total)}</span>

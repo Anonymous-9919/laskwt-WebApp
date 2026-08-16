@@ -21,7 +21,7 @@ import { useRepository } from "@/lib/data/use-repository";
 import { useCurrentUserId } from "@/lib/auth/use-current-user";
 import { useAutosave } from "@/lib/data/use-autosave";
 import { useLanguage } from "@/lib/i18n/context";
-import { cn } from "@/lib/utils";
+import { cn, todayDateString } from "@/lib/utils";
 import { DEFAULT_STYLES } from "@/lib/pricing/calculator";
 import { CustomerStep } from "@/components/orders/steps/customer-step";
 import { MeasurementForm } from "@/components/measurement/measurement-form";
@@ -140,6 +140,13 @@ export function OrderWizard() {
   }, [repo, customerId]);
 
   const stepIndex = STEPS.findIndex((s) => s.key === step);
+
+  // Auto-fill today's date when reaching the review step
+  useEffect(() => {
+    if (step === "review" && !dueDate) {
+      setDueDate(todayDateString());
+    }
+  }, [step, dueDate]);
 
   function goNext() {
     setStep(STEPS[Math.min(stepIndex + 1, STEPS.length - 1)].key);
