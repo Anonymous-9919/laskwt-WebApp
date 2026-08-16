@@ -13,7 +13,6 @@ import type { BusinessProfile, Customer, Order, OrderStatus } from "@/types";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { dictionaries } from "@/lib/i18n/dict";
-import { BRAND_ACCENT_PATHS, BRAND_LETTER_PATHS, BRAND_VIEWBOX } from "@/lib/brand";
 
 export const INTER_FONT_FILES = {
   regular: "inter-regular.ttf",
@@ -50,13 +49,12 @@ export async function registerInvoiceFonts(baseUrl?: string) {
   Font.register({ family: "Cairo", src: src(CAIRO_FONT_FILES[500]), fontWeight: 500 });
 }
 
-const GOLD = "#C3A972";
+const GREY = "#3F454B";
 const INK = "#16160F";
 const MUTED = "#6B6257";
 const LINE = "#E7DFD0";
 const PAPER = "#F6F3EC";
 const WHITE = "#FFFFFF";
-const IVORY = "#F6F3EC";
 
 const styles = StyleSheet.create({
   page: {
@@ -68,11 +66,15 @@ const styles = StyleSheet.create({
   },
   // ── Header band ─────────────────────────────────────────
   headerBand: {
-    backgroundColor: INK,
-    margin: -32,
+    backgroundColor: WHITE,
+    borderWidth: 1,
+    borderColor: LINE,
+    borderBottomWidth: 3,
+    borderBottomColor: GREY,
+    borderRadius: 8,
     marginBottom: 20,
-    paddingHorizontal: 32,
-    paddingVertical: 18,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -80,26 +82,27 @@ const styles = StyleSheet.create({
   brandBlock: {
     gap: 4,
   },
-  brandLogoSvg: {
-    width: 120,
-    height: 26,
+  brandLogo: {
+    width: 44,
+    height: 38,
+    objectFit: "contain",
   },
   brandSub: {
     fontSize: 8,
-    color: "#CFC5B3",
+    color: MUTED,
     marginTop: 1,
   },
   invoiceTag: {
     fontSize: 13,
     fontWeight: 700,
-    color: GOLD,
+    color: GREY,
     letterSpacing: 3,
   },
   invoiceTagAr: {
     fontFamily: "Cairo",
     fontSize: 13,
     fontWeight: 700,
-    color: GOLD,
+    color: GREY,
     letterSpacing: 1,
   },
   // ── Meta strip ──────────────────────────────────────────
@@ -173,7 +176,7 @@ const styles = StyleSheet.create({
   },
   infoCardTitle: {
     fontSize: 8,
-    color: GOLD,
+    color: GREY,
     fontWeight: 700,
     textTransform: "uppercase",
     letterSpacing: 0.8,
@@ -182,7 +185,7 @@ const styles = StyleSheet.create({
   infoCardTitleAr: {
     fontFamily: "Cairo",
     fontSize: 9,
-    color: GOLD,
+    color: GREY,
     fontWeight: 700,
     marginBottom: 6,
   },
@@ -215,7 +218,7 @@ const styles = StyleSheet.create({
   },
   sectionRule: {
     height: 2,
-    backgroundColor: GOLD,
+    backgroundColor: GREY,
     width: 32,
     marginBottom: 8,
   },
@@ -345,13 +348,13 @@ const styles = StyleSheet.create({
   grandValue: {
     fontSize: 14,
     fontWeight: 700,
-    color: GOLD,
+    color: WHITE,
   },
   grandValueAr: {
     fontFamily: "Cairo",
     fontSize: 14,
     fontWeight: 700,
-    color: GOLD,
+    color: WHITE,
   },
   // ── Footer ──────────────────────────────────────────────
   footer: {
@@ -371,7 +374,7 @@ const styles = StyleSheet.create({
     fontSize: 8.5,
   },
   footerLink: {
-    color: GOLD,
+    color: GREY,
     fontSize: 8.5,
   },
   pageNo: {
@@ -391,19 +394,6 @@ const STATUS_STYLES: Record<OrderStatus, { bg: string; labelKey: string }> = {
   cancelled: { bg: "#A0402E", labelKey: "status_cancelled" },
 };
 
-function brandLogoDataUri(light = true) {
-  const ink = light ? IVORY : INK;
-  const gold = light ? GOLD : "#B5985A";
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${BRAND_VIEWBOX}" fill="none" role="img" aria-label="Laskwt">
-<g fill="${ink}">${BRAND_LETTER_PATHS.map((d) => `<path d="${d}"/>`).join("")}</g>
-<g fill="${gold}">${BRAND_ACCENT_PATHS.map((d) => `<path d="${d}"/>`).join("")}</g>
-</svg>`;
-  if (typeof window === "undefined") {
-    return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
-  }
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-}
-
 function fmt(value: number) {
   return `KWD ${value.toFixed(3)}`;
 }
@@ -413,11 +403,13 @@ export function InvoiceDocument({
   customer,
   lang,
   business,
+  baseUrl,
 }: {
   order: Order;
   customer: Customer | null;
   lang: "ar" | "en";
   business?: BusinessProfile | null;
+  baseUrl?: string;
 }) {
   const t = dictionaries[lang];
   const isAr = lang === "ar";
@@ -448,10 +440,17 @@ export function InvoiceDocument({
   return (
     <Document title={`${order.number}`} author={businessName} subject={t.invoice.businessName}>
       <Page size="A4" style={styles.page} wrap>
-        {/* Dark brand band */}
+        {/* Brand band */}
         <View style={styles.headerBand} fixed>
           <View style={styles.brandBlock}>
-            <Image src={brandLogoDataUri(true)} style={styles.brandLogoSvg} />
+            <Image
+              src={
+                baseUrl
+                  ? `${baseUrl}/laskwt-logo.png`
+                  : "/laskwt-logo.png"
+              }
+              style={styles.brandLogo}
+            />
             {businessLines.length > 0 && (
               <Text style={[styles.brandSub, fontStyle]}>{businessLines.join("  ·  ")}</Text>
             )}

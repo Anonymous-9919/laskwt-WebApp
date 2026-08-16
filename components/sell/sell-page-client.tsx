@@ -165,7 +165,7 @@ export function SellPageClient({ profile }: { profile: any }) {
         <Card className="border-gold/40 bg-gold/10 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
-              <CheckCircle2 className="h-4 w-4 text-gold-foreground" />
+              <CheckCircle2 className="h-4 w-4 text-gold" />
               <span>Saved draft — continue?</span>
             </div>
             <Button variant="outline" size="sm" onClick={async () => { if (repo && userId) await repo.clearDraft(userId, "order"); setShowDraftBanner(false); }}>
@@ -182,7 +182,7 @@ export function SellPageClient({ profile }: { profile: any }) {
           return (
             <button key={s.key} onClick={() => i <= stepIndex && setStep(s.key)} className={cn(
               "flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-              active && "bg-gold/15 text-gold-foreground ring-1 ring-gold/40",
+              active && "bg-gold/15 text-gold ring-1 ring-gold/40",
               done && "text-emerald-600",
               !active && !done && "text-muted-foreground"
             )}>
@@ -210,7 +210,7 @@ export function SellPageClient({ profile }: { profile: any }) {
                     className="w-full justify-start gap-3 py-4 text-right"
                     onClick={() => { setCustomer(c); setStep("product"); }}
                   >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gold/15 text-gold-foreground">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gold/15 text-gold">
                       <UserRound className="h-6 w-6" />
                     </div>
                     <div>
@@ -477,7 +477,7 @@ function ReviewStep({
     <div className="space-y-4">
       <Card className="p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gold/15 text-gold-foreground">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gold/15 text-gold">
             <Shirt className="h-6 w-6" />
           </div>
           <div>

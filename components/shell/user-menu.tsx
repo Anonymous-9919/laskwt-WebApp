@@ -45,7 +45,7 @@ export function UserMenu({ profile }: { profile: Profile }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
           <Avatar className="h-9 w-9 border border-gold/40">
-            <AvatarFallback className="bg-gold/15 text-gold-foreground text-sm font-semibold">
+            <AvatarFallback className="bg-gold/15 text-gold text-sm font-semibold">
               {initials}
             </AvatarFallback>
           </Avatar>

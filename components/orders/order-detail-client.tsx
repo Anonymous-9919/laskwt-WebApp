@@ -201,7 +201,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <UserRound className="h-4 w-4 text-gold-foreground" />
+              <UserRound className="h-4 w-4 text-gold" />
               {t.invoice.customer}
             </CardTitle>
           </CardHeader>
@@ -210,7 +210,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
             {customer?.phone && <p className="text-sm text-muted-foreground">{customer.phone}</p>}
             <Link
               href={`/customers/${order.customer_id}`}
-              className="text-sm text-gold-foreground hover:underline"
+              className="text-sm text-gold hover:underline"
             >
               {t.customer.title} →
             </Link>
@@ -220,7 +220,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Package className="h-4 w-4 text-gold-foreground" />
+              <Package className="h-4 w-4 text-gold" />
               {t.order.productType}
             </CardTitle>
           </CardHeader>
@@ -243,7 +243,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Ruler className="h-4 w-4 text-gold-foreground" />
+            <Ruler className="h-4 w-4 text-gold" />
             {t.invoice.measurements}
           </CardTitle>
           <CardDescription>
@@ -273,7 +273,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <ClipboardList className="h-4 w-4 text-gold-foreground" />
+              <ClipboardList className="h-4 w-4 text-gold" />
               {t.invoice.styles}
             </CardTitle>
           </CardHeader>
@@ -288,7 +288,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
                       {lang === "ar" ? opt.label_ar : opt.label_en}
                     </span>
                     {opt.price_addition > 0 && (
-                      <span className="text-gold-foreground" dir="ltr">
+                      <span className="text-gold" dir="ltr">
                         +{formatKWD(opt.price_addition)}
                       </span>
                     )}
@@ -302,7 +302,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <ReceiptText className="h-4 w-4 text-gold-foreground" />
+              <ReceiptText className="h-4 w-4 text-gold" />
               {t.invoice.summary}
             </CardTitle>
           </CardHeader>
@@ -324,7 +324,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
             <Separator />
             <div className="flex items-center justify-between">
               <span className="font-semibold">{t.common.total}</span>
-              <span className="font-serif text-xl font-bold text-gold-foreground" dir="ltr">
+              <span className="font-serif text-xl font-bold text-gold" dir="ltr">
                 {formatKWD(order.total)}
               </span>
             </div>

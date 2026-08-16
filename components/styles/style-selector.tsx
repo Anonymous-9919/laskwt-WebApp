@@ -36,7 +36,7 @@ export function StyleSelector({ value, onChange }: Props) {
                 {lang === "ar" ? KIND_LABEL[kind].ar : KIND_LABEL[kind].en}
               </h3>
               {selectedOpt && selectedOpt.price_addition > 0 && (
-                <span className="inline-flex items-center gap-1 text-xs font-medium text-gold-foreground">
+                <span className="inline-flex items-center gap-1 text-xs font-medium text-gold">
                   <Plus className="h-3 w-3" />
                   {selectedOpt.price_addition} KWD
                 </span>
@@ -67,7 +67,7 @@ export function StyleSelector({ value, onChange }: Props) {
                       style={{ color: selected ? "hsl(var(--primary))" : undefined }}
                       dangerouslySetInnerHTML={{ __html: opt.preview_svg }}
                     />
-                    <span className={cn("text-xs font-medium leading-tight", selected && "text-gold-foreground")}>
+                    <span className={cn("text-xs font-medium leading-tight", selected && "text-gold")}>
                       {lang === "ar" ? opt.label_ar : opt.label_en}
                     </span>
                     <span className="text-[10px] text-muted-foreground">

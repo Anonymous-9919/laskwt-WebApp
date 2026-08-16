@@ -130,7 +130,7 @@ export function CustomerDetailClient() {
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Ruler className="h-5 w-5 text-gold-foreground" />
+              <Ruler className="h-5 w-5 text-gold" />
               {t.customer.historyMeasurements}
             </CardTitle>
             <CardDescription>{t.measurement.previous}</CardDescription>

@@ -61,7 +61,7 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
   return (
     <Card className="shadow-xl">
       <CardHeader className="items-center space-y-4 pb-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold/15 text-gold-foreground">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gold/15 text-gold">
           <UserRound className="h-6 w-6" />
         </div>
         <div className="text-center space-y-1">

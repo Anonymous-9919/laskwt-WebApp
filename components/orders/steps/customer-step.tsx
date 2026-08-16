@@ -48,7 +48,7 @@ export function CustomerStep({ repo, value, onSelect }: Props) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <UserRound className="h-5 w-5 text-gold-foreground" />
+          <UserRound className="h-5 w-5 text-gold" />
           <div>
             <h2 className="font-serif text-xl font-semibold">{t.order.stepCustomer}</h2>
             <p className="text-sm text-muted-foreground">{t.order.selectCustomerHint}</p>
@@ -101,7 +101,7 @@ export function CustomerStep({ repo, value, onSelect }: Props) {
                         <span className="text-xs text-muted-foreground">
                           {formatDate(c.updated_at, lang)}
                         </span>
-                        {selected && <span className="text-xs font-semibold text-gold-foreground">✓</span>}
+                        {selected && <span className="text-xs font-semibold text-gold">✓</span>}
                       </div>
                     </button>
                   </li>

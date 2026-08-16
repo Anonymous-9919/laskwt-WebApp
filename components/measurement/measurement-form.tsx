@@ -71,7 +71,7 @@ export function MeasurementForm({
       <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Ruler className="h-5 w-5 text-gold-foreground" />
+            <Ruler className="h-5 w-5 text-gold" />
             {t.measurement.diagram}
           </CardTitle>
           <CardDescription>
@@ -93,7 +93,7 @@ export function MeasurementForm({
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Ruler className="h-5 w-5 text-gold-foreground" />
+              <Ruler className="h-5 w-5 text-gold" />
               {t.measurement.form}
             </CardTitle>
             <CardDescription>
@@ -167,7 +167,7 @@ export function MeasurementForm({
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2 text-base">
-                <History className="h-4 w-4 text-gold-foreground" />
+                <History className="h-4 w-4 text-gold" />
                 {t.measurement.previous}
               </CardTitle>
               {!customerId && <CardDescription>{t.order.selectCustomer}</CardDescription>}

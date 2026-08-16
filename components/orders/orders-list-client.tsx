@@ -120,7 +120,7 @@ export function OrdersListClient() {
               <Link key={o.id} href={`/orders/${o.id}`} className="block">
                 <Card className="flex flex-wrap items-center justify-between gap-3 p-4 transition-colors hover:border-primary/40">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold/15 text-gold-foreground">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold/15 text-gold">
                       <ReceiptText className="h-5 w-5" />
                     </div>
                     <div>
@@ -135,7 +135,7 @@ export function OrdersListClient() {
                   <div className="flex items-center gap-2">
                     <Badge variant={status.variant}>{status.label}</Badge>
                     <Badge variant={sync.variant}>{sync.label}</Badge>
-                    <span className="ms-2 font-serif text-lg font-bold text-gold-foreground" dir="ltr">
+                    <span className="ms-2 font-serif text-lg font-bold text-gold" dir="ltr">
                       {formatKWD(o.total)}
                     </span>
                   </div>

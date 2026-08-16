@@ -1,8 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
-import { BRAND_ACCENT_PATHS, BRAND_LETTER_PATHS, BRAND_VIEWBOX } from "@/lib/brand";
 
 export function LaskwtMark({
   className,
@@ -11,26 +11,15 @@ export function LaskwtMark({
   className?: string;
   light?: boolean;
 }) {
-  const ink = light ? "#F6F3EC" : "#16160F";
-  const gold = light ? "#C3A972" : "#B5985A";
   return (
-    <svg
-      viewBox={BRAND_VIEWBOX}
-      className={className}
-      role="img"
-      aria-label="Laskwt"
-    >
-      <g fill={ink}>
-        {BRAND_LETTER_PATHS.map((d) => (
-          <path key={d} d={d} />
-        ))}
-      </g>
-      <g fill={gold}>
-        {BRAND_ACCENT_PATHS.map((d) => (
-          <path key={d} d={d} />
-        ))}
-      </g>
-    </svg>
+    <Image
+      src="/laskwt-logo.png"
+      alt="Laskwt"
+      width={1080}
+      height={916}
+      className={cn("h-10 w-auto object-contain", className)}
+      priority
+    />
   );
 }
 
@@ -47,7 +36,7 @@ export function Logo({
   return (
     <div className={cn("flex flex-col items-start gap-1", className)}>
       <LaskwtMark
-        className={cn("h-6 w-auto", light ? "text-[#F6F3EC]" : "text-foreground")}
+        className={cn("h-10 w-auto", light ? "opacity-95" : "")}
         light={light}
       />
       {showTagline && (

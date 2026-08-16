@@ -138,7 +138,7 @@ export function ReviewStep(props: Props) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Package className="h-5 w-5 text-gold-foreground" />
+              <Package className="h-5 w-5 text-gold" />
               {t.order.productType}
             </CardTitle>
             <CardDescription>{t.pricing.perUnit}</CardDescription>
@@ -159,7 +159,7 @@ export function ReviewStep(props: Props) {
                 >
                   <p className="font-medium">{lang === "ar" ? (type === "dascha" ? "Ø¯Ø±Ø¹ÙŠØ©" : "Ø«ÙˆØ¨") : type === "dascha" ? "Dascha" : "Thobe"}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{t.order[`product_${type}`]}</p>
-                  <p className="mt-2 text-lg font-semibold text-gold-foreground">{formatKWD(BASE_PRICES[type])}</p>
+                  <p className="mt-2 text-lg font-semibold text-gold">{formatKWD(BASE_PRICES[type])}</p>
                 </button>
               ))}
             </div>
@@ -264,7 +264,7 @@ export function ReviewStep(props: Props) {
       <Card className="h-fit lg:sticky lg:top-6">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ReceiptText className="h-5 w-5 text-gold-foreground" />
+            <ReceiptText className="h-5 w-5 text-gold" />
             {t.pricing.pricePreview}
           </CardTitle>
         </CardHeader>
@@ -296,7 +296,7 @@ export function ReviewStep(props: Props) {
           <Separator />
           <div className="flex items-center justify-between">
             <span className="font-semibold">{t.common.total}</span>
-            <span className="font-serif text-xl font-bold text-gold-foreground" dir="ltr">
+            <span className="font-serif text-xl font-bold text-gold" dir="ltr">
               {formatKWD(totals.total)}
             </span>
           </div>
@@ -317,7 +317,7 @@ export function ReviewStep(props: Props) {
                       {lang === "ar" ? opt.label_ar : opt.label_en}
                     </span>
                     {opt.price_addition > 0 && (
-                      <span className="text-gold-foreground" dir="ltr">
+                      <span className="text-gold" dir="ltr">
                         +{formatKWD(opt.price_addition)}
                       </span>
                     )}

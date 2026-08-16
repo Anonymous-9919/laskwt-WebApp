@@ -173,7 +173,7 @@ export function OrderWizard() {
       {showDraftBanner && resumeDraft && (
         <Card className="flex flex-wrap items-center justify-between gap-3 border-gold/40 bg-gold/10 p-4">
           <div className="flex items-center gap-2 text-sm">
-            <History className="h-4 w-4 text-gold-foreground" />
+            <History className="h-4 w-4 text-gold" />
             <span>{t.common.resumeDraft}</span>
           </div>
           <Button
@@ -201,7 +201,7 @@ export function OrderWizard() {
               onClick={() => goTo(i)}
               className={cn(
                 "flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                active && "bg-gold/15 text-gold-foreground ring-1 ring-gold/40",
+                active && "bg-gold/15 text-gold ring-1 ring-gold/40",
                 done && "text-emerald-600 dark:text-emerald-400",
                 !active && !done && "text-muted-foreground hover:bg-accent/60"
               )}

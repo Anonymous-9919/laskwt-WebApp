@@ -23,9 +23,9 @@
     --destructive-foreground: 0 0% 100%;
     --border: 39 32% 86%;                 /* #E7DFD0 — warm line */
     --input: 39 32% 86%;
-    --ring: 41 40% 61%;                   /* #C3A972 — gold */
-    --gold: 41 40% 61%;                   /* #C3A972 — brand gold */
-    --gold-foreground: 60 19% 7%;         /* ink on gold */
+    --ring: 210 9% 27%;                   /* #3F454B — dark grey accent */
+    --gold: 210 9% 27%;                   /* #3F454B — dark grey accent */
+    --gold-foreground: 42 36% 95%;        /* ivory on dark grey */
     --radius: 0.625rem;
   }
 
@@ -49,9 +49,9 @@
     --destructive-foreground: 0 0% 100%;
     --border: 39 32% 86%;
     --input: 39 32% 86%;
-    --ring: 41 40% 61%;
-    --gold: 41 40% 61%;
-    --gold-foreground: 60 19% 7%;
+    --ring: 210 9% 27%;
+    --gold: 210 9% 27%;
+    --gold-foreground: 42 36% 95%;
   }
 }
 

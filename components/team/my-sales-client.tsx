@@ -31,17 +31,17 @@ export function MySalesClient({
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="flex flex-col items-center gap-2 p-6 text-center">
-          <TrendingUp className="h-6 w-6 text-gold-foreground" />
+          <TrendingUp className="h-6 w-6 text-gold" />
           <div className="text-3xl font-bold">{thirty.orderCount}</div>
           <div className="text-xs text-muted-foreground">طلبات 30 يوم</div>
         </Card>
         <Card className="flex flex-col items-center gap-2 p-6 text-center">
-          <ReceiptText className="h-6 w-6 text-gold-foreground" />
+          <ReceiptText className="h-6 w-6 text-gold" />
           <div className="text-3xl font-bold font-mono">{formatKWD(thirty.totalKwd)}</div>
           <div className="text-xs text-muted-foreground">مبيعات 30 يوم</div>
         </Card>
         <Card className="flex flex-col items-center gap-2 p-6 text-center">
-          <CalendarDays className="h-6 w-6 text-gold-foreground" />
+          <CalendarDays className="h-6 w-6 text-gold" />
           <div className="text-3xl font-bold font-mono">{formatKWD(ninety.totalKwd)}</div>
           <div className="text-xs text-muted-foreground">مبيعات 90 يوم</div>
         </Card>

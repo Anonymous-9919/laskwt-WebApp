@@ -175,7 +175,7 @@ export function TeamPageClient({
           return (
             <Card key={emp.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold/15 text-gold-foreground">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold/15 text-gold">
                   <KeyRound className="h-5 w-5" />
                 </div>
                 <div>
