@@ -26,7 +26,8 @@ export async function GET(req: NextRequest) {
     : null;
 
   try {
-    await registerInvoiceFonts();
+    const baseUrl = req.nextUrl.origin;
+    await registerInvoiceFonts(baseUrl);
     const buffer = await renderToBuffer(
       <InvoiceDocument order={order} customer={customer} lang={lang} />
     );
