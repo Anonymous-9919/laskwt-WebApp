@@ -29,6 +29,14 @@ export function UserMenu({ profile }: { profile: Profile }) {
       .join("") ?? "LK";
 
   async function signOut() {
+    const { hasSupabaseEnv } = await import("@/lib/data/env");
+    if (!hasSupabaseEnv()) {
+      const { clearDemoSession } = await import("@/lib/auth/demo-session");
+      clearDemoSession();
+      router.push("/login");
+      router.refresh();
+      return;
+    }
     const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();
     const { error } = await supabase.auth.signOut();

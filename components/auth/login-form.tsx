@@ -9,11 +9,10 @@ import { Loader2, Mail, Lock, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import { useLanguage } from "@/lib/i18n/context";
-import { Logo } from "@/components/shell/logo";
 
 const schema = z.object({
   email: z.string().email(),
@@ -36,6 +35,8 @@ export function LoginForm({ demoMode }: { demoMode: boolean }) {
 
   async function onSubmit(values: FormValues) {
     if (demoMode) {
+      const { setDemoSession, DEMO_ADMIN_ID } = await import("@/lib/auth/demo-session");
+      setDemoSession(DEMO_ADMIN_ID);
       router.push("/");
       router.refresh();
       return;
@@ -59,11 +60,7 @@ export function LoginForm({ demoMode }: { demoMode: boolean }) {
   return (
     <Card className="shadow-xl">
       <CardHeader className="items-center space-y-4 pb-4">
-        <Logo showTagline />
-        <div className="text-center space-y-1">
-          <CardTitle>{t.auth.signIn}</CardTitle>
-          <CardDescription>{t.auth.signInSubtitle}</CardDescription>
-        </div>
+        <CardTitle>{t.auth.signIn}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -122,7 +119,9 @@ export function LoginForm({ demoMode }: { demoMode: boolean }) {
             <Button
               variant="gold"
               className="w-full"
-              onClick={() => {
+              onClick={async () => {
+                const { setDemoSession, DEMO_ADMIN_ID } = await import("@/lib/auth/demo-session");
+                setDemoSession(DEMO_ADMIN_ID);
                 router.push("/");
                 router.refresh();
               }}

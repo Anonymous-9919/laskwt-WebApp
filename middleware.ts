@@ -13,6 +13,6 @@ export const config = {
      * - favicon.ico, public files
      * - api/pdf (shared PDF access via signed URLs)
      */
-    "/((?!_next/static|_next/image|favicon.ico|api/pdf|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|api/pdf|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|ttf|woff|woff2)$).*)",
   ],
 };

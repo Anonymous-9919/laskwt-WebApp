@@ -18,7 +18,7 @@ export function MySalesClient({
   thirty: EmployeeSales;
   ninety: EmployeeSales;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
@@ -33,25 +33,27 @@ export function MySalesClient({
         <Card className="flex flex-col items-center gap-2 p-6 text-center">
           <TrendingUp className="h-6 w-6 text-gold" />
           <div className="text-3xl font-bold">{thirty.orderCount}</div>
-          <div className="text-xs text-muted-foreground">طلبات 30 يوم</div>
+          <div className="text-xs text-muted-foreground">{lang === "ar" ? "طلبات 30 يوم" : "Orders (30 days)"}</div>
         </Card>
         <Card className="flex flex-col items-center gap-2 p-6 text-center">
           <ReceiptText className="h-6 w-6 text-gold" />
           <div className="text-3xl font-bold font-mono">{formatKWD(thirty.totalKwd)}</div>
-          <div className="text-xs text-muted-foreground">مبيعات 30 يوم</div>
+          <div className="text-xs text-muted-foreground">{lang === "ar" ? "مبيعات 30 يوم" : "Sales (30 days)"}</div>
         </Card>
         <Card className="flex flex-col items-center gap-2 p-6 text-center">
           <CalendarDays className="h-6 w-6 text-gold" />
           <div className="text-3xl font-bold font-mono">{formatKWD(ninety.totalKwd)}</div>
-          <div className="text-xs text-muted-foreground">مبيعات 90 يوم</div>
+          <div className="text-xs text-muted-foreground">{lang === "ar" ? "مبيعات 90 يوم" : "Sales (90 days)"}</div>
         </Card>
       </div>
 
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium">د.ل.ك. {formatKWD(thirty.averageKwd)}</p>
-            <p className="text-xs text-muted-foreground">متوسط طلب (30 يوم)</p>
+            <p className="font-medium">{formatKWD(thirty.averageKwd)}</p>
+            <p className="text-xs text-muted-foreground">
+              {lang === "ar" ? "متوسط طلب (30 يوم)" : "Average order (30 days)"}
+            </p>
           </div>
           <Button asChild size="lg">
             <Link href="/sell">

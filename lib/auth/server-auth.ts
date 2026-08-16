@@ -1,11 +1,15 @@
+import { cookies } from "next/headers";
 import type { Profile } from "@/types";
 import { getMockRepository } from "@/lib/data/mock";
 import { hasSupabaseEnv } from "@/lib/data/env";
-import { MOCK_PROFILE_ID } from "./permissions";
+import { DEMO_SESSION_COOKIE } from "./demo-session";
 
-async function getMockProfile(): Promise<Profile> {
+async function getMockProfile(): Promise<Profile | null> {
+  const store = await cookies();
+  const session = store.get(DEMO_SESSION_COOKIE)?.value;
+  if (!session) return null;
   const repo = getMockRepository();
-  const profile = await repo.getProfile(MOCK_PROFILE_ID);
+  const profile = await repo.getProfile(session);
   if (!profile) {
     throw new Error("Mock profile missing");
   }
@@ -14,7 +18,8 @@ async function getMockProfile(): Promise<Profile> {
 
 /**
  * Returns the signed-in profile from the server (Supabase session).
- * In demo mode (no Supabase env) returns the mock admin profile.
+ * In demo mode (no Supabase env) returns the mock profile selected by
+ * the demo session cookie, or null when signed out.
  */
 export async function getCurrentProfileServer(): Promise<Profile | null> {
   if (!hasSupabaseEnv()) {

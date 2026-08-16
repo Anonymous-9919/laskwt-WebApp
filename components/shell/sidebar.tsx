@@ -9,21 +9,19 @@ import { Logo } from "@/components/shell/logo";
 import { isAdmin } from "@/lib/auth/permissions";
 import type { Profile } from "@/types";
 
-type NavKey = "dashboard" | "customers" | "orders" | "newOrder" | "settings" | "team" | "sell" | "mySales";
+type NavKey = "dashboard" | "customers" | "orders" | "newOrder" | "settings" | "users" | "sell" | "mySales";
 
 const ADMIN_NAV: { href: string; key: NavKey; icon: React.ComponentType<{ className?: string }>; exact?: boolean }[] = [
   { href: "/", key: "dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/sell", key: "sell", icon: ShoppingCart, exact: true },
   { href: "/orders", key: "orders", icon: ReceiptText },
   { href: "/orders/new", key: "newOrder", icon: PlusCircle },
   { href: "/customers", key: "customers", icon: Users },
-  { href: "/team", key: "team", icon: UsersRound },
+  { href: "/users", key: "users", icon: UsersRound },
   { href: "/settings", key: "settings", icon: Settings },
 ];
 
 const EMPLOYEE_NAV: { href: string; key: NavKey; icon: React.ComponentType<{ className?: string }>; exact?: boolean }[] = [
   { href: "/sell", key: "sell", icon: ShoppingCart, exact: true },
-  { href: "/orders", key: "orders", icon: ReceiptText },
   { href: "/me", key: "mySales", icon: TrendingUp, exact: true },
 ];
 

@@ -157,8 +157,8 @@ export function SellPageClient({ profile }: { profile: any }) {
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-2 md:px-0">
       <div className="text-center">
-        <h1 className="font-serif text-2xl font-semibold">New Sale</h1>
-        <p className="text-sm text-muted-foreground">Step by step</p>
+        <h1 className="font-serif text-2xl font-semibold">{lang === "ar" ? "بيع جديد" : "New Sale"}</h1>
+        <p className="text-sm text-muted-foreground">{lang === "ar" ? "خطوة بخطوة" : "Step by step"}</p>
       </div>
 
       {showDraftBanner && resumeDraft && (
@@ -166,10 +166,10 @@ export function SellPageClient({ profile }: { profile: any }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm">
               <CheckCircle2 className="h-4 w-4 text-gold" />
-              <span>Saved draft — continue?</span>
+              <span>{lang === "ar" ? "مسودة محفوظة — هل تريد المتابعة؟" : "Saved draft — continue?"}</span>
             </div>
             <Button variant="outline" size="sm" onClick={async () => { if (repo && userId) await repo.clearDraft(userId, "order"); setShowDraftBanner(false); }}>
-              Dismiss
+              {lang === "ar" ? "إغلاق" : "Dismiss"}
             </Button>
           </div>
         </Card>
@@ -198,7 +198,9 @@ export function SellPageClient({ profile }: { profile: any }) {
       <div className="space-y-4">
         {step === "customer" && (
           <div className="space-y-3">
-            <h2 className="font-medium">Select Customer or Add New</h2>
+            <h2 className="font-medium">
+              {lang === "ar" ? "اختر عميلاً أو أضف جديداً" : "Select Customer or Add New"}
+            </h2>
             {loadingCustomers ? (
               <div className="space-y-2"><Skeleton className="h-20 rounded-xl" /><Skeleton className="h-20 rounded-xl" /></div>
             ) : (
@@ -224,8 +226,10 @@ export function SellPageClient({ profile }: { profile: any }) {
                     <Plus className="h-6 w-6 text-muted-foreground" />
                   </div>
                   <div>
-                    <p className="font-medium">New Customer</p>
-                    <p className="text-xs text-muted-foreground">Name + Phone only</p>
+                    <p className="font-medium">{lang === "ar" ? "عميل جديد" : "New Customer"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {lang === "ar" ? "الاسم والهاتف فقط" : "Name + Phone only"}
+                    </p>
                   </div>
                 </Button>
               </>
@@ -298,22 +302,22 @@ export function SellPageClient({ profile }: { profile: any }) {
           {stepIndex > 0 && (
             <Button variant="outline" onClick={goBack}>
               <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
-              Back
+              {lang === "ar" ? "رجوع" : "Back"}
             </Button>
           )}
           {stepIndex < STEPS.length - 1 && canAdvance[step] ? (
             <Button onClick={goNext}>
-              Next
+              {lang === "ar" ? "التالي" : "Next"}
               <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Button>
           ) : stepIndex === STEPS.length - 1 ? (
             <Button size="lg" onClick={createOrder} className="w-full max-w-xs">
               <Save className="h-5 w-5" />
-              Save Order
+              {lang === "ar" ? "حفظ الطلب" : "Save Order"}
             </Button>
           ) : (
             <Button variant="outline" disabled>
-              Complete required fields first
+              {lang === "ar" ? "أكمل الحقول المطلوبة أولاً" : "Complete required fields first"}
             </Button>
           )}
         </div>
@@ -329,6 +333,7 @@ function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
   const { repo } = useRepository();
   const { userId } = useCurrentUserId();
   const { toast } = useToast();
+  const { lang } = useLanguage();
 
   async function submit() {
     if (!name || !phone || !repo || !userId) return;
@@ -345,10 +350,16 @@ function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
 
   return (
     <Card className="p-4 space-y-3 border-dashed">
-      <Input placeholder="Customer name" value={name} onChange={(e) => setName(e.target.value)} />
-      <Input placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" />
+      <Input placeholder={lang === "ar" ? "اسم العميل" : "Customer name"} value={name} onChange={(e) => setName(e.target.value)} />
+      <Input placeholder={lang === "ar" ? "الهاتف" : "Phone"} value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" />
       <Button onClick={submit} disabled={saving || !name || !phone} className="w-full">
-        {saving ? "Saving..." : "Add & Start Measurement"}
+        {saving
+          ? lang === "ar"
+            ? "جارٍ الحفظ…"
+            : "Saving..."
+          : lang === "ar"
+            ? "إضافة وبدء القياس"
+            : "Add & Start Measurement"}
       </Button>
     </Card>
   );
@@ -503,18 +514,18 @@ function ReviewStep({
           </div>
         )}
         <div className="flex items-center justify-between border-t pt-2">
-          <span className="font-medium">Total</span>
+          <span className="font-medium">{lang === "ar" ? "الإجمالي" : "Total"}</span>
           <span className="font-bold text-lg font-mono">{formatKWD(totals.total)}</span>
         </div>
       </Card>
 
       <Card className="p-4">
-        <Label>Notes</Label>
+        <Label>{lang === "ar" ? "ملاحظات" : "Notes"}</Label>
         <textarea
           className="mt-2 w-full rounded-md border border-input bg-background p-3 text-sm min-h-[80px]"
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
-          placeholder="Optional..."
+          placeholder={lang === "ar" ? "اختياري..." : "Optional..."}
           dir="auto"
         />
       </Card>

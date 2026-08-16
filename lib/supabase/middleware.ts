@@ -1,13 +1,35 @@
 import { createServerClient, type SetAllCookies } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { DEMO_SESSION_COOKIE } from "@/lib/auth/demo-session";
 
 function isMockMode(): boolean {
   return !process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 }
 
 export async function updateSession(request: NextRequest) {
-  // Demo mode: no Supabase credentials configured — let every route through.
+  // Demo mode: no Supabase credentials configured — use the demo session cookie.
   if (isMockMode()) {
+    const sessionId = request.cookies.get(DEMO_SESSION_COOKIE)?.value;
+    const isAuthPage = request.nextUrl.pathname.startsWith("/login");
+    const isPdfRoute = request.nextUrl.pathname.startsWith("/api/pdf");
+    const isPublicEmployeeRoute =
+      request.nextUrl.pathname.startsWith("/api/directories/employees") ||
+      request.nextUrl.pathname.startsWith("/api/auth/employee-login");
+
+    if (!sessionId && !isAuthPage && !isPdfRoute && !isPublicEmployeeRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("redirected", "1");
+      return NextResponse.redirect(url);
+    }
+
+    if (sessionId && isAuthPage) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      url.searchParams.delete("redirected");
+      return NextResponse.redirect(url);
+    }
+
     return NextResponse.next({ request });
   }
 
@@ -39,6 +61,9 @@ export async function updateSession(request: NextRequest) {
 
   const isAuthPage = request.nextUrl.pathname.startsWith("/login");
   const isPdfRoute = request.nextUrl.pathname.startsWith("/api/pdf");
+  const isPublicEmployeeRoute =
+    request.nextUrl.pathname.startsWith("/api/directories/employees") ||
+    request.nextUrl.pathname.startsWith("/api/auth/employee-login");
 
   if (isPdfRoute) {
     // PDF download links may be shared with customers via WhatsApp; they
@@ -46,7 +71,7 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
-  if (!user && !isAuthPage) {
+  if (!user && !isAuthPage && !isPublicEmployeeRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirected", "1");

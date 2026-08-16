@@ -1,62 +1,89 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, KeyRound, UserRound } from "lucide-react";
+import { Loader2, UserRound, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useLanguage } from "@/lib/i18n/context";
 
-const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", "⌫"];
+const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0"];
+
+type EmployeeOption = { id: string; full_name: string };
 
 export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { toast } = useToast();
   const router = useRouter();
-  const [phone, setPhone] = useState("");
+  const [employees, setEmployees] = useState<EmployeeOption[]>([]);
+  const [selected, setSelected] = useState<string>("");
   const [pin, setPin] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const pinDigits = pin.replace(/\D/g, "");
+
+  useEffect(() => {
+    (async () => {
+      const res = await fetch("/api/directories/employees");
+      if (res.ok) {
+        const list = (await res.json()) as EmployeeOption[];
+        setEmployees(list);
+      }
+    })();
+  }, []);
 
   function handleKey(d: string) {
     if (d === "⌫") {
       setPin((p) => p.slice(0, -1));
       return;
     }
-    if (d === ".") return;
     if (pinDigits.length >= 6) return;
     setPin((p) => p + d);
   }
 
   async function onSubmit() {
-    if (!phone || pinDigits.length < 4) {
-      toast({ variant: "destructive", title: "أدخل الهاتف والرمز" });
+    if (!selected || pinDigits.length < 4) {
+      toast({
+        variant: "destructive",
+        title: lang === "ar" ? "اختر الموظف وأدخل الرمز" : "Select an employee and enter your PIN",
+      });
       return;
     }
 
+    const selectedName = employees.find((e) => e.id === selected)?.full_name ?? selected;
+
     if (demoMode) {
+      const { setDemoSession, DEMO_EMPLOYEE_ID } = await import("@/lib/auth/demo-session");
+      setDemoSession(DEMO_EMPLOYEE_ID);
+      toast({
+        variant: "default",
+        title: lang === "ar" ? `مرحباً ${selectedName}` : `Welcome, ${selectedName}`,
+      });
       router.push("/");
       router.refresh();
       return;
     }
 
     setSubmitting(true);
-    const email = `${phone.replace(/\D/g, "")}@laskwt.local`;
-    const { createClient } = await import("@/lib/supabase/client");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password: pinDigits });
-
-    if (error) {
-      toast({ variant: "destructive", title: t.auth.invalidCredentials, description: error.message });
+    const res = await fetch("/api/auth/employee-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ employeeId: selected, pin }),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      toast({ variant: "destructive", title: t.auth.invalidCredentials, description: err.error });
       setSubmitting(false);
       return;
     }
+
     router.push("/");
     router.refresh();
   }
+
+  const selectedEmployee = employees.find((e) => e.id === selected);
 
   return (
     <Card className="shadow-xl">
@@ -66,19 +93,37 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
         </div>
         <div className="text-center space-y-1">
           <CardTitle>{t.auth.employeeLogin}</CardTitle>
-          <CardDescription>أدخل رقم هاتفك والرمز</CardDescription>
+          <CardDescription>
+            {lang === "ar" ? "اختر اسمك ثم أدخل الرمز" : "Pick your name, then enter your PIN"}
+          </CardDescription>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Input
-            type="tel"
-            placeholder="9655xxxxxxx"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            dir="ltr"
-          />
-        </div>
+        <Select value={selected} onValueChange={setSelected}>
+          <SelectTrigger className="h-12 w-full">
+            <SelectValue placeholder={lang === "ar" ? "اختر اسمك" : "Select your name"} />
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </SelectTrigger>
+          <SelectContent>
+            {employees.length === 0 ? (
+              <SelectItem value="" disabled>
+                {lang === "ar" ? "لا يوجد موظفون" : "No employees yet"}
+              </SelectItem>
+            ) : (
+              employees.map((e) => (
+                <SelectItem key={e.id} value={e.id}>
+                  {e.full_name}
+                </SelectItem>
+              ))
+            )}
+          </SelectContent>
+        </Select>
+
+        {selectedEmployee && (
+          <p className="text-center text-sm text-muted-foreground">
+            {selectedEmployee.full_name || "—"}
+          </p>
+        )}
 
         <div>
           <p className="mb-2 text-center text-xs text-muted-foreground">
@@ -92,6 +137,7 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
                 variant={d === "⌫" ? "outline" : "secondary"}
                 className="h-12 text-xl font-medium"
                 onClick={() => handleKey(d)}
+                disabled={submitting}
               >
                 {d}
               </Button>
@@ -102,8 +148,14 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
           </div>
         </div>
 
-        <Button type="button" className="w-full" size="lg" onClick={onSubmit} disabled={submitting}>
-          {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "دخول"}
+        <Button type="button" className="w-full" size="lg" onClick={onSubmit} disabled={submitting || !selected || pinDigits.length < 4}>
+          {submitting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : lang === "ar" ? (
+            "دخول"
+          ) : (
+            "Enter"
+          )}
         </Button>
       </CardContent>
     </Card>

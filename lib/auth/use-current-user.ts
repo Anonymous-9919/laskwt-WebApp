@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MOCK_PROFILE_ID } from "@/lib/auth/permissions";
-import { hasSupabaseEnv } from "@/lib/data/env";export function useCurrentUserId(): { userId: string | null; loading: boolean } {
+import { hasSupabaseEnv } from "@/lib/data/env";
+import { getDemoSession } from "@/lib/auth/demo-session";export function useCurrentUserId(): { userId: string | null; loading: boolean } {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -11,7 +11,7 @@ import { hasSupabaseEnv } from "@/lib/data/env";export function useCurrentUserId
     async function load() {
       if (!hasSupabaseEnv()) {
         if (mounted) {
-          setUserId(MOCK_PROFILE_ID);
+          setUserId(getDemoSession());
           setLoading(false);
         }
         return;

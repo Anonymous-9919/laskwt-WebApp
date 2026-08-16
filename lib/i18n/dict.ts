@@ -9,13 +9,12 @@ export type Dict = {
     newOrder: string;
     settings: string;
     signOut: string;
-    team: string;
+    users: string;
     sell: string;
     mySales: string;
   };
   auth: {
     signIn: string;
-    signInSubtitle: string;
     email: string;
     password: string;
     submitting: string;
@@ -224,13 +223,12 @@ const ar: Dict = {
     newOrder: "طلب جديد",
     settings: "الإعدادات",
     signOut: "تسجيل الخروج",
-    team: "الفريق",
+    users: "المستخدمون",
     sell: "بيع",
     mySales: "مبيعاتي",
   },
   auth: {
     signIn: "تسجيل الدخول",
-    signInSubtitle: "منطقة الموظفين — أدخل بياناتك للمتابعة",
     email: "البريد الإلكتروني",
     password: "كلمة المرور",
     submitting: "جارٍ الدخول...",
@@ -439,13 +437,12 @@ const en: Dict = {
     newOrder: "New Order",
     settings: "Settings",
     signOut: "Sign out",
-    team: "Team",
+    users: "Users",
     sell: "Sell",
     mySales: "My Sales",
   },
   auth: {
     signIn: "Sign in",
-    signInSubtitle: "Employee area — sign in to continue",
     email: "Email",
     password: "Password",
     submitting: "Signing in...",

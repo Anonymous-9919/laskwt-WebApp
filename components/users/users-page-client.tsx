@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, KeyRound } from "lucide-react";
+import { Plus, Search, KeyRound, ShieldCheck, UserRound } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,13 +17,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { useLanguage } from "@/lib/i18n/context";
 import { formatKWD } from "@/lib/utils";
 import type { EmployeeSales } from "@/lib/data/types";
-import type { Profile } from "@/types";
+import type { Profile, Role } from "@/types";
 
-export function TeamPageClient({
+export function UsersPageClient({
   profile,
   profiles,
   sales,
@@ -32,13 +33,15 @@ export function TeamPageClient({
   profiles: Profile[];
   sales: Record<string, EmployeeSales>;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const router = useRouter();
   const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [creating, setCreating] = useState(false);
   const [createName, setCreateName] = useState("");
   const [createPhone, setCreatePhone] = useState("");
+  const [createRole, setCreateRole] = useState<Role>("employee");
+  const [updatingRole, setUpdatingRole] = useState<string | null>(null);
 
   const visible = profiles.filter(
     (p) =>
@@ -50,26 +53,28 @@ export function TeamPageClient({
     router.refresh();
   }
 
-  async function createEmployee() {
+  async function createUser() {
     if (!createName || !createPhone) return;
     setCreating(true);
     try {
-      const res = await fetch("/api/team", {
+      const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           action: "create",
           full_name: createName,
           phone: createPhone,
+          role: createRole,
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
       toast({
-        title: json.password ? `${t.auth.pin}: ${json.password}` : "Employee created",
+        title: json.password ? `${t.auth.pin}: ${json.password}` : "User created",
       });
       setCreateName("");
       setCreatePhone("");
+      setCreateRole("employee");
       await refresh();
     } catch (e: any) {
       toast({ variant: "destructive", title: "Failed", description: e.message });
@@ -80,7 +85,7 @@ export function TeamPageClient({
 
   async function toggleActive(p: Profile) {
     try {
-      const res = await fetch("/api/team", {
+      const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "update", id: p.id, active: !p.active }),
@@ -93,13 +98,32 @@ export function TeamPageClient({
     }
   }
 
+  async function changeRole(p: Profile, role: Role) {
+    if (role === p.role) return;
+    setUpdatingRole(p.id);
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "update", id: p.id, role }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      await refresh();
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Failed", description: e.message });
+    } finally {
+      setUpdatingRole(null);
+    }
+  }
+
   async function resetPin(p: Profile) {
     const pin = Math.floor(1000 + Math.random() * 9000).toString();
     try {
-      const res = await fetch("/api/team", {
+      const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "update", id: p.id, password: pin }),
+        body: JSON.stringify({ action: "resetPin", id: p.id, password: pin }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
@@ -113,7 +137,7 @@ export function TeamPageClient({
     <div className="mx-auto max-w-5xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-2xl font-semibold">{t.nav.team}</h1>
+          <h1 className="font-serif text-2xl font-semibold">{t.nav.users}</h1>
           <p className="text-sm text-muted-foreground">{t.app.tagline}</p>
         </div>
         <Dialog>
@@ -125,8 +149,8 @@ export function TeamPageClient({
           </DialogTrigger>
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
-              <DialogTitle>{t.auth.employeeLogin}</DialogTitle>
-              <DialogDescription>Add a new employee (name + phone)</DialogDescription>
+              <DialogTitle>{t.nav.users}</DialogTitle>
+              <DialogDescription>Add a new user (name + phone)</DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
               <div>
@@ -134,7 +158,7 @@ export function TeamPageClient({
                 <Input
                   value={createName}
                   onChange={(e) => setCreateName(e.target.value)}
-                  placeholder="اسم الموظف"
+                  placeholder={lang === "ar" ? "اسم المستخدم" : "Full name"}
                 />
               </div>
               <div>
@@ -146,13 +170,25 @@ export function TeamPageClient({
                   dir="ltr"
                 />
               </div>
+              <div>
+                <Label>{lang === "ar" ? "الصلاحية" : "Role"}</Label>
+                <Select value={createRole} onValueChange={(v) => setCreateRole(v as Role)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="employee">{lang === "ar" ? "موظف" : "Employee"}</SelectItem>
+                    <SelectItem value="admin">{lang === "ar" ? "مدير" : "Admin"}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" disabled={creating}>
                 {t.common.cancel}
               </Button>
-              <Button onClick={createEmployee} disabled={creating || !createName || !createPhone}>
-                {creating ? "Creating…" : t.common.add}
+              <Button onClick={createUser} disabled={creating || !createName || !createPhone}>
+                {creating ? (lang === "ar" ? "جارٍ الإنشاء…" : "Creating…") : t.common.add}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -162,7 +198,7 @@ export function TeamPageClient({
       <div className="relative w-full max-w-xs">
         <Search className="absolute start-3 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="ابحث باسم أو هاتف…"
+          placeholder={lang === "ar" ? "ابحث باسم أو هاتف…" : "Search by name or phone…"}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="ps-10"
@@ -172,11 +208,12 @@ export function TeamPageClient({
       <div className="space-y-2">
         {visible.map((emp) => {
           const s = sales[emp.id];
+          const isSelf = emp.id === profile.id;
           return (
             <Card key={emp.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gold/15 text-gold">
-                  <KeyRound className="h-5 w-5" />
+                  {emp.role === "admin" ? <ShieldCheck className="h-5 w-5" /> : <UserRound className="h-5 w-5" />}
                 </div>
                 <div>
                   <p className="font-medium">{emp.full_name}</p>
@@ -189,18 +226,39 @@ export function TeamPageClient({
                 {s && (
                   <div className="text-sm">
                     <span className="font-medium">{s.orderCount}</span>{" "}
-                    <span className="text-muted-foreground">orders</span>
+                    <span className="text-muted-foreground">{lang === "ar" ? "طلبات" : "orders"}</span>
                     <span className="mx-1">·</span>
                     <span className="font-medium">{formatKWD(s.totalKwd)}</span>
                   </div>
                 )}
+                <Select
+                  value={emp.role}
+                  onValueChange={(v) => changeRole(emp, v as Role)}
+                  disabled={isSelf || updatingRole === emp.id}
+                >
+                  <SelectTrigger className="h-8 w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="employee">{lang === "ar" ? "موظف" : "Employee"}</SelectItem>
+                    <SelectItem value="admin">{lang === "ar" ? "مدير" : "Admin"}</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Badge variant={emp.active ? "default" : "secondary"}>
-                  {emp.active ? "Active" : "Inactive"}
+                  {lang === "ar" ? (emp.active ? "نشط" : "غير نشط") : emp.active ? "Active" : "Inactive"}
                 </Badge>
-                <Button variant="outline" size="sm" onClick={() => toggleActive(emp)}>
-                  {emp.active ? "Deactivate" : "Activate"}
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => resetPin(emp)}>
+                {!isSelf && (
+                  <Button variant="outline" size="sm" onClick={() => toggleActive(emp)}>
+                    {lang === "ar"
+                      ? emp.active
+                        ? "إلغاء التفعيل"
+                        : "تفعيل"
+                      : emp.active
+                        ? "Deactivate"
+                        : "Activate"}
+                  </Button>
+                )}
+                <Button variant="outline" size="sm" onClick={() => resetPin(emp)} disabled={isSelf}>
                   {t.auth.pin}
                 </Button>
               </div>
@@ -208,7 +266,9 @@ export function TeamPageClient({
           );
         })}
         {visible.length === 0 && (
-          <Card className="p-8 text-center text-sm text-muted-foreground">No employees found.</Card>
+          <Card className="p-8 text-center text-sm text-muted-foreground">
+            {lang === "ar" ? "لا يوجد مستخدمون" : "No users found."}
+          </Card>
         )}
       </div>
     </div>

@@ -48,7 +48,7 @@ export function CustomerFormDialog({
   onUpdate?: (id: string, values: CustomerInput) => Promise<Customer | null>;
   customer?: Customer | null;
 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [sameAsPhone, setSameAsPhone] = useState(true);
@@ -112,7 +112,7 @@ export function CustomerFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{customer ? "Edit customer" : t.customer.newCustomer}</DialogTitle>
+          <DialogTitle>{customer ? (lang === "ar" ? "تعديل العميل" : "Edit customer") : t.customer.newCustomer}</DialogTitle>
           <DialogDescription>{t.customer.title}</DialogDescription>
         </DialogHeader>
 

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentProfileServer } from "@/lib/auth/server-auth";
 import { salesForEmployee } from "@/lib/data/server-profiles";
 import type { EmployeeSales } from "@/lib/data/types";
-import { MySalesClient } from "@/components/team/my-sales-client";
+import { MySalesClient } from "@/components/users/my-sales-client";
 
 export default async function MePage() {
   const profile = await getCurrentProfileServer();

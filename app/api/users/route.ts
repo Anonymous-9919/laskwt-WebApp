@@ -126,6 +126,11 @@ export async function POST(request: Request) {
       const data = await repo.updateProfile(id, patch as any);
       return NextResponse.json({ profile: data });
     }
+    case "resetPin": {
+      const { id, password } = body as { id: string; password: string };
+      const updated = await repo.updateProfile(id, { password } as any);
+      return NextResponse.json({ profile: updated, password });
+    }
     default:
       return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   }

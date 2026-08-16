@@ -1,4 +1,6 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { getCurrentProfileServer } from "@/lib/auth/server-auth";
 import { OrdersListClient } from "@/components/orders/orders-list-client";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -6,7 +8,10 @@ export const metadata = {
   title: "Orders",
 };
 
-export default function OrdersPage() {
+export default async function OrdersPage() {
+  const profile = await getCurrentProfileServer();
+  if (!profile) redirect("/login");
+  if (profile.role !== "admin") redirect("/sell");
   return (
     <Suspense
       fallback={

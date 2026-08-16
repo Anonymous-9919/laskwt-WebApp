@@ -4,9 +4,9 @@ import { isAdmin } from "@/lib/auth/permissions";
 import { listProfilesForAdmin, salesForEmployee } from "@/lib/data/server-profiles";
 import type { EmployeeSales } from "@/lib/data/types";
 import type { Profile } from "@/types";
-import { TeamPageClient } from "@/components/team/team-page-client";
+import { UsersPageClient } from "@/components/users/users-page-client";
 
-export default async function TeamPage() {
+export default async function UsersPage() {
   const profile = await getCurrentProfileServer();
   if (!profile || !isAdmin(profile)) {
     redirect("/login");
@@ -20,6 +20,6 @@ export default async function TeamPage() {
   }
 
   return (
-    <TeamPageClient profile={profile} profiles={profiles as Profile[]} sales={sales} />
+    <UsersPageClient profile={profile} profiles={profiles as Profile[]} sales={sales} />
   );
 }
