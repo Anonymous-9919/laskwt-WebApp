@@ -37,3 +37,7 @@ dev-server.log
 prod-server.log
 .playwright-mcp/
 *.png
+!public/laskwt-logo.png
+!public/logo-footer.png
+!public/favicon.png
+!app/icon.png

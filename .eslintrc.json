@@ -3,5 +3,13 @@
   "rules": {
     "react/no-unescaped-entities": "off",
     "@next/next/no-img-element": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["lib/invoice/invoice-document.tsx"],
+      "rules": {
+        "jsx-a11y/alt-text": "off"
+      }
+    }
+  ]
 }

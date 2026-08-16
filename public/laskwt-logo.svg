@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="120" viewBox="0 0 560 120" fill="none" role="img" aria-label="Laskwt">
+  <g fill="#16160F">
+    <path d="M20 96V24h26v18h-8v36h8v18H20Z" />
+    <path d="M96 96 84 42 72 96H52l-4-72h26l4 46 14-46h24l14 46 4-46h26l-4 72h-20l-12-54-12 54H96Z" />
+    <path d="M170 96V24h52v18h-26v12h24v18h-24v24h-26Z" />
+    <path d="M248 96V24h52v18h-26v54h26v18h-52Z" />
+    <path d="M330 96V42h-16V24h62v18h-16v54h-30Z" />
+    <path d="M392 96V24h52v18h-26v54h26v18h-52Z" />
+  </g>
+  <g fill="#B5985A">
+    <path d="M470 96V24h52v18h-26v18h26v18h-26v18h26v18h-52Z" />
+    <path d="M544 26a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0-12a22 22 0 1 1 0 44 22 22 0 0 1 0-44Z" />
+  </g>
+  <g fill="#8A8A86">
+    <path d="M24 108h512" stroke="#8A8A86" stroke-width="2" />
+    <text x="24" y="108" font-family="Georgia, 'Times New Roman', serif" font-size="12" letter-spacing="8" fill="#8A8A86">K U W A I T · E S T . 2 0 2 4</text>
+  </g>
+</svg>

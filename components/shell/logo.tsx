@@ -2,26 +2,64 @@
 
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
+import { BRAND_ACCENT_PATHS, BRAND_LETTER_PATHS, BRAND_VIEWBOX } from "@/lib/brand";
 
-export function Logo({ className, showTagline = false }: { className?: string; showTagline?: boolean }) {
+export function LaskwtMark({
+  className,
+  light = false,
+}: {
+  className?: string;
+  light?: boolean;
+}) {
+  const ink = light ? "#F6F3EC" : "#16160F";
+  const gold = light ? "#C3A972" : "#B5985A";
+  return (
+    <svg
+      viewBox={BRAND_VIEWBOX}
+      className={className}
+      role="img"
+      aria-label="Laskwt"
+    >
+      <g fill={ink}>
+        {BRAND_LETTER_PATHS.map((d) => (
+          <path key={d} d={d} />
+        ))}
+      </g>
+      <g fill={gold}>
+        {BRAND_ACCENT_PATHS.map((d) => (
+          <path key={d} d={d} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+export function Logo({
+  className,
+  showTagline = false,
+  light = false,
+}: {
+  className?: string;
+  showTagline?: boolean;
+  light?: boolean;
+}) {
   const { t } = useLanguage();
   return (
-    <div className={cn("flex items-center gap-3", className)}>
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-md">
-        <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6">
-          <path
-            d="M4 5h16M5 5v14M19 5v14M5 19h14M8 9h3M8 13h3"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-          />
-          <path d="M12 9c1 1.5 1 3 0 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-      </div>
-      <div className="leading-tight">
-        <div className="font-serif text-lg font-semibold tracking-wide">{t.app.name}</div>
-        {showTagline && <div className="text-xs text-muted-foreground">{t.app.tagline}</div>}
-      </div>
+    <div className={cn("flex flex-col items-start gap-1", className)}>
+      <LaskwtMark
+        className={cn("h-6 w-auto", light ? "text-[#F6F3EC]" : "text-foreground")}
+        light={light}
+      />
+      {showTagline && (
+        <span
+          className={cn(
+            "text-xs",
+            light ? "text-[#F6F3EC]/70" : "text-muted-foreground"
+          )}
+        >
+          {t.app.tagline}
+        </span>
+      )}
     </div>
   );
 }

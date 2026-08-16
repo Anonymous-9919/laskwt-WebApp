@@ -4,54 +4,54 @@
 
 @layer base {
   :root {
-    /* Light only — neutral grey accent on a clean off-white canvas */
-    --background: 0 0% 98%;               /* #FAFAFA */
-    --foreground: 210 12% 18%;            /* #2C3036 */
+    /* Light only — Las Kwt 2 brand palette (warm ivory canvas, ink text, gold accent) */
+    --background: 42 36% 95%;             /* #F6F3EC — warm ivory */
+    --foreground: 60 19% 7%;              /* #16160F — ink */
     --card: 0 0% 100%;                    /* #FFFFFF */
-    --card-foreground: 210 12% 18%;
+    --card-foreground: 60 19% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 12% 18%;
-    --primary: 210 8% 30%;                /* #4A5258 — charcoal grey accent */
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 8% 90%;
-    --secondary-foreground: 210 12% 18%;
-    --muted: 210 9% 92%;
-    --muted-foreground: 210 10% 42%;
-    --accent: 210 11% 88%;
-    --accent-foreground: 210 12% 18%;
+    --popover-foreground: 60 19% 7%;
+    --primary: 60 19% 7%;                 /* #16160F — ink buttons */
+    --primary-foreground: 42 36% 95%;     /* #F6F3EC */
+    --secondary: 40 29% 90%;              /* #EDE8DE */
+    --secondary-foreground: 60 19% 7%;
+    --muted: 40 29% 90%;                  /* #EDE8DE */
+    --muted-foreground: 33 10% 38%;       /* #6B6257 — warm taupe */
+    --accent: 40 29% 90%;                 /* #EDE8DE */
+    --accent-foreground: 60 19% 7%;
     --destructive: 0 72% 42%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 8% 85%;
-    --input: 210 8% 85%;
-    --ring: 210 8% 30%;
-    --gold: 210 8% 30%;                   /* kept for existing className usage, now grey */
-    --gold-foreground: 0 0% 100%;
+    --border: 39 32% 86%;                 /* #E7DFD0 — warm line */
+    --input: 39 32% 86%;
+    --ring: 41 40% 61%;                   /* #C3A972 — gold */
+    --gold: 41 40% 61%;                   /* #C3A972 — brand gold */
+    --gold-foreground: 60 19% 7%;         /* ink on gold */
     --radius: 0.625rem;
   }
 
-  /* Dark theme intentionally disabled — collapses to the light grey palette */
+  /* Dark theme intentionally disabled — collapses to the light brand palette */
   .dark {
-    --background: 0 0% 98%;
-    --foreground: 210 12% 18%;
+    --background: 42 36% 95%;
+    --foreground: 60 19% 7%;
     --card: 0 0% 100%;
-    --card-foreground: 210 12% 18%;
+    --card-foreground: 60 19% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 12% 18%;
-    --primary: 210 8% 30%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 8% 90%;
-    --secondary-foreground: 210 12% 18%;
-    --muted: 210 9% 92%;
-    --muted-foreground: 210 10% 42%;
-    --accent: 210 11% 88%;
-    --accent-foreground: 210 12% 18%;
+    --popover-foreground: 60 19% 7%;
+    --primary: 60 19% 7%;
+    --primary-foreground: 42 36% 95%;
+    --secondary: 40 29% 90%;
+    --secondary-foreground: 60 19% 7%;
+    --muted: 40 29% 90%;
+    --muted-foreground: 33 10% 38%;
+    --accent: 40 29% 90%;
+    --accent-foreground: 60 19% 7%;
     --destructive: 0 72% 42%;
     --destructive-foreground: 0 0% 100%;
-    --border: 210 8% 85%;
-    --input: 210 8% 85%;
-    --ring: 210 8% 30%;
-    --gold: 210 8% 30%;
-    --gold-foreground: 0 0% 100%;
+    --border: 39 32% 86%;
+    --input: 39 32% 86%;
+    --ring: 41 40% 61%;
+    --gold: 41 40% 61%;
+    --gold-foreground: 60 19% 7%;
   }
 }
 

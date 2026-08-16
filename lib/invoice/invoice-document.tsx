@@ -2,6 +2,7 @@ import React from "react";
 import {
   Document,
   Font,
+  Image,
   Link,
   Page,
   StyleSheet,
@@ -12,6 +13,7 @@ import type { BusinessProfile, Customer, Order, OrderStatus } from "@/types";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { dictionaries } from "@/lib/i18n/dict";
+import { BRAND_ACCENT_PATHS, BRAND_LETTER_PATHS, BRAND_VIEWBOX } from "@/lib/brand";
 
 export const INTER_FONT_FILES = {
   regular: "inter-regular.ttf",
@@ -48,12 +50,13 @@ export async function registerInvoiceFonts(baseUrl?: string) {
   Font.register({ family: "Cairo", src: src(CAIRO_FONT_FILES[500]), fontWeight: 500 });
 }
 
-const GOLD = "#9C7A3C";
-const INK = "#1F1A14";
+const GOLD = "#C3A972";
+const INK = "#16160F";
 const MUTED = "#6B6257";
 const LINE = "#E7DFD0";
-const PAPER = "#FBF9F4";
+const PAPER = "#F6F3EC";
 const WHITE = "#FFFFFF";
+const IVORY = "#F6F3EC";
 
 const styles = StyleSheet.create({
   page: {
@@ -75,32 +78,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   brandBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
+    gap: 4,
   },
-  brandMark: {
-    width: 34,
-    height: 34,
-    borderRadius: 9,
-    backgroundColor: GOLD,
-    color: WHITE,
-    justifyContent: "center",
-    alignItems: "center",
-    fontWeight: 700,
-    fontSize: 16,
-  },
-  brandName: {
-    fontSize: 17,
-    fontWeight: 700,
-    color: WHITE,
-    letterSpacing: 0.3,
-  },
-  brandNameAr: {
-    fontFamily: "Cairo",
-    fontSize: 17,
-    fontWeight: 700,
-    color: WHITE,
+  brandLogoSvg: {
+    width: 120,
+    height: 26,
   },
   brandSub: {
     fontSize: 8,
@@ -272,7 +254,7 @@ const styles = StyleSheet.create({
     borderTopColor: LINE,
   },
   tableRowAlt: {
-    backgroundColor: "#F6F2E9",
+    backgroundColor: "#EDE8DE",
   },
   tableCell: {
     fontSize: 9.5,
@@ -409,6 +391,19 @@ const STATUS_STYLES: Record<OrderStatus, { bg: string; labelKey: string }> = {
   cancelled: { bg: "#A0402E", labelKey: "status_cancelled" },
 };
 
+function brandLogoDataUri(light = true) {
+  const ink = light ? IVORY : INK;
+  const gold = light ? GOLD : "#B5985A";
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${BRAND_VIEWBOX}" fill="none" role="img" aria-label="Laskwt">
+<g fill="${ink}">${BRAND_LETTER_PATHS.map((d) => `<path d="${d}"/>`).join("")}</g>
+<g fill="${gold}">${BRAND_ACCENT_PATHS.map((d) => `<path d="${d}"/>`).join("")}</g>
+</svg>`;
+  if (typeof window === "undefined") {
+    return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+  }
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
 function fmt(value: number) {
   return `KWD ${value.toFixed(3)}`;
 }
@@ -456,15 +451,10 @@ export function InvoiceDocument({
         {/* Dark brand band */}
         <View style={styles.headerBand} fixed>
           <View style={styles.brandBlock}>
-            <View style={styles.brandMark}>
-              <Text>L</Text>
-            </View>
-            <View>
-              <Text style={isAr ? styles.brandNameAr : styles.brandName}>{businessName}</Text>
-              {businessLines.length > 0 && (
-                <Text style={[styles.brandSub, fontStyle]}>{businessLines.join("  ·  ")}</Text>
-              )}
-            </View>
+            <Image src={brandLogoDataUri(true)} style={styles.brandLogoSvg} />
+            {businessLines.length > 0 && (
+              <Text style={[styles.brandSub, fontStyle]}>{businessLines.join("  ·  ")}</Text>
+            )}
           </View>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={isAr ? styles.invoiceTagAr : styles.invoiceTag}>
