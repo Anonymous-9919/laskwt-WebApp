@@ -41,6 +41,10 @@ export async function GET(req: NextRequest) {
     if (err instanceof Error) {
       console.error((err.stack ?? "").split("\n").slice(0, 20).join("\n"));
     }
-    return new Response("PDF generation failed", { status: 500 });
+    const detail =
+      err instanceof Error
+        ? `${err.name}: ${err.message}`
+        : "Unknown error";
+    return new Response(`PDF generation failed: ${detail}`, { status: 500 });
   }
 }
