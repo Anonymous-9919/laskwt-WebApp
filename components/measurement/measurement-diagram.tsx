@@ -15,37 +15,105 @@ type Props = {
 const SILHOUETTE = (
   <>
     {/* Head */}
-    <circle cx="110" cy="30" r="12" fill="hsl(var(--muted))" />
-    {/* Torso */}
+    <ellipse cx="110" cy="28" rx="11" ry="13" fill="hsl(var(--muted))" opacity="0.6" />
+    {/* Neck */}
+    <rect x="105" y="40" width="10" height="12" rx="3" fill="hsl(var(--muted))" opacity="0.4" />
+
+    {/* Main body / torso — dishdasha shape */}
     <path
-      d="M110 40 C 95 42, 92 50, 92 58
-         C 92 70, 88 80, 86 96
-         L 82 130 L 82 300
-         C 82 380, 96 420, 110 424
-         C 124 420, 138 380, 138 300
-         L 138 130 L 134 96
-         C 132 80, 128 70, 128 58
-         C 128 50, 125 42, 110 40 Z"
+      d={[
+        "M 95 52",
+        "C 90 52, 86 56, 84 64",
+        "L 78 88",
+        "L 76 120",
+        "C 76 160, 74 220, 74 280",
+        "C 74 340, 78 380, 82 400",
+        "C 86 418, 98 424, 110 426",
+        "C 122 424, 134 418, 138 400",
+        "C 142 380, 146 340, 146 280",
+        "C 146 220, 144 160, 144 120",
+        "L 142 88",
+        "L 136 64",
+        "C 134 56, 130 52, 125 52",
+        "C 120 48, 115 46, 110 46",
+        "C 105 46, 100 48, 95 52 Z",
+      ].join(" ")}
       fill="hsl(var(--muted))"
-      opacity="0.35"
+      opacity="0.25"
+      stroke="hsl(var(--border))"
+      strokeWidth="0.8"
     />
-    {/* Sleeves */}
+
+    {/* Left sleeve */}
     <path
-      d="M92 58 L 60 64 L 52 128 L 84 136 Z"
+      d={[
+        "M 84 64",
+        "L 56 70",
+        "C 52 72, 48 80, 46 92",
+        "L 42 128",
+        "C 42 132, 44 136, 48 136",
+        "L 78 132",
+        "L 76 120",
+        "L 78 88 Z",
+      ].join(" ")}
       fill="hsl(var(--muted))"
-      opacity="0.3"
+      opacity="0.2"
+      stroke="hsl(var(--border))"
+      strokeWidth="0.8"
     />
+
+    {/* Right sleeve */}
     <path
-      d="M128 58 L 160 64 L 168 128 L 136 136 Z"
+      d={[
+        "M 136 64",
+        "L 164 70",
+        "C 168 72, 172 80, 174 92",
+        "L 178 128",
+        "C 178 132, 176 136, 172 136",
+        "L 142 132",
+        "L 144 120",
+        "L 142 88 Z",
+      ].join(" ")}
       fill="hsl(var(--muted))"
-      opacity="0.3"
+      opacity="0.2"
+      stroke="hsl(var(--border))"
+      strokeWidth="0.8"
     />
-    {/* Center front line */}
-    <line x1="110" y1="52" x2="110" y2="424" stroke="hsl(var(--border))" strokeDasharray="4 4" strokeWidth="1" />
-    {/* Hem */}
-    <line x1="82" y1="422" x2="138" y2="422" stroke="hsl(var(--border))" strokeWidth="1" />
-    {/* Collar band */}
-    <path d="M98 40 L 122 40 L 116 50 L 104 50 Z" fill="none" stroke="hsl(var(--border))" strokeWidth="1.2" />
+
+    {/* Collar — traditional dishdasha high collar */}
+    <path
+      d={[
+        "M 98 52",
+        "C 100 44, 104 40, 110 40",
+        "C 116 40, 120 44, 122 52",
+        "L 118 56",
+        "C 116 50, 114 48, 110 48",
+        "C 106 48, 104 50, 102 56 Z",
+      ].join(" ")}
+      fill="none"
+      stroke="hsl(var(--border))"
+      strokeWidth="1.2"
+    />
+
+    {/* Center front placket line */}
+    <line x1="110" y1="48" x2="110" y2="426" stroke="hsl(var(--border))" strokeDasharray="3 3" strokeWidth="0.8" opacity="0.6" />
+
+    {/* Hem bottom */}
+    <path d="M 82 400 C 94 414, 108 420, 110 426 C 112 420, 126 414, 138 400" fill="none" stroke="hsl(var(--border))" strokeWidth="1" />
+
+    {/* Sleeve cuff lines */}
+    <line x1="46" y1="128" x2="78" y2="132" stroke="hsl(var(--border))" strokeWidth="0.8" opacity="0.5" />
+    <line x1="174" y1="128" x2="142" y2="132" stroke="hsl(var(--border))" strokeWidth="0.8" opacity="0.5" />
+
+    {/* Measurement guide lines — subtle horizontal indicators */}
+    {/* Shoulder line */}
+    <line x1="78" y1="60" x2="142" y2="60" stroke="hsl(var(--gold))" strokeWidth="0.4" opacity="0.25" strokeDasharray="2 2" />
+    {/* Chest line */}
+    <line x1="76" y1="100" x2="144" y2="100" stroke="hsl(var(--gold))" strokeWidth="0.4" opacity="0.25" strokeDasharray="2 2" />
+    {/* Waist line */}
+    <line x1="75" y1="148" x2="145" y2="148" stroke="hsl(var(--gold))" strokeWidth="0.4" opacity="0.25" strokeDasharray="2 2" />
+    {/* Hips line */}
+    <line x1="75" y1="188" x2="145" y2="188" stroke="hsl(var(--gold))" strokeWidth="0.4" opacity="0.25" strokeDasharray="2 2" />
   </>
 );
 
@@ -61,7 +129,7 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
       viewBox="0 0 220 440"
       className={cn("h-full max-h-[440px] w-full", className)}
       role="img"
-      aria-label="Thobe measurement diagram"
+      aria-label="Dishdasha measurement diagram"
       onMouseLeave={() => onHoverField(null)}
     >
       {SILHOUETTE}
@@ -79,24 +147,27 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
             className="diagram-point"
             data-field={p.key}
           >
-            {active && <circle r="9" fill="hsl(var(--gold))" opacity="0.25" className="animate-pulse-dot" />}
+            {active && <circle r="10" fill="hsl(var(--gold))" opacity="0.2" className="animate-pulse-dot" />}
             <circle
-              r={active ? 5 : 3.5}
+              r={active ? 5 : isFilled ? 4 : 3}
               fill={active ? "hsl(var(--gold))" : isFilled ? "hsl(var(--gold) / 0.8)" : "hsl(var(--muted-foreground))"}
               stroke="hsl(var(--card))"
               strokeWidth="1.5"
             />
+            {isFilled && !active && (
+              <circle r="7" fill="none" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.4" />
+            )}
             <g transform={`translate(${p.dx}, ${p.dy})`} className="pointer-events-none">
               <text
                 x={p.anchor === "end" ? -4 : p.anchor === "start" ? 4 : 0}
                 y={0}
                 textAnchor={p.anchor ?? "middle"}
                 dominantBaseline="middle"
-                fontSize="9"
+                fontSize="8.5"
                 fontWeight={active ? 700 : 500}
                 fill={active ? "hsl(var(--gold))" : "hsl(var(--muted-foreground))"}
                 className="select-none"
-                style={{ paintOrder: "stroke", stroke: "hsl(var(--card))", strokeWidth: 2 }}
+                style={{ paintOrder: "stroke", stroke: "hsl(var(--card))", strokeWidth: 2.5 }}
               >
                 {labelFor(p)}
               </text>

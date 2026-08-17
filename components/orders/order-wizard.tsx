@@ -18,7 +18,6 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useRepository } from "@/lib/data/use-repository";
-import { useCurrentUserId } from "@/lib/auth/use-current-user";
 import { useAutosave } from "@/lib/data/use-autosave";
 import { useLanguage } from "@/lib/i18n/context";
 import { cn, todayDateString } from "@/lib/utils";
@@ -39,11 +38,10 @@ const STEPS = [
 
 type StepKey = (typeof STEPS)[number]["key"];
 
-export function OrderWizard() {
+export function OrderWizard({ userId }: { userId: string }) {
   const { t, lang } = useLanguage();
   const searchParams = useSearchParams();
   const { repo } = useRepository();
-  const { userId } = useCurrentUserId();
 
   const [step, setStep] = useState<StepKey>("customer");
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -222,6 +220,7 @@ export function OrderWizard() {
         <CustomerStep
           repo={repo}
           value={customer}
+          userId={userId}
           onSelect={(c) => {
             setCustomer(c);
             setStep("measurement");
@@ -276,7 +275,8 @@ export function OrderWizard() {
           onNotesChange={setNotes}
           dueDate={dueDate}
           onDueDateChange={setDueDate}
-          measurementLabel={measurementLabel}
+           measurementLabel={measurementLabel}
+          userId={userId}
           onCreated={async () => {
             if (repo && userId) await repo.clearDraft(userId, "order");
             setShowDraftBanner(false);

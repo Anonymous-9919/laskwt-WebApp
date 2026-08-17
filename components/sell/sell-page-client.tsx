@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Plus, UserRound, Shirt, Ruler, CheckCircle2, ArrowLeft, ArrowRight, Save, ChevronRight } from "lucide-react";
+import { Plus, UserRound, Shirt, Ruler, CheckCircle2, ArrowLeft, ArrowRight, Save, ChevronRight, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,7 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { useRepository } from "@/lib/data/use-repository";
 import { useAutosave } from "@/lib/data/use-autosave";
-import { useCurrentUserId } from "@/lib/auth/use-current-user";
 import { useLanguage } from "@/lib/i18n/context";
 import { useToast } from "@/components/ui/use-toast";
 import { cn, formatKWD, todayDateString } from "@/lib/utils";
@@ -31,15 +30,13 @@ const STEPS = [
 
 type StepKey = (typeof STEPS)[number]["key"];
 
-const REQUIRED_KEYS = MEASUREMENT_FIELDS.filter((f) => f.required).map((f) => f.key);
-
-export function SellPageClient({ profile }: { profile: any }) {
+export function SellPageClient({ profile }: { profile: { id: string; full_name: string | null } }) {
   const { t, lang } = useLanguage();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { repo } = useRepository();
-  const { userId } = useCurrentUserId();
   const { toast } = useToast();
+  const userId = profile.id;
 
   const [step, setStep] = useState<StepKey>("customer");
   const [customer, setCustomer] = useState<Customer | null>(null);
@@ -76,13 +73,18 @@ export function SellPageClient({ profile }: { profile: any }) {
   const goNext = useCallback(() => setStep(STEPS[Math.min(stepIndex + 1, STEPS.length - 1)].key), [stepIndex]);
   const goBack = useCallback(() => setStep(STEPS[Math.max(stepIndex - 1, 0)].key), [stepIndex]);
 
-  useEffect(() => {
+  function refreshCustomers() {
     if (!repo) return;
     repo.listCustomers().then((c) => { setCustomers(c); setLoadingCustomers(false); });
+  }
+
+  useEffect(() => {
+    if (!repo) return;
+    refreshCustomers();
   }, [repo]);
 
   useEffect(() => {
-    if (!repo || !userId) return;
+    if (!repo) return;
     repo.getDraft(userId, "order").then((draft) => {
       if (draft?.payload && typeof draft.payload === "object") {
         const p = draft.payload as DraftOrderPayload;
@@ -115,7 +117,7 @@ export function SellPageClient({ profile }: { profile: any }) {
   }
 
   async function createOrder() {
-    if (!customer || !repo || !userId) return;
+    if (!customer || !repo) return;
     if (!hasAllRequired(measurements)) {
       toast({ variant: "destructive", title: t.measurement?.required ?? "Required measurements missing" });
       return;
@@ -170,7 +172,7 @@ export function SellPageClient({ profile }: { profile: any }) {
               <CheckCircle2 className="h-4 w-4 text-gold" />
               <span>{lang === "ar" ? "مسودة محفوظة — هل تريد المتابعة؟" : "Saved draft — continue?"}</span>
             </div>
-            <Button variant="outline" size="sm" onClick={async () => { if (repo && userId) await repo.clearDraft(userId, "order"); setShowDraftBanner(false); }}>
+            <Button variant="outline" size="sm" onClick={async () => { await repo?.clearDraft(userId, "order"); setShowDraftBanner(false); }}>
               {lang === "ar" ? "إغلاق" : "Dismiss"}
             </Button>
           </div>
@@ -214,29 +216,25 @@ export function SellPageClient({ profile }: { profile: any }) {
                     className="w-full justify-start gap-3 py-4 text-right"
                     onClick={() => { setCustomer(c); setStep("product"); }}
                   >
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gold/15 text-gold">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gold/15 text-gold">
                       <UserRound className="h-6 w-6" />
                     </div>
-                    <div>
-                      <p className="font-medium">{c.full_name}</p>
+                    <div className="min-w-0 text-left">
+                      <p className="font-medium truncate">{c.full_name}</p>
                       <p className="text-xs text-muted-foreground" dir="ltr">{c.phone}</p>
                     </div>
                   </Button>
                 ))}
-                <Button variant="outline" className="w-full justify-start gap-3 py-4 text-right" onClick={() => setCustomer(null)}>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-dashed border-muted">
-                    <Plus className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-medium">{lang === "ar" ? "عميل جديد" : "New Customer"}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {lang === "ar" ? "الاسم والهاتف فقط" : "Name + Phone only"}
-                    </p>
-                  </div>
-                </Button>
               </>
             )}
-            <NewCustomerForm onCreate={(c) => { setCustomer(c); setStep("product"); }} />
+            <NewCustomerForm
+              userId={userId}
+              onCreate={(c) => {
+                setCustomer(c);
+                setCustomers((prev) => [c, ...prev]);
+                setStep("product");
+              }}
+            />
           </div>
         )}
 
@@ -334,22 +332,30 @@ export function SellPageClient({ profile }: { profile: any }) {
   );
 }
 
-function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
+function NewCustomerForm({ onCreate, userId }: { onCreate: (c: Customer) => void; userId: string }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("+965");
   const [saving, setSaving] = useState(false);
   const { repo } = useRepository();
-  const { userId } = useCurrentUserId();
   const { toast } = useToast();
   const { lang } = useLanguage();
 
   async function submit() {
-    if (!name || !phone || !repo || !userId) return;
+    if (!name || !phone) {
+      toast({ variant: "destructive", title: lang === "ar" ? "أدخل الاسم والهاتف" : "Enter name and phone" });
+      return;
+    }
+    if (!repo) {
+      toast({ variant: "destructive", title: lang === "ar" ? "جاري التحميل..." : "Loading, please wait..." });
+      return;
+    }
     setSaving(true);
     try {
       const normalized = phone.startsWith("+") ? phone : phone.startsWith("965") ? `+${phone}` : `+965${phone}`;
       const c = await repo.createCustomer({ full_name: name, phone: normalized, whatsapp: normalized }, userId);
       onCreate(c);
+      setName("");
+      setPhone("+965");
     } catch (e: any) {
       toast({ variant: "destructive", title: e.message });
     } finally {
@@ -358,22 +364,30 @@ function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
   }
 
   return (
-    <Card className="p-4 space-y-3 border-dashed">
-      <Input placeholder={lang === "ar" ? "اسم العميل" : "Customer name"} value={name} onChange={(e) => setName(e.target.value)} />
-      <Input
-        placeholder="+965 5555 1234"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        dir="ltr"
-      />
+    <Card className="border border-dashed border-gold/40 bg-gold/5 p-4 space-y-3">
+      <div className="flex items-center gap-2 text-sm font-medium text-gold">
+        <Plus className="h-4 w-4" />
+        {lang === "ar" ? "عميل جديد" : "New Customer"}
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Input
+          placeholder={lang === "ar" ? "اسم العميل" : "Customer name"}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="bg-background"
+        />
+        <Input
+          placeholder="+965 5555 1234"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          dir="ltr"
+          className="bg-background"
+        />
+      </div>
       <Button onClick={submit} disabled={saving || !name || !phone} className="w-full">
         {saving
-          ? lang === "ar"
-            ? "جارٍ الحفظ…"
-            : "Saving..."
-          : lang === "ar"
-            ? "إضافة وبدء القياس"
-            : "Add & Start Measurement"}
+          ? lang === "ar" ? "جارٍ الحفظ…" : "Saving..."
+          : lang === "ar" ? "إضافة وبدء القياس" : "Add & Start Measurement"}
       </Button>
     </Card>
   );
@@ -397,9 +411,9 @@ function MeasurementStep({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h2 className="font-medium">Measurements (cm)</h2>
+        <h2 className="font-medium">{lang === "ar" ? "القياسات (سم)" : "Measurements (cm)"}</h2>
         <Button variant="ghost" size="sm" onClick={() => onToggleAll(!showAll)}>
-          {showAll ? "Hide optional" : "Show all"}
+          {showAll ? (lang === "ar" ? "إخفاء اختياري" : "Hide optional") : (lang === "ar" ? "عرض الكل" : "Show all")}
         </Button>
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -439,14 +453,14 @@ function StyleStep({
 }) {
   return (
     <div className="space-y-4">
-      <h2 className="font-medium">Choose style for each part</h2>
+      <h2 className="font-medium">{lang === "ar" ? "اختر الستايل لكل جزء" : "Choose style for each part"}</h2>
       {STYLE_KINDS.map((kind) => {
         const options = STYLE_CATALOG.filter((o) => o.kind === kind && o.active);
         const current = styles[kind];
         return (
           <Card key={kind} className="p-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="font-medium">{kind}</span>
+              <span className="font-medium capitalize">{kind}</span>
               <span className="text-xs text-muted-foreground">
                 {options.find((o) => o.key === current)?.[lang === "ar" ? "label_ar" : "label_en"] ?? "—"}
               </span>
@@ -538,7 +552,6 @@ function ReviewStep({
         </div>
       </Card>
 
-      {/* Style prices */}
       <Card className="p-4 space-y-2">
         <p className="text-sm font-medium">{lang === "ar" ? "أسعار الستايل" : "Style Prices"}</p>
         {STYLE_KINDS.map((kind) => {
@@ -547,7 +560,7 @@ function ReviewStep({
           const currentPrice = customStylePrices?.[opt.key] ?? opt.price_addition;
           return (
             <div key={kind} className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">
+              <span className="text-muted-foreground capitalize">
                 {lang === "ar" ? opt.label_ar : opt.label_en}
               </span>
               <div className="flex items-center gap-1">
@@ -572,7 +585,7 @@ function ReviewStep({
 
       <Card className="p-4 space-y-2">
         <div className="flex items-center justify-between">
-          <span>Quantity</span>
+          <span>{lang === "ar" ? "الكمية" : "Quantity"}</span>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="icon" onClick={() => onQuantityChange(Math.max(1, quantity - 1))}>−</Button>
             <span className="w-10 text-center font-mono text-lg">{quantity}</span>
@@ -604,7 +617,7 @@ function ReviewStep({
 
       <Button size="lg" onClick={onSubmit} className="w-full">
         <Save className="h-5 w-5" />
-        Save Order
+        {lang === "ar" ? "حفظ الطلب" : "Save Order"}
       </Button>
     </div>
   );

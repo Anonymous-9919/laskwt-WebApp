@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLanguage } from "@/lib/i18n/context";
-import { useCurrentUserId } from "@/lib/auth/use-current-user";
 import { formatDate } from "@/lib/utils";
 import { CustomerFormDialog } from "@/components/customers/customer-form-dialog";
 import type { Customer } from "@/types";
@@ -17,11 +16,11 @@ type Props = {
   repo: Repository | null;
   value: Customer | null;
   onSelect: (c: Customer) => void;
+  userId: string;
 };
 
-export function CustomerStep({ repo, value, onSelect }: Props) {
+export function CustomerStep({ repo, value, onSelect, userId }: Props) {
   const { t, lang } = useLanguage();
-  const { userId } = useCurrentUserId();
   const [search, setSearch] = useState("");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -116,7 +115,7 @@ export function CustomerStep({ repo, value, onSelect }: Props) {
         open={createOpen}
         onOpenChange={setCreateOpen}
         onCreate={async (values) => {
-          if (!repo || !userId) throw new Error("not ready");
+          if (!repo) throw new Error("not ready");
           const created = await repo.createCustomer(values, userId);
           setCustomers((prev) => [created, ...prev]);
           setSearch("");

@@ -22,7 +22,6 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { useRepository } from "@/lib/data/use-repository";
-import { useCurrentUserId } from "@/lib/auth/use-current-user";
 import { useLanguage } from "@/lib/i18n/context";
 import { computeOrderTotals, canCompleteOrder, BASE_PRICES } from "@/lib/pricing/calculator";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
@@ -49,6 +48,7 @@ type Props = {
   onDueDateChange: (v: string) => void;
   measurementLabel: string;
   onCreated?: () => void;
+  userId: string;
   customBasePrice?: number;
   onCustomBasePriceChange?: (v: number) => void;
   customStylePrices?: Record<string, number>;
@@ -60,7 +60,6 @@ export function ReviewStep(props: Props) {
   const { toast } = useToast();
   const router = useRouter();
   const { repo } = useRepository();
-  const { userId } = useCurrentUserId();
   const [creating, setCreating] = useState(false);
 
   const totals = computeOrderTotals({
@@ -84,14 +83,14 @@ export function ReviewStep(props: Props) {
   );
 
   async function handleCreate() {
-    if (!repo || !userId || !props.customer) return;
+    if (!repo || !props.customer) return;
     setCreating(true);
     try {
       let measurementId: string | null = null;
       if (Object.keys(props.measurements).length > 0) {
         const meas = await repo.createMeasurement(
           { customer_id: props.customer.id, label: props.measurementLabel || null, values: props.measurements },
-          userId
+          props.userId
         );
         measurementId = meas.id;
       }
@@ -121,7 +120,7 @@ export function ReviewStep(props: Props) {
           notes: props.notes.trim() || null,
           due_date: props.dueDate || null,
         },
-        userId
+        props.userId
       );
 
       props.onCreated?.();
@@ -364,7 +363,7 @@ export function ReviewStep(props: Props) {
 
           <Button
             className="w-full"
-            disabled={!check.ok || creating || !repo || !userId}
+            disabled={!check.ok || creating || !repo}
             onClick={handleCreate}
           >
             {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgeCheck className="h-4 w-4" />}

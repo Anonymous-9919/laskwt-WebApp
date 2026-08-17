@@ -22,7 +22,7 @@ export default async function NewOrderPage() {
         </div>
       }
     >
-      <OrderWizard />
+      <OrderWizard userId={profile.id} />
     </Suspense>
   );
 }
