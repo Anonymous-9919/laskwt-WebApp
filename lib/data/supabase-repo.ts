@@ -142,53 +142,46 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
     async createOrder(input: OrderInput, userId: string) {
       assertValidUserId(userId);
       const cleanUserId = userId.trim();
-      const rpc = await client.rpc("create_order", {
-        customer_id: input.customer_id,
-        status: input.status,
-        subtotal: input.subtotal,
-        customization_total: input.customization_total,
-        discount_type: input.discount_type,
-        discount_value: input.discount_value,
-        discount_amount: input.discount_amount,
-        total: input.total,
-        measurement_id: input.measurement_id ?? null,
-        measurements: input.measurements,
-        items: input.items as any,
-        notes: input.notes ?? null,
-        due_date: input.due_date ?? null,
-        created_by: cleanUserId,
-      });
 
-      if (rpc.error) {
-        // Fall back to insert + next_order_number via direct call
-        const num = await client.rpc("next_order_number");
-        const number = (num.data ?? "LK-0001") as string;
-        const r = await ordersTable()
-          .insert({
-            number,
-            customer_id: input.customer_id,
-            status: input.status,
-            subtotal: input.subtotal,
-            customization_total: input.customization_total,
-            discount_type: input.discount_type,
-            discount_value: input.discount_value,
-            discount_amount: input.discount_amount,
-            total: input.total,
-            measurement_id: input.measurement_id ?? null,
-            measurements: input.measurements,
-            items: input.items as any,
-            notes: input.notes ?? null,
-            due_date: input.due_date ?? null,
-            created_by: cleanUserId,
-          })
-          .select()
-          .single();
-        return unwrap(r, {} as Order);
+      async function attemptCreate(): Promise<Order> {
+        const rpc = await client.rpc("create_order", {
+          customer_id: input.customer_id,
+          status: input.status,
+          subtotal: input.subtotal,
+          customization_total: input.customization_total,
+          discount_type: input.discount_type,
+          discount_value: input.discount_value,
+          discount_amount: input.discount_amount,
+          total: input.total,
+          measurement_id: input.measurement_id ?? null,
+          measurements: input.measurements,
+          items: input.items as any,
+          notes: input.notes ?? null,
+          due_date: input.due_date ?? null,
+          created_by: cleanUserId,
+        });
+
+        if (rpc.error) {
+          throw new Error(rpc.error.message);
+        }
+
+        const r = await ordersTable().select("*").eq("number", rpc.data).maybeSingle();
+        if (r.error) throw new Error(r.error.message);
+        return r.data ? toOrder(r.data) : ({} as Order);
       }
 
-      const r = await ordersTable().select("*").eq("number", rpc.data).maybeSingle();
-      if (r.error) throw new Error(r.error.message);
-      return r.data ? toOrder(r.data) : ({} as Order);
+      try {
+        return await attemptCreate();
+      } catch (e: any) {
+        // If duplicate key on order number, retry once with fresh sequence
+        const msg = e?.message ?? "";
+        if (msg.includes("duplicate key") && msg.includes("orders_number_key")) {
+          // Wait a bit and retry - the next_order_number function now self-corrects
+          await new Promise((res) => setTimeout(res, 50));
+          return attemptCreate();
+        }
+        throw e;
+      }
     },
 
     async getOrder(id) {
