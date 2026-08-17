@@ -1,35 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { getDemoSession } from "@/lib/auth/demo-session";
 import { hasSupabaseEnv } from "@/lib/data/env";
-import { getDemoSession } from "@/lib/auth/demo-session";export function useCurrentUserId(): { userId: string | null; loading: boolean } {
+
+function decodeUserIdFromCookie(): string | null {
+  try {
+    const match = document.cookie.match(/sb-[^-]+-auth-token=([^;]+)/);
+    if (!match) return null;
+    let raw = match[1];
+    if (raw.startsWith("base64-")) raw = atob(raw.slice(7));
+    const parts = raw.split(".");
+    if (parts.length < 2) return null;
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")));
+    return payload.sub ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function useCurrentUserId(): { userId: string | null; loading: boolean } {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-    async function load() {
-      if (!hasSupabaseEnv()) {
-        if (mounted) {
-          setUserId(getDemoSession());
-          setLoading(false);
-        }
-        return;
-      }
-      const { createClient } = await import("@/lib/supabase/client");
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (mounted) {
-        setUserId(user?.id ?? null);
-        setLoading(false);
-      }
+    if (!hasSupabaseEnv()) {
+      setUserId(getDemoSession());
+      setLoading(false);
+      return;
     }
-    load();
-    return () => {
-      mounted = false;
-    };
+    setUserId(decodeUserIdFromCookie());
+    setLoading(false);
   }, []);
 
   return { userId, loading };

@@ -1,22 +1,24 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils";
-import { useLanguage } from "@/lib/i18n/context";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
-import type { Profile } from "@/types";
+import { useAuthProfile } from "@/lib/auth/auth-context";
 
-export function AppShell({ profile, children }: { profile: Profile; children: React.ReactNode }) {
+export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { profile, loading } = useAuthProfile();
 
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  if (loading || !profile) {
+    return <div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-gold border-t-transparent" /></div>;
+  }
 
   return (
     <div className="flex min-h-screen">

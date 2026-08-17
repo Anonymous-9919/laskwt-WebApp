@@ -3,8 +3,6 @@ import { redirect } from "next/navigation";
 import { getCurrentProfileServer } from "@/lib/auth/server-auth";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Dashboard — Laskwt",
 };

@@ -16,11 +16,15 @@ export const DEFAULT_STYLES: SelectedStyles = {
   embroidery: "emb_none",
 };
 
-export function customizationTotal(styles: SelectedStyles): number {
+export function customizationTotal(styles: SelectedStyles, customStylePrices?: Record<string, number>): number {
   const kinds: StyleKind[] = ["collar", "cuff", "pocket", "front", "buttons", "embroidery"];
   return kinds.reduce((sum, kind) => {
     const opt = getOption(kind, styles[kind]);
-    return sum + (opt?.price_addition ?? 0);
+    if (!opt) return sum;
+    if (customStylePrices && opt.key in customStylePrices) {
+      return sum + (customStylePrices[opt.key] ?? 0);
+    }
+    return sum + (opt.price_addition ?? 0);
   }, 0);
 }
 
@@ -30,9 +34,11 @@ export function computeOrderTotals(input: {
   styles: SelectedStyles;
   discountType: DiscountType;
   discountValue: number;
+  customBasePrice?: number;
+  customStylePrices?: Record<string, number>;
 }) {
-  const base = BASE_PRICES[input.productType];
-  const customization = customizationTotal(input.styles);
+  const base = input.customBasePrice ?? BASE_PRICES[input.productType];
+  const customization = customizationTotal(input.styles, input.customStylePrices);
   const perUnit = base + customization;
   const subtotal = perUnit * input.quantity;
 

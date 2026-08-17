@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentProfileServer } from "@/lib/auth/server-auth";
 import { isAdmin } from "@/lib/auth/permissions";
-import { listProfilesForAdmin, salesForEmployee } from "@/lib/data/server-profiles";
+import { listProfilesForAdmin, salesForAllEmployees } from "@/lib/data/server-profiles";
 import type { EmployeeSales } from "@/lib/data/types";
 import type { Profile } from "@/types";
 import { UsersPageClient } from "@/components/users/users-page-client";
@@ -12,15 +12,10 @@ export default async function UsersPage() {
     redirect("/login");
   }
 
-  const profiles = await listProfilesForAdmin();
-
-  const salesEntries = await Promise.all(
-    profiles.map(async (p) => {
-      const s = await salesForEmployee(p.id, 30);
-      return [p.id, s] as const;
-    })
-  );
-  const sales: Record<string, EmployeeSales> = Object.fromEntries(salesEntries);
+  const [profiles, sales] = await Promise.all([
+    listProfilesForAdmin(),
+    salesForAllEmployees(30),
+  ]);
 
   return (
     <UsersPageClient profile={profile} profiles={profiles as Profile[]} sales={sales} />

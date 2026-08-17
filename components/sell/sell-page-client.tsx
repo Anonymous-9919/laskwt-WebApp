@@ -54,6 +54,8 @@ export function SellPageClient({ profile }: { profile: any }) {
   const [showDraftBanner, setShowDraftBanner] = useState(false);
   const [resumeDraft, setResumeDraft] = useState(false);
   const [loadingCustomers, setLoadingCustomers] = useState(true);
+  const [customBasePrice, setCustomBasePrice] = useState<number | undefined>(undefined);
+  const [customStylePrices, setCustomStylePrices] = useState<Record<string, number>>({});
 
   const draftPayload: DraftOrderPayload = {
     customer,
@@ -119,7 +121,7 @@ export function SellPageClient({ profile }: { profile: any }) {
       return;
     }
     try {
-      const totals = computeOrderTotals({ productType, quantity, styles, discountType: "percent", discountValue: 0 });
+      const totals = computeOrderTotals({ productType, quantity, styles, discountType: "percent", discountValue: 0, customBasePrice, customStylePrices });
       const order = await repo.createOrder(
         {
           customer_id: customer.id,
@@ -285,6 +287,12 @@ export function SellPageClient({ profile }: { profile: any }) {
             dueDate={dueDate}
             onSubmit={createOrder}
             lang={lang}
+            customBasePrice={customBasePrice}
+            onCustomBasePriceChange={setCustomBasePrice}
+            customStylePrices={customStylePrices}
+            onCustomStylePriceChange={(key, val) =>
+              setCustomStylePrices((prev) => ({ ...prev, [key]: val }))
+            }
           />
         )}
       </div>
@@ -475,6 +483,10 @@ function ReviewStep({
   dueDate,
   onSubmit,
   lang,
+  customBasePrice,
+  onCustomBasePriceChange,
+  customStylePrices,
+  onCustomStylePriceChange,
 }: {
   customer: Customer | null;
   productType: "dascha" | "thobe";
@@ -487,8 +499,12 @@ function ReviewStep({
   dueDate: string;
   onSubmit: () => void;
   lang: "ar" | "en";
+  customBasePrice?: number;
+  onCustomBasePriceChange?: (v: number) => void;
+  customStylePrices?: Record<string, number>;
+  onCustomStylePriceChange?: (key: string, v: number) => void;
 }) {
-  const totals = computeOrderTotals({ productType, quantity, styles, discountType: "percent", discountValue: 0 });
+  const totals = computeOrderTotals({ productType, quantity, styles, discountType: "percent", discountValue: 0, customBasePrice, customStylePrices });
 
   return (
     <div className="space-y-4">
@@ -502,6 +518,56 @@ function ReviewStep({
             <p className="text-sm text-muted-foreground">{customer?.full_name ?? "—"}</p>
           </div>
         </div>
+        <div className="mt-3 flex items-center gap-2">
+          <Label className="text-sm whitespace-nowrap">{lang === "ar" ? "سعر الوحدة" : "Unit Price"}</Label>
+          <div className="flex items-center gap-1">
+            <Input
+              type="number"
+              min={0}
+              step={0.5}
+              dir="ltr"
+              className="h-8 w-24"
+              value={customBasePrice ?? BASE_PRICES[productType]}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value);
+                if (!isNaN(val) && val >= 0) onCustomBasePriceChange?.(val);
+              }}
+            />
+            <span className="text-xs text-muted-foreground">KWD</span>
+          </div>
+        </div>
+      </Card>
+
+      {/* Style prices */}
+      <Card className="p-4 space-y-2">
+        <p className="text-sm font-medium">{lang === "ar" ? "أسعار الستايل" : "Style Prices"}</p>
+        {STYLE_KINDS.map((kind) => {
+          const opt = getOption(kind, styles[kind]);
+          if (!opt) return null;
+          const currentPrice = customStylePrices?.[opt.key] ?? opt.price_addition;
+          return (
+            <div key={kind} className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">
+                {lang === "ar" ? opt.label_ar : opt.label_en}
+              </span>
+              <div className="flex items-center gap-1">
+                <Input
+                  type="number"
+                  min={0}
+                  step={0.5}
+                  dir="ltr"
+                  className="h-7 w-16 px-1 py-0 text-xs"
+                  value={currentPrice}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    if (!isNaN(val) && val >= 0) onCustomStylePriceChange?.(opt.key, val);
+                  }}
+                />
+                <span className="text-xs text-muted-foreground">KWD</span>
+              </div>
+            </div>
+          );
+        })}
       </Card>
 
       <Card className="p-4 space-y-2">

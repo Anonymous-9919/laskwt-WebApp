@@ -49,6 +49,10 @@ type Props = {
   onDueDateChange: (v: string) => void;
   measurementLabel: string;
   onCreated?: () => void;
+  customBasePrice?: number;
+  onCustomBasePriceChange?: (v: number) => void;
+  customStylePrices?: Record<string, number>;
+  onCustomStylePriceChange?: (key: string, v: number) => void;
 };
 
 export function ReviewStep(props: Props) {
@@ -65,6 +69,8 @@ export function ReviewStep(props: Props) {
     styles: props.styles,
     discountType: props.discountType,
     discountValue: props.discountValue,
+    customBasePrice: props.customBasePrice,
+    customStylePrices: props.customStylePrices,
   });
 
   const check = canCompleteOrder({
@@ -93,7 +99,7 @@ export function ReviewStep(props: Props) {
       const item: OrderItemInput = {
         product_type: props.productType,
         quantity: props.quantity,
-        base_price: BASE_PRICES[props.productType],
+        base_price: totals.basePrice,
         styles: props.styles,
         customization_total: totals.customization,
         line_total: totals.total,
@@ -157,9 +163,24 @@ export function ReviewStep(props: Props) {
                       : "border-input hover:border-primary/40"
                   )}
                 >
-                  <p className="font-medium">{lang === "ar" ? (type === "dascha" ? "Ø¯Ø±Ø¹ÙŠØ©" : "Ø«ÙˆØ¨") : type === "dascha" ? "Dascha" : "Thobe"}</p>
+                  <p className="font-medium">{lang === "ar" ? (type === "dascha" ? "درعية" : "ثوب") : type === "dascha" ? "Dascha" : "Thobe"}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{t.order[`product_${type}`]}</p>
-                  <p className="mt-2 text-lg font-semibold text-gold">{formatKWD(BASE_PRICES[type])}</p>
+                  <div className="mt-2 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                    <Input
+                      type="number"
+                      min={0}
+                      step={0.5}
+                      dir="ltr"
+                      className="h-8 w-24 text-lg font-semibold text-gold"
+                      value={props.customBasePrice ?? BASE_PRICES[type]}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value);
+                        if (!isNaN(val) && val >= 0) props.onCustomBasePriceChange?.(val);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <span className="text-xs text-muted-foreground">KWD</span>
+                  </div>
                 </button>
               ))}
             </div>
@@ -234,7 +255,7 @@ export function ReviewStep(props: Props) {
                 dir="auto"
                 value={props.notes}
                 onChange={(e) => props.onNotesChange(e.target.value)}
-                placeholder={lang === "ar" ? "Ø£ÙŠ Ù…Ù„Ø§Ø­Ø¸Ø§Øª Ø¥Ø¶Ø§ÙÙŠØ©..." : "Any additional notes..."}
+                placeholder={lang === "ar" ? "أي ملاحظات إضافية..." : "Any additional notes..."}
               />
             </div>
           </CardContent>
@@ -251,7 +272,7 @@ export function ReviewStep(props: Props) {
                 {props.quantity <= 0 && <p className="text-muted-foreground">{t.pricing.qty}</p>}
                 {missingRequired.length > 0 && (
                   <p className="text-muted-foreground">
-                    {missingRequired.map((f) => (lang === "ar" ? f.labelAr : f.labelEn)).join("ØŒ ")}
+                    {missingRequired.map((f) => (lang === "ar" ? f.labelAr : f.labelEn)).join("، ")}
                   </p>
                 )}
               </div>
@@ -301,26 +322,40 @@ export function ReviewStep(props: Props) {
             </span>
           </div>
 
-          {/* Selected styles */}
+          {/* Selected styles with editable prices */}
           <div className="pt-2">
             <p className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
               <ClipboardList className="h-3.5 w-3.5" />
               {t.order.stepStyle}
             </p>
-            <ul className="space-y-1">
+            <ul className="space-y-2">
               {STYLE_KINDS.map((kind) => {
                 const opt = getOption(kind, props.styles[kind]);
                 if (!opt) return null;
+                const defaultPrice = opt.price_addition;
+                const currentPrice = props.customStylePrices?.[opt.key] ?? defaultPrice;
                 return (
                   <li key={kind} className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">
                       {lang === "ar" ? opt.label_ar : opt.label_en}
                     </span>
-                    {opt.price_addition > 0 && (
-                      <span className="text-gold" dir="ltr">
-                        +{formatKWD(opt.price_addition)}
-                      </span>
-                    )}
+                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                      <Input
+                        type="number"
+                        min={0}
+                        step={0.5}
+                        dir="ltr"
+                        className="h-6 w-16 px-1 py-0 text-xs"
+                        value={currentPrice}
+                        onChange={(e) => {
+                          const val = parseFloat(e.target.value);
+                          if (!isNaN(val) && val >= 0) {
+                            props.onCustomStylePriceChange?.(opt.key, val);
+                          }
+                        }}
+                      />
+                      <span className="text-muted-foreground">KWD</span>
+                    </div>
                   </li>
                 );
               })}

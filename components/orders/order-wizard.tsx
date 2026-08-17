@@ -22,7 +22,7 @@ import { useCurrentUserId } from "@/lib/auth/use-current-user";
 import { useAutosave } from "@/lib/data/use-autosave";
 import { useLanguage } from "@/lib/i18n/context";
 import { cn, todayDateString } from "@/lib/utils";
-import { DEFAULT_STYLES } from "@/lib/pricing/calculator";
+import { DEFAULT_STYLES, BASE_PRICES } from "@/lib/pricing/calculator";
 import { CustomerStep } from "@/components/orders/steps/customer-step";
 import { MeasurementForm } from "@/components/measurement/measurement-form";
 import { StyleSelector } from "@/components/styles/style-selector";
@@ -60,6 +60,8 @@ export function OrderWizard() {
   const [resumeDraft, setResumeDraft] = useState(false);
   const [previousMeasurements, setPreviousMeasurements] = useState<Measurement[]>([]);
   const [loadingPrevious, setLoadingPrevious] = useState(false);
+  const [customBasePrice, setCustomBasePrice] = useState<number | undefined>(undefined);
+  const [customStylePrices, setCustomStylePrices] = useState<Record<string, number>>({});
 
   const hydrated = useRef(false);
 
@@ -279,6 +281,12 @@ export function OrderWizard() {
             if (repo && userId) await repo.clearDraft(userId, "order");
             setShowDraftBanner(false);
           }}
+          customBasePrice={customBasePrice}
+          onCustomBasePriceChange={setCustomBasePrice}
+          customStylePrices={customStylePrices}
+          onCustomStylePriceChange={(key, val) =>
+            setCustomStylePrices((prev) => ({ ...prev, [key]: val }))
+          }
         />
       )}
 

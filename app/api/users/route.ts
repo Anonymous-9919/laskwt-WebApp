@@ -92,11 +92,20 @@ export async function POST(request: Request) {
         } else if (active === true) {
           await admin.auth.admin.updateUserById(id, { ban_duration: "none" });
         }
+        if (phone !== undefined) {
+          const newEmail = `${phone.replace(/\D/g, "")}@laskwt.local`;
+          await admin.auth.admin.updateUserById(id, { email: newEmail });
+        }
         return NextResponse.json({ profile: data });
       }
       case "resetPin": {
         const { id, password } = body as { id: string; password: string };
-        const { data, error } = await admin.auth.admin.updateUserById(id, { password });
+        const { data: prof } = await admin.from("profiles").select("phone").eq("id", id).single();
+        const updatePayload: { password: string; email?: string } = { password };
+        if (prof?.phone) {
+          updatePayload.email = `${prof.phone.replace(/\D/g, "")}@laskwt.local`;
+        }
+        const { data, error } = await admin.auth.admin.updateUserById(id, updatePayload);
         if (error) return NextResponse.json({ error: error.message }, { status: 400 });
         return NextResponse.json({ user: data });
       }

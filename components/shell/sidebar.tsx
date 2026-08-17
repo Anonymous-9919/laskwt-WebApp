@@ -13,8 +13,8 @@ type NavKey = "dashboard" | "customers" | "orders" | "newOrder" | "settings" | "
 
 const ADMIN_NAV: { href: string; key: NavKey; icon: React.ComponentType<{ className?: string }>; exact?: boolean }[] = [
   { href: "/", key: "dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/orders", key: "orders", icon: ReceiptText },
-  { href: "/orders/new", key: "newOrder", icon: PlusCircle },
+  { href: "/orders", key: "orders", icon: ReceiptText, exact: true },
+  { href: "/orders/new", key: "newOrder", icon: PlusCircle, exact: true },
   { href: "/customers", key: "customers", icon: Users },
   { href: "/users", key: "users", icon: UsersRound },
   { href: "/settings", key: "settings", icon: Settings },
