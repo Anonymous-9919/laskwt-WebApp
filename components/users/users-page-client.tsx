@@ -39,7 +39,7 @@ export function UsersPageClient({
   const [search, setSearch] = useState("");
   const [creating, setCreating] = useState(false);
   const [createName, setCreateName] = useState("");
-  const [createPhone, setCreatePhone] = useState("");
+  const [createPhone, setCreatePhone] = useState("+965");
   const [createRole, setCreateRole] = useState<Role>("employee");
   const [createPin, setCreatePin] = useState("");
   const [updatingRole, setUpdatingRole] = useState<string | null>(null);
@@ -247,16 +247,12 @@ export function UsersPageClient({
               </div>
               <div>
                 <Label>{t.auth.phone}</Label>
-                <div className="relative">
-                  <span className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">+965</span>
-                  <Input
-                    value={createPhone}
-                    onChange={(e) => setCreatePhone(e.target.value)}
-                    placeholder="5555 1234"
-                    dir="ltr"
-                    className="ps-[3.5rem]"
-                  />
-                </div>
+                <Input
+                  value={createPhone}
+                  onChange={(e) => setCreatePhone(e.target.value)}
+                  placeholder="+965 5555 1234"
+                  dir="ltr"
+                />
               </div>
               <div>
                 <Label>{lang === "ar" ? "الصلاحية" : "Role"}</Label>
@@ -394,15 +390,11 @@ export function UsersPageClient({
             </div>
             <div>
               <Label>{t.auth.phone}</Label>
-              <div className="relative">
-                <span className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">+965</span>
-                <Input
-                  value={editPhone}
-                  onChange={(e) => setEditPhone(e.target.value)}
-                  dir="ltr"
-                  className="ps-[3.5rem]"
-                />
-              </div>
+              <Input
+                value={editPhone}
+                onChange={(e) => setEditPhone(e.target.value)}
+                dir="ltr"
+              />
             </div>
             <div>
               <Label>{lang === "ar" ? "الصلاحية" : "Role"}</Label>

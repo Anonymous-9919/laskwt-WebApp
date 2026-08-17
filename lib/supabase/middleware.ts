@@ -54,24 +54,21 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  // Do not run code between createServerClient and supabase.auth.getUser()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const isAuthPage = request.nextUrl.pathname.startsWith("/login");
   const isPdfRoute = request.nextUrl.pathname.startsWith("/api/pdf");
   const isPublicEmployeeRoute =
     request.nextUrl.pathname.startsWith("/api/directories/employees") ||
     request.nextUrl.pathname.startsWith("/api/auth/employee-login");
+  const isAuthPage = request.nextUrl.pathname.startsWith("/login");
 
-  if (isPdfRoute) {
-    // PDF download links may be shared with customers via WhatsApp; they
-    // use a signed URL token and do their own auth check.
+  if (isPdfRoute || isPublicEmployeeRoute) {
     return supabaseResponse;
   }
 
-  if (!user && !isAuthPage && !isPublicEmployeeRoute) {
+  // Use getCookies() instead of getUser() - no network call, just reads the JWT
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user ?? null;
+
+  if (!user && !isAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirected", "1");

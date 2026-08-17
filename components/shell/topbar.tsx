@@ -2,7 +2,6 @@
 
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/shell/theme-toggle";
 import { LanguageToggle } from "@/components/shell/language-toggle";
 import { UserMenu } from "@/components/shell/user-menu";
 import type { Profile } from "@/types";
@@ -21,7 +20,6 @@ export function Topbar({ profile, onMenu }: { profile: Profile; onMenu: () => vo
       </Button>
 
       <div className="ms-auto flex items-center gap-1.5">
-        <ThemeToggle />
         <LanguageToggle />
         <UserMenu profile={profile} />
       </div>

@@ -328,7 +328,7 @@ export function SellPageClient({ profile }: { profile: any }) {
 
 function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+965");
   const [saving, setSaving] = useState(false);
   const { repo } = useRepository();
   const { userId } = useCurrentUserId();
@@ -352,16 +352,12 @@ function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
   return (
     <Card className="p-4 space-y-3 border-dashed">
       <Input placeholder={lang === "ar" ? "اسم العميل" : "Customer name"} value={name} onChange={(e) => setName(e.target.value)} />
-      <div className="relative">
-        <span className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">+965</span>
-        <Input
-          placeholder="5555 1234"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          dir="ltr"
-          className="ps-[3.5rem]"
-        />
-      </div>
+      <Input
+        placeholder="+965 5555 1234"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        dir="ltr"
+      />
       <Button onClick={submit} disabled={saving || !name || !phone} className="w-full">
         {saving
           ? lang === "ar"

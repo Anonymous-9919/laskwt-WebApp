@@ -4,15 +4,15 @@
 
 @layer base {
   :root {
-    /* Light only — Las Kwt 2 brand palette (warm ivory canvas, ink text, gold accent) */
-    --background: 42 36% 95%;             /* #F6F3EC — warm ivory */
+    /* Light only — Las Kwt 2 brand palette */
+    --background: 0 0% 98%;                /* #FAFAFA — light grey */
     --foreground: 60 19% 7%;              /* #16160F — ink */
     --card: 0 0% 100%;                    /* #FFFFFF */
     --card-foreground: 60 19% 7%;
     --popover: 0 0% 100%;
     --popover-foreground: 60 19% 7%;
     --primary: 60 19% 7%;                 /* #16160F — ink buttons */
-    --primary-foreground: 42 36% 95%;     /* #F6F3EC */
+    --primary-foreground: 0 0% 98%;       /* light grey */
     --secondary: 40 29% 90%;              /* #EDE8DE */
     --secondary-foreground: 60 19% 7%;
     --muted: 40 29% 90%;                  /* #EDE8DE */
@@ -25,20 +25,19 @@
     --input: 39 32% 86%;
     --ring: 210 9% 27%;                   /* #3F454B — dark grey accent */
     --gold: 210 9% 27%;                   /* #3F454B — dark grey accent */
-    --gold-foreground: 42 36% 95%;        /* ivory on dark grey */
+    --gold-foreground: 0 0% 98%;          /* light grey on dark grey */
     --radius: 0.625rem;
   }
 
-  /* Dark theme intentionally disabled — collapses to the light brand palette */
   .dark {
-    --background: 42 36% 95%;
+    --background: 0 0% 98%;
     --foreground: 60 19% 7%;
     --card: 0 0% 100%;
     --card-foreground: 60 19% 7%;
     --popover: 0 0% 100%;
     --popover-foreground: 60 19% 7%;
     --primary: 60 19% 7%;
-    --primary-foreground: 42 36% 95%;
+    --primary-foreground: 0 0% 98%;
     --secondary: 40 29% 90%;
     --secondary-foreground: 60 19% 7%;
     --muted: 40 29% 90%;
@@ -51,7 +50,7 @@
     --input: 39 32% 86%;
     --ring: 210 9% 27%;
     --gold: 210 9% 27%;
-    --gold-foreground: 42 36% 95%;
+    --gold-foreground: 0 0% 98%;
   }
 }
 

@@ -62,7 +62,7 @@ export function CustomerFormDialog({
     if (open) {
       reset({
         full_name: customer?.full_name ?? "",
-        phone: customer?.phone ?? "",
+        phone: customer?.phone || "+965",
         email: customer?.email ?? "",
         notes: customer?.notes ?? "",
       });
@@ -120,6 +120,7 @@ export function CustomerFormDialog({
                 dir="ltr"
                 className="ps-10"
                 placeholder="+965 5555 1234"
+                defaultValue="+965"
                 {...register("phone")}
               />
             </div>
