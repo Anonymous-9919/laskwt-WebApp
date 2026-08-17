@@ -143,8 +143,10 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
       assertValidUserId(userId);
       const cleanUserId = userId.trim();
 
-      // Primary RPC method
-      async function attemptRpc(): Promise<Order | null> {
+      // Use the create_order RPC which is SECURITY DEFINER — it bypasses RLS,
+      // so both admin and employee users can create orders without hitting
+      // "new row violates row-level security policy" errors.
+      async function attemptRpc(): Promise<Order> {
         const rpc = await client.rpc("create_order", {
           customer_id: input.customer_id,
           status: input.status,
@@ -163,14 +165,6 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
         });
 
         if (rpc.error) {
-          const msg = rpc.error.message || "";
-          if (
-            msg.includes("schema cache") ||
-            msg.includes("Could not find the function") ||
-            msg.includes("function public.create_order")
-          ) {
-            return null; // Trigger fallback if function signature isn't found in PostgREST schema cache
-          }
           throw new Error(rpc.error.message);
         }
 
@@ -179,80 +173,16 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
         return r.data ? toOrder(r.data) : ({} as Order);
       }
 
-      // Fallback direct insert method if RPC is missing or parameter mismatch
-      async function attemptDirectInsert(): Promise<Order> {
-        let orderNumber: string | null = null;
-        try {
-          const nextVal = await client.rpc("next_order_number");
-          if (!nextVal.error && nextVal.data) {
-            orderNumber = nextVal.data as string;
-          }
-        } catch {
-          // Ignore RPC failure
-        }
-
-        if (!orderNumber) {
-          const year = new Date().getFullYear();
-          const prefix = `LK-${year}-`;
-          const { data: latest } = await ordersTable()
-            .select("number")
-            .like("number", `${prefix}%`)
-            .order("created_at", { ascending: false })
-            .limit(10);
-
-          let maxSeq = 0;
-          if (latest && latest.length > 0) {
-            for (const row of latest) {
-              const match = row.number?.match(/LK-\d{4}-(\d+)$/);
-              if (match?.[1]) {
-                const seq = parseInt(match[1], 10);
-                if (seq > maxSeq) maxSeq = seq;
-              }
-            }
-          }
-          orderNumber = `LK-${year}-${String(maxSeq + 1).padStart(4, "0")}`;
-        }
-
-        const insertRes = await ordersTable()
-          .insert({
-            number: orderNumber,
-            customer_id: input.customer_id,
-            status: input.status,
-            subtotal: input.subtotal,
-            customization_total: input.customization_total,
-            discount_type: input.discount_type,
-            discount_value: input.discount_value,
-            discount_amount: input.discount_amount,
-            total: input.total,
-            measurement_id: input.measurement_id ?? null,
-            measurements: input.measurements,
-            items: input.items as any,
-            notes: input.notes ?? null,
-            due_date: input.due_date ?? null,
-            created_by: cleanUserId,
-          })
-          .select()
-          .single();
-
-        if (insertRes.error) throw new Error(insertRes.error.message);
-        return toOrder(insertRes.data);
-      }
-
       try {
-        const order = await attemptRpc();
-        if (order) return order;
-        return await attemptDirectInsert();
+        return await attemptRpc();
       } catch (e: any) {
         const msg = e?.message ?? "";
+        // Retry once on duplicate order number (sequence race condition)
         if (msg.includes("duplicate key") && msg.includes("orders_number_key")) {
-          await new Promise((res) => setTimeout(res, 50));
-          return attemptDirectInsert();
+          await new Promise((res) => setTimeout(res, 100));
+          return attemptRpc();
         }
-        try {
-          return await attemptDirectInsert();
-        } catch {
-          throw e;
-        }
+        throw e;
       }
     },
 
