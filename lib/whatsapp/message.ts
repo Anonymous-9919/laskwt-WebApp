@@ -11,10 +11,10 @@ export function buildWhatsAppMessage(
   const t = dictionaries[lang];
   const isAr = lang === "ar";
   const nl = "\n";
-  const item = order.items[0];
+  const item = order.items?.[0] ?? { product_type: "dascha", quantity: 1, styles: {} };
 
   const lines: string[] = [];
-  lines.push(`*${t.order[`product_${item.product_type}`]}*`);
+  lines.push(`*${t.order[`product_${item.product_type as "dascha" | "thobe"}`] ?? item.product_type}*`);
   lines.push(`${t.order.orderNumber}: ${order.number}`);
   lines.push(
     `${t.invoice.customer}: ${customer?.full_name ?? "—"}${
@@ -48,7 +48,7 @@ export function buildWhatsAppMessage(
 
   const styles: string[] = [];
   for (const kind of STYLE_KINDS) {
-    const opt = getOption(kind, item.styles[kind]);
+    const opt = getOption(kind, item.styles?.[kind]);
     if (opt) styles.push(isAr ? opt.label_ar : opt.label_en);
   }
   if (styles.length > 0) {

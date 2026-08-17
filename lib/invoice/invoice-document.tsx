@@ -414,7 +414,7 @@ export function InvoiceDocument({
   const t = dictionaries[lang];
   const isAr = lang === "ar";
   const fontStyle = isAr ? styles.arabic : {};
-  const item = order.items[0];
+  const item = order.items?.[0] ?? { product_type: "dascha", quantity: 1, styles: {} };
   const filledMeasurement = MEASUREMENT_FIELDS.filter(
     (f) => order.measurements[f.key] !== undefined && order.measurements[f.key] !== null
   );
@@ -586,7 +586,7 @@ export function InvoiceDocument({
         <View style={styles.sectionRule} />
         <View style={[styles.infoCard, { marginBottom: 8 }]}>
           {STYLE_KINDS.map((kind) => {
-            const opt = getOption(kind, order.items[0].styles[kind]);
+            const opt = getOption(kind, item.styles?.[kind]);
             if (!opt) return null;
             return (
               <View key={kind} style={styles.styleRow}>

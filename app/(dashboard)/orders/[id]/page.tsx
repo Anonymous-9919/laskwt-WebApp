@@ -11,7 +11,6 @@ export const metadata = {
 export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const profile = await getCurrentProfileServer();
   if (!profile) redirect("/login");
-  if (profile.role !== "admin") redirect("/sell");
   const { id } = await params;
   return (
     <Suspense

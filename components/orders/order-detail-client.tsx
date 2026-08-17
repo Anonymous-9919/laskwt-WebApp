@@ -80,9 +80,9 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
     );
   }
 
-  const item = order.items[0];
+  const item = order.items?.[0] ?? { product_type: "dascha", quantity: 1, styles: {} };
   const filledMeasurements = MEASUREMENT_FIELDS.filter(
-    (f) => order.measurements[f.key] !== undefined && order.measurements[f.key] !== null
+    (f) => order.measurements && order.measurements[f.key] !== undefined && order.measurements[f.key] !== null
   );
 
   return (
@@ -280,7 +280,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
           <CardContent>
             <ul className="space-y-1.5 text-sm">
               {STYLE_KINDS.map((kind) => {
-                const opt = getOption(kind, order.items[0].styles[kind]);
+                const opt = getOption(kind, item.styles?.[kind]);
                 if (!opt) return null;
                 return (
                   <li key={kind} className="flex items-center justify-between">
