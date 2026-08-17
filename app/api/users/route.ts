@@ -27,7 +27,7 @@ export async function POST(request: Request) {
         if (!full_name || !phone) {
           return NextResponse.json({ error: "full_name and phone required" }, { status: 400 });
         }
-        const password = body.password ?? Math.floor(1000 + Math.random() * 9000).toString();
+        const password = body.password ?? Math.floor(100000 + Math.random() * 900000).toString();
         const email = `${phone.replace(/\D/g, "")}@laskwt.local`;
         const { data: userData, error: signError } =
           await admin.auth.admin.createUser({
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
       const data: Profile = await repo.createProfile({ full_name, phone, role });
       return NextResponse.json({
         profile: data,
-        password: password ?? Math.floor(1000 + Math.random() * 9000).toString(),
+        password: password ?? Math.floor(100000 + Math.random() * 900000).toString(),
       });
     }
     case "update": {

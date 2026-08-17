@@ -18,8 +18,8 @@ export async function POST(request: Request) {
   const employeeId: string | undefined = body?.employeeId;
   const pin: string | undefined = body?.pin;
 
-  if (!employeeId || !pin || pin.replace(/\D/g, "").length !== 4) {
-    return NextResponse.json({ error: "employeeId and a 4-digit pin required" }, { status: 400 });
+  if (!employeeId || !pin || pin.replace(/\D/g, "").length !== 6) {
+    return NextResponse.json({ error: "employeeId and a 6-digit pin required" }, { status: 400 });
   }
 
   if (!hasSupabaseEnv()) {

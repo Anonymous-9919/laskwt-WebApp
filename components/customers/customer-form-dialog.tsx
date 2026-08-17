@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Phone, MessageCircle } from "lucide-react";
+import { Loader2, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,7 +26,6 @@ import type { CustomerInput } from "@/lib/data/types";
 const schema = z.object({
   full_name: z.string().min(2),
   phone: z.string().min(6),
-  whatsapp: z.string().optional().or(z.literal("")),
   email: z.string().email().optional().or(z.literal("")),
   notes: z.string().optional(),
 });
@@ -51,37 +50,24 @@ export function CustomerFormDialog({
   const { t, lang } = useLanguage();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
-  const [sameAsPhone, setSameAsPhone] = useState(true);
 
   const {
     register,
     handleSubmit,
     reset,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
-
-  const phone = watch("phone");
 
   useEffect(() => {
     if (open) {
       reset({
         full_name: customer?.full_name ?? "",
-        phone: customer?.phone ?? "",
-        whatsapp: customer?.whatsapp ?? "",
+        phone: customer?.phone?.replace(/^\+965/, "") ?? "",
         email: customer?.email ?? "",
         notes: customer?.notes ?? "",
       });
-      setSameAsPhone(!customer?.whatsapp);
     }
   }, [open, customer, reset]);
-
-  useEffect(() => {
-    if (sameAsPhone && phone) {
-      setValue("whatsapp", normalizePhone(phone), { shouldValidate: true });
-    }
-  }, [phone, sameAsPhone, setValue]);
 
   async function onSubmit(values: FormValues) {
     setSubmitting(true);
@@ -89,7 +75,7 @@ export function CustomerFormDialog({
       const payload = {
         full_name: values.full_name.trim(),
         phone: normalizePhone(values.phone),
-        whatsapp: values.whatsapp ? normalizePhone(values.whatsapp) : null,
+        whatsapp: normalizePhone(values.phone),
         email: values.email || null,
         notes: values.notes || null,
       };
@@ -125,48 +111,21 @@ export function CustomerFormDialog({
             )}
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="cf-phone">{t.customer.phone}</Label>
-              <div className="relative">
-                <Phone className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="cf-phone"
-                  dir="ltr"
-                  className="ps-9"
-                  placeholder="+965 5555 1234"
-                  {...register("phone")}
-                />
-              </div>
-              {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
+          <div className="space-y-2">
+            <Label htmlFor="cf-phone">{t.customer.phone} / WhatsApp</Label>
+            <div className="relative">
+              <Phone className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <span className="pointer-events-none absolute start-9 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">+965</span>
+              <Input
+                id="cf-phone"
+                dir="ltr"
+                className="ps-[4.5rem]"
+                placeholder="5555 1234"
+                maxLength={8}
+                {...register("phone")}
+              />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="cf-wa">{t.customer.whatsapp}</Label>
-              <div className="relative">
-                <MessageCircle className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  id="cf-wa"
-                  dir="ltr"
-                  className="ps-9"
-                  placeholder="+965 5555 1234"
-                  disabled={sameAsPhone}
-                  {...register("whatsapp")}
-                />
-              </div>
-              <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                <input
-                  type="checkbox"
-                  checked={sameAsPhone}
-                  onChange={(e) => {
-                    setSameAsPhone(e.target.checked);
-                    if (e.target.checked) setValue("whatsapp", phone || "");
-                  }}
-                  className="h-3.5 w-3.5 accent-gold"
-                />
-                {t.customer.whatsappSameAsPhone}
-              </label>
-            </div>
+            {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
           </div>
 
           <div className="space-y-2">

@@ -25,5 +25,5 @@ export default async function DashboardPage() {
     console.error("[dashboard] failed to load orders/customers:", e);
   }
 
-  return <DashboardClient orders={orders} customers={customers} fullName={profile.full_name} />;
+  return <DashboardClient orders={orders.slice(0, 6)} customers={customers} fullName={profile.full_name} />;
 }

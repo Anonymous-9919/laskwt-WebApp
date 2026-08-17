@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, KeyRound, ShieldCheck, UserRound } from "lucide-react";
+import { Plus, Search, KeyRound, ShieldCheck, UserRound, Pencil, Phone } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,7 +41,18 @@ export function UsersPageClient({
   const [createName, setCreateName] = useState("");
   const [createPhone, setCreatePhone] = useState("");
   const [createRole, setCreateRole] = useState<Role>("employee");
+  const [createPin, setCreatePin] = useState("");
   const [updatingRole, setUpdatingRole] = useState<string | null>(null);
+
+  const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editPhone, setEditPhone] = useState("");
+  const [editRole, setEditRole] = useState<Role>("employee");
+  const [editSaving, setEditSaving] = useState(false);
+
+  const [resetPinProfile, setResetPinProfile] = useState<Profile | null>(null);
+  const [newPin, setNewPin] = useState("");
+  const [resetSaving, setResetSaving] = useState(false);
 
   const visible = profiles.filter(
     (p) =>
@@ -55,6 +66,11 @@ export function UsersPageClient({
 
   async function createUser() {
     if (!createName || !createPhone) return;
+    const pin6 = createPin.replace(/\D/g, "");
+    if (pin6.length !== 6) {
+      toast({ variant: "destructive", title: lang === "ar" ? "الرمز يجب أن يكون 6 أرقام" : "PIN must be 6 digits" });
+      return;
+    }
     setCreating(true);
     try {
       const res = await fetch("/api/users", {
@@ -63,18 +79,20 @@ export function UsersPageClient({
         body: JSON.stringify({
           action: "create",
           full_name: createName,
-          phone: createPhone,
+          phone: createPhone.startsWith("+") ? createPhone : createPhone.startsWith("965") ? `+${createPhone}` : `+965${createPhone}`,
           role: createRole,
+          password: pin6,
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
       toast({
-        title: json.password ? `${t.auth.pin}: ${json.password}` : "User created",
+        title: `${t.auth.pin}: ${pin6}`,
       });
       setCreateName("");
       setCreatePhone("");
       setCreateRole("employee");
+      setCreatePin("");
       await refresh();
     } catch (e: any) {
       toast({ variant: "destructive", title: "Failed", description: e.message });
@@ -117,19 +135,67 @@ export function UsersPageClient({
     }
   }
 
-  async function resetPin(p: Profile) {
-    const pin = Math.floor(1000 + Math.random() * 9000).toString();
+  function openEdit(p: Profile) {
+    setEditingProfile(p);
+    setEditName(p.full_name ?? "");
+    setEditPhone(p.phone?.replace(/^\+965/, "") ?? "");
+    setEditRole(p.role);
+  }
+
+  async function saveEdit() {
+    if (!editingProfile) return;
+    setEditSaving(true);
     try {
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "resetPin", id: p.id, password: pin }),
+        body: JSON.stringify({
+          action: "update",
+          id: editingProfile.id,
+          full_name: editName,
+          phone: editPhone.startsWith("+") ? editPhone : editPhone.startsWith("965") ? `+${editPhone}` : `+965${editPhone}`,
+          role: editRole,
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      toast({ title: `${p.full_name}: ${t.auth.pin} ${pin}` });
+      toast({ title: lang === "ar" ? "تم التحديث" : "Updated" });
+      setEditingProfile(null);
+      await refresh();
     } catch (e: any) {
       toast({ variant: "destructive", title: "Failed", description: e.message });
+    } finally {
+      setEditSaving(false);
+    }
+  }
+
+  function openResetPin(p: Profile) {
+    setResetPinProfile(p);
+    setNewPin("");
+  }
+
+  async function saveResetPin() {
+    if (!resetPinProfile) return;
+    const pin6 = newPin.replace(/\D/g, "");
+    if (pin6.length !== 6) {
+      toast({ variant: "destructive", title: lang === "ar" ? "الرمز يجب أن يكون 6 أرقام" : "PIN must be 6 digits" });
+      return;
+    }
+    setResetSaving(true);
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "resetPin", id: resetPinProfile.id, password: pin6 }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      toast({ title: `${resetPinProfile.full_name}: ${t.auth.pin} ${pin6}` });
+      setResetPinProfile(null);
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Failed", description: e.message });
+    } finally {
+      setResetSaving(false);
     }
   }
 
@@ -150,7 +216,7 @@ export function UsersPageClient({
           <DialogContent className="sm:max-w-sm">
             <DialogHeader>
               <DialogTitle>{t.nav.users}</DialogTitle>
-              <DialogDescription>Add a new user (name + phone)</DialogDescription>
+              <DialogDescription>{lang === "ar" ? "إضافة مستخدم جديد" : "Add a new user"}</DialogDescription>
             </DialogHeader>
             <div className="space-y-3">
               <div>
@@ -163,12 +229,17 @@ export function UsersPageClient({
               </div>
               <div>
                 <Label>{t.auth.phone}</Label>
-                <Input
-                  value={createPhone}
-                  onChange={(e) => setCreatePhone(e.target.value)}
-                  placeholder="9655xxxxxxx"
-                  dir="ltr"
-                />
+                <div className="relative">
+                  <span className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">+965</span>
+                  <Input
+                    value={createPhone}
+                    onChange={(e) => setCreatePhone(e.target.value)}
+                    placeholder="5555 1234"
+                    dir="ltr"
+                    className="ps-[3.5rem]"
+                    maxLength={8}
+                  />
+                </div>
               </div>
               <div>
                 <Label>{lang === "ar" ? "الصلاحية" : "Role"}</Label>
@@ -182,12 +253,23 @@ export function UsersPageClient({
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label>{lang === "ar" ? "الرمز (6 أرقام)" : "PIN (6 digits)"}</Label>
+                <Input
+                  type="password"
+                  value={createPin}
+                  onChange={(e) => setCreatePin(e.target.value)}
+                  placeholder="000000"
+                  dir="ltr"
+                  maxLength={6}
+                />
+              </div>
             </div>
             <DialogFooter>
               <Button variant="outline" disabled={creating}>
                 {t.common.cancel}
               </Button>
-              <Button onClick={createUser} disabled={creating || !createName || !createPhone}>
+              <Button onClick={createUser} disabled={creating || !createName || !createPhone || createPin.replace(/\D/g, "").length !== 6}>
                 {creating ? (lang === "ar" ? "جارٍ الإنشاء…" : "Creating…") : t.common.add}
               </Button>
             </DialogFooter>
@@ -222,7 +304,7 @@ export function UsersPageClient({
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-2">
                 {s && (
                   <div className="text-sm">
                     <span className="font-medium">{s.orderCount}</span>{" "}
@@ -248,6 +330,11 @@ export function UsersPageClient({
                   {lang === "ar" ? (emp.active ? "نشط" : "غير نشط") : emp.active ? "Active" : "Inactive"}
                 </Badge>
                 {!isSelf && (
+                  <Button variant="outline" size="sm" onClick={() => openEdit(emp)}>
+                    <Pencil className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+                {!isSelf && (
                   <Button variant="outline" size="sm" onClick={() => toggleActive(emp)}>
                     {lang === "ar"
                       ? emp.active
@@ -258,9 +345,11 @@ export function UsersPageClient({
                         : "Activate"}
                   </Button>
                 )}
-                <Button variant="outline" size="sm" onClick={() => resetPin(emp)} disabled={isSelf}>
-                  {t.auth.pin}
-                </Button>
+                {!isSelf && (
+                  <Button variant="outline" size="sm" onClick={() => openResetPin(emp)}>
+                    <KeyRound className="h-3.5 w-3.5" />
+                  </Button>
+                )}
               </div>
             </Card>
           );
@@ -271,6 +360,86 @@ export function UsersPageClient({
           </Card>
         )}
       </div>
+
+      {/* Edit Profile Dialog */}
+      <Dialog open={!!editingProfile} onOpenChange={(o) => { if (!o) setEditingProfile(null); }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{lang === "ar" ? "تعديل الموظف" : "Edit Employee"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>{t.customer.fullName || "Name"}</Label>
+              <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+            </div>
+            <div>
+              <Label>{t.auth.phone}</Label>
+              <div className="relative">
+                <span className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">+965</span>
+                <Input
+                  value={editPhone}
+                  onChange={(e) => setEditPhone(e.target.value)}
+                  dir="ltr"
+                  className="ps-[3.5rem]"
+                  maxLength={8}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>{lang === "ar" ? "الصلاحية" : "Role"}</Label>
+              <Select value={editRole} onValueChange={(v) => setEditRole(v as Role)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="employee">{lang === "ar" ? "موظف" : "Employee"}</SelectItem>
+                  <SelectItem value="admin">{lang === "ar" ? "مدير" : "Admin"}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingProfile(null)}>
+              {t.common.cancel}
+            </Button>
+            <Button onClick={saveEdit} disabled={editSaving || !editName}>
+              {editSaving ? (lang === "ar" ? "جارٍ الحفظ…" : "Saving…") : t.common.save}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reset PIN Dialog */}
+      <Dialog open={!!resetPinProfile} onOpenChange={(o) => { if (!o) setResetPinProfile(null); }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{lang === "ar" ? "تغيير الرمز" : "Change PIN"}</DialogTitle>
+            <DialogDescription>{resetPinProfile?.full_name}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>{lang === "ar" ? "الرمز الجديد (6 أرقام)" : "New PIN (6 digits)"}</Label>
+              <Input
+                type="password"
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value)}
+                placeholder="000000"
+                dir="ltr"
+                maxLength={6}
+                autoFocus
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setResetPinProfile(null)}>
+              {t.common.cancel}
+            </Button>
+            <Button onClick={saveResetPin} disabled={resetSaving || newPin.replace(/\D/g, "").length !== 6}>
+              {resetSaving ? (lang === "ar" ? "جارٍ الحفظ…" : "Saving…") : t.common.save}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

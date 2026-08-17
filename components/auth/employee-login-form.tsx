@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, UserRound, ChevronDown } from "lucide-react";
+import { Loader2, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useLanguage } from "@/lib/i18n/context";
 
 const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0"];
-const PIN_LENGTH = 4;
+const PIN_LENGTH = 6;
 
 type EmployeeOption = { id: string; full_name: string };
 
@@ -101,7 +101,6 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
         <Select value={selected} onValueChange={setSelected}>
           <SelectTrigger className="h-12 w-full">
             <SelectValue placeholder={lang === "ar" ? "اختر اسمك" : "Select your name"} />
-            <ChevronDown className="h-4 w-4 opacity-50" />
           </SelectTrigger>
           <SelectContent>
             {employees.length === 0 ? (

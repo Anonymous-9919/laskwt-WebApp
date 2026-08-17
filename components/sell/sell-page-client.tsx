@@ -339,7 +339,8 @@ function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
     if (!name || !phone || !repo || !userId) return;
     setSaving(true);
     try {
-      const c = await repo.createCustomer({ full_name: name, phone }, userId);
+      const normalized = phone.startsWith("+") ? phone : phone.startsWith("965") ? `+${phone}` : `+965${phone}`;
+      const c = await repo.createCustomer({ full_name: name, phone: normalized, whatsapp: normalized }, userId);
       onCreate(c);
     } catch (e: any) {
       toast({ variant: "destructive", title: e.message });
@@ -351,7 +352,17 @@ function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
   return (
     <Card className="p-4 space-y-3 border-dashed">
       <Input placeholder={lang === "ar" ? "اسم العميل" : "Customer name"} value={name} onChange={(e) => setName(e.target.value)} />
-      <Input placeholder={lang === "ar" ? "الهاتف" : "Phone"} value={phone} onChange={(e) => setPhone(e.target.value)} dir="ltr" />
+      <div className="relative">
+        <span className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">+965</span>
+        <Input
+          placeholder="5555 1234"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          dir="ltr"
+          className="ps-[3.5rem]"
+          maxLength={8}
+        />
+      </div>
       <Button onClick={submit} disabled={saving || !name || !phone} className="w-full">
         {saving
           ? lang === "ar"

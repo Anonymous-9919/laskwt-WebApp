@@ -18,34 +18,65 @@ async function getMockProfile(): Promise<Profile | null> {
 }
 
 /**
- * Returns the signed-in profile from the server (Supabase session).
- * Wrapped in React.cache() so multiple calls within the same
- * server-render pass (layout + page) share a single network fetch.
+ * Extract user ID from the Supabase session JWT cookie.
+ * This avoids a round-trip to auth server — the middleware already
+ * validated the session, so we just decode the JWT payload.
+ */
+function extractUserIdFromJwt(cookieValue: string): string | null {
+  try {
+    const parts = cookieValue.split(".");
+    if (parts.length < 2) return null;
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString("utf-8"));
+    return payload.sub ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Returns the signed-in profile from the server.
+ * Wrapped in React.cache() so layout + page share a single fetch.
  *
- * In demo mode returns the mock profile; in real mode verifies the
- * session via the cookie-based client, then fetches the profile via
- * the admin client (bypasses RLS for speed).
+ * Uses a fast JWT-decode path to get the user ID (no network call),
+ * then fetches the profile via the admin client (1 network call).
  */
 export const getCurrentProfileServer = cache(async (): Promise<Profile | null> => {
   if (!hasSupabaseEnv()) {
     return getMockProfile();
   }
 
-  const { createClient } = await import("@/lib/supabase/server");
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let userId: string | null = null;
 
-  if (!user) return null;
+  try {
+    const store = await cookies();
+    const sessionCookie = store.get("sb-qvxilzcciqluttuafpee-auth-token")?.value
+      ?? store.get("sb-qvxilzcciqluttuafpee-auth-token-code-verifier")?.value;
+    if (sessionCookie) {
+      const raw = sessionCookie.startsWith("base64-")
+        ? atob(sessionCookie.slice(7))
+        : sessionCookie;
+      userId = extractUserIdFromJwt(raw);
+    }
+  } catch {}
+
+  if (!userId) {
+    try {
+      const { createClient } = await import("@/lib/supabase/server");
+      const supabase = await createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      userId = user?.id ?? null;
+    } catch {}
+  }
+
+  if (!userId) return null;
 
   try {
     const { createAdminClient } = await import("@/lib/supabase/admin");
     const admin = createAdminClient();
     const { data: profile } = await admin
       .from("profiles")
-      .select("*")
-      .eq("id", user.id)
+      .select("id,full_name,phone,role,active,created_at,updated_at")
+      .eq("id", userId)
       .maybeSingle();
     if (profile) return profile as Profile;
   } catch (e) {
