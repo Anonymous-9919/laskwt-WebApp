@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, KeyRound, ShieldCheck, UserRound, Pencil, Phone, Trash2 } from "lucide-react";
+import { Plus, Search, KeyRound, ShieldCheck, UserRound, Pencil, Phone, Trash2, Mail, Lock } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,14 +40,18 @@ export function UsersPageClient({
   const [creating, setCreating] = useState(false);
   const [createName, setCreateName] = useState("");
   const [createPhone, setCreatePhone] = useState("+965");
+  const [createEmail, setCreateEmail] = useState("");
   const [createRole, setCreateRole] = useState<Role>("employee");
   const [createPin, setCreatePin] = useState("");
+  const [createPassword, setCreatePassword] = useState("");
   const [updatingRole, setUpdatingRole] = useState<string | null>(null);
 
   const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
   const [editName, setEditName] = useState("");
   const [editPhone, setEditPhone] = useState("");
+  const [editEmail, setEditEmail] = useState("");
   const [editRole, setEditRole] = useState<Role>("employee");
+  const [editPassword, setEditPassword] = useState("");
   const [editSaving, setEditSaving] = useState(false);
 
   const [resetPinProfile, setResetPinProfile] = useState<Profile | null>(null);
@@ -65,34 +69,74 @@ export function UsersPageClient({
   }
 
   async function createUser() {
-    if (!createName || !createPhone) return;
-    const pin6 = createPin.replace(/\D/g, "");
-    if (pin6.length !== 6) {
-      toast({ variant: "destructive", title: lang === "ar" ? "الرمز يجب أن يكون 6 أرقام" : "PIN must be 6 digits" });
+    if (!createName) {
+      toast({ variant: "destructive", title: lang === "ar" ? "أدخل الاسم" : "Enter name" });
       return;
     }
+
+    if (createRole === "admin") {
+      if (!createEmail || !createPassword) {
+        toast({ variant: "destructive", title: lang === "ar" ? "البريد الإلكتروني وكلمة المرور مطلوبة للمدير" : "Email and password are required for admin" });
+        return;
+      }
+      if (createPassword.length < 6) {
+        toast({ variant: "destructive", title: lang === "ar" ? "كلمة المرور يجب أن تكون 6 أحرف على الأقل" : "Password must be at least 6 characters" });
+        return;
+      }
+    } else {
+      if (!createPhone || createPhone.replace(/\D/g, "").length < 7) {
+        toast({ variant: "destructive", title: lang === "ar" ? "أدخل رقم هاتف صالح" : "Enter a valid phone" });
+        return;
+      }
+      const pin6 = createPin.replace(/\D/g, "");
+      if (pin6.length !== 6) {
+        toast({ variant: "destructive", title: lang === "ar" ? "الرمز يجب أن يكون 6 أرقام" : "PIN must be 6 digits" });
+        return;
+      }
+    }
+
     setCreating(true);
     try {
+      const body: any = {
+        action: "create",
+        full_name: createName,
+        role: createRole,
+      };
+
+      if (createRole === "admin") {
+        body.email = createEmail;
+        body.password = createPassword;
+      } else {
+        body.phone = createPhone.startsWith("+") ? createPhone : createPhone.startsWith("965") ? `+${createPhone}` : `+965${createPhone}`;
+        body.password = createPin.replace(/\D/g, "");
+      }
+
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "create",
-          full_name: createName,
-          phone: createPhone.startsWith("+") ? createPhone : createPhone.startsWith("965") ? `+${createPhone}` : `+965${createPhone}`,
-          role: createRole,
-          password: pin6,
-        }),
+        body: JSON.stringify(body),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      toast({
-        title: `${t.auth.pin}: ${pin6}`,
-      });
+
+      if (createRole === "admin") {
+        toast({
+          title: lang === "ar" ? "تم إنشاء المدير" : "Admin created",
+          description: `${createEmail}`,
+        });
+      } else {
+        toast({
+          title: `${t.auth.pin}: ${createPin.replace(/\D/g, "")}`,
+          description: lang === "ar" ? "يمكنه تسجيل الدخول الآن" : "Can login now",
+        });
+      }
+
       setCreateName("");
-      setCreatePhone("");
+      setCreatePhone("+965");
+      setCreateEmail("");
       setCreateRole("employee");
       setCreatePin("");
+      setCreatePassword("");
       await refresh();
     } catch (e: any) {
       toast({ variant: "destructive", title: "Failed", description: e.message });
@@ -136,6 +180,33 @@ export function UsersPageClient({
 
   async function changeRole(p: Profile, role: Role) {
     if (role === p.role) return;
+
+    if (role === "admin" && p.role === "employee") {
+      const email = window.prompt(lang === "ar" ? "أدخل بريد المدير الإلكتروني:" : "Enter admin email:");
+      const password = window.prompt(lang === "ar" ? "أدخل كلمة مرور للمدير:" : "Enter admin password:");
+      if (!email || !password || password.length < 6) {
+        toast({ variant: "destructive", title: lang === "ar" ? "البريد وكلمة المرور مطلوبة (6 أحرف على الأقل)" : "Email and password required (6+ chars)" });
+        return;
+      }
+      setUpdatingRole(p.id);
+      try {
+        const res = await fetch("/api/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "promoteToAdmin", id: p.id, email, password, phone: p.phone, full_name: p.full_name }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error);
+        toast({ title: lang === "ar" ? "تمت الترقية إلى مدير" : "Promoted to admin" });
+        await refresh();
+      } catch (e: any) {
+        toast({ variant: "destructive", title: "Failed", description: e.message });
+      } finally {
+        setUpdatingRole(null);
+      }
+      return;
+    }
+
     setUpdatingRole(p.id);
     try {
       const res = await fetch("/api/users", {
@@ -157,23 +228,48 @@ export function UsersPageClient({
     setEditingProfile(p);
     setEditName(p.full_name ?? "");
     setEditPhone(p.phone ?? "");
+    setEditEmail(p.email ?? "");
     setEditRole(p.role);
+    setEditPassword("");
   }
 
   async function saveEdit() {
-    if (!editingProfile) return;
+    if (!editingProfile || !editName) return;
     setEditSaving(true);
     try {
+      const body: any = {
+        action: "update",
+        id: editingProfile.id,
+        full_name: editName,
+        role: editRole,
+      };
+
+      if (editRole === "admin" && editingProfile.role !== "admin") {
+        if (!editEmail || !editPassword) {
+          toast({ variant: "destructive", title: lang === "ar" ? "البريد وكلمة المرور مطلوبة للمدير" : "Email and password required for admin" });
+          setEditSaving(false);
+          return;
+        }
+        if (editPassword.length < 6) {
+          toast({ variant: "destructive", title: lang === "ar" ? "كلمة المرور يجب أن تكون 6 أحرف على الأقل" : "Password must be at least 6 characters" });
+          setEditSaving(false);
+          return;
+        }
+        body.email = editEmail;
+        body.password = editPassword;
+      }
+
+      if (editRole === "employee") {
+        body.phone = editPhone.startsWith("+") ? editPhone : editPhone.startsWith("965") ? `+${editPhone}` : `+965${editPhone}`;
+      } else if (editRole === "admin") {
+        body.email = editEmail;
+        if (editPassword) body.password = editPassword;
+      }
+
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "update",
-          id: editingProfile.id,
-          full_name: editName,
-          phone: editPhone.startsWith("+") ? editPhone : editPhone.startsWith("965") ? `+${editPhone}` : `+965${editPhone}`,
-          role: editRole,
-        }),
+        body: JSON.stringify(body),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
@@ -231,7 +327,7 @@ export function UsersPageClient({
               {t.common.add}
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-sm">
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>{t.nav.users}</DialogTitle>
               <DialogDescription>{lang === "ar" ? "إضافة مستخدم جديد" : "Add a new user"}</DialogDescription>
@@ -245,15 +341,7 @@ export function UsersPageClient({
                   placeholder={lang === "ar" ? "اسم المستخدم" : "Full name"}
                 />
               </div>
-              <div>
-                <Label>{t.auth.phone}</Label>
-                <Input
-                  value={createPhone}
-                  onChange={(e) => setCreatePhone(e.target.value)}
-                  placeholder="+965 5555 1234"
-                  dir="ltr"
-                />
-              </div>
+
               <div>
                 <Label>{lang === "ar" ? "الصلاحية" : "Role"}</Label>
                 <Select value={createRole} onValueChange={(v) => setCreateRole(v as Role)}>
@@ -261,28 +349,78 @@ export function UsersPageClient({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="employee">{lang === "ar" ? "موظف" : "Employee"}</SelectItem>
-                    <SelectItem value="admin">{lang === "ar" ? "مدير" : "Admin"}</SelectItem>
+                    <SelectItem value="employee">{lang === "ar" ? "موظف (رمز PIN)" : "Employee (PIN)"}</SelectItem>
+                    <SelectItem value="admin">{lang === "ar" ? "مدير (بريد + كلمة مرور)" : "Admin (Email + Password)"}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label>{lang === "ar" ? "الرمز (6 أرقام)" : "PIN (6 digits)"}</Label>
-                <Input
-                  type="password"
-                  value={createPin}
-                  onChange={(e) => setCreatePin(e.target.value)}
-                  placeholder="000000"
-                  dir="ltr"
-                  maxLength={6}
-                />
-              </div>
+
+              {createRole === "employee" && (
+                <>
+                  <div>
+                    <Label>{t.auth.phone}</Label>
+                    <Input
+                      value={createPhone}
+                      onChange={(e) => setCreatePhone(e.target.value)}
+                      placeholder="+965 5555 1234"
+                      dir="ltr"
+                    />
+                  </div>
+                  <div>
+                    <Label>{lang === "ar" ? "الرمز (6 أرقام)" : "PIN (6 digits)"}</Label>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        type="password"
+                        value={createPin}
+                        onChange={(e) => setCreatePin(e.target.value)}
+                        placeholder="000000"
+                        dir="ltr"
+                        maxLength={6}
+                      />
+                      <KeyRound className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {createRole === "admin" && (
+                <>
+                  <div>
+                    <Label className="flex items-center gap-1">
+                      <Mail className="h-4 w-4" />
+                      Email
+                    </Label>
+                    <Input
+                      type="email"
+                      dir="ltr"
+                      value={createEmail}
+                      onChange={(e) => setCreateEmail(e.target.value)}
+                      placeholder="admin@example.com"
+                    />
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-1">
+                      <Lock className="h-4 w-4" />
+                      {lang === "ar" ? "كلمة المرور" : "Password"}
+                    </Label>
+                    <Input
+                      type="password"
+                      value={createPassword}
+                      onChange={(e) => setCreatePassword(e.target.value)}
+                      placeholder={lang === "ar" ? "الحد الأدنى 6 أحرف" : "Min 6 characters"}
+                    />
+                  </div>
+                </>
+              )}
             </div>
             <DialogFooter>
               <Button variant="outline" disabled={creating}>
                 {t.common.cancel}
               </Button>
-              <Button onClick={createUser} disabled={creating || !createName || !createPhone || createPin.replace(/\D/g, "").length !== 6}>
+              <Button
+                onClick={createUser}
+                disabled={creating || !createName || (createRole === "employee" && createPin.replace(/\D/g, "").length !== 6) || (createRole === "admin" && (!createEmail || createPassword.length < 6))}
+              >
                 {creating ? (lang === "ar" ? "جارٍ الإنشاء…" : "Creating…") : t.common.add}
               </Button>
             </DialogFooter>
@@ -313,7 +451,7 @@ export function UsersPageClient({
                 <div>
                   <p className="font-medium">{emp.full_name}</p>
                   <p className="text-xs text-muted-foreground" dir="ltr">
-                    {emp.phone ?? "—"}
+                    {emp.phone ?? (emp.email ?? "—")}
                   </p>
                 </div>
               </div>
@@ -331,7 +469,7 @@ export function UsersPageClient({
                   onValueChange={(v) => changeRole(emp, v as Role)}
                   disabled={isSelf || updatingRole === emp.id}
                 >
-                  <SelectTrigger className="h-8 w-32">
+                  <SelectTrigger className="h-8 w-36">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -343,8 +481,8 @@ export function UsersPageClient({
                   {lang === "ar" ? (emp.active ? "نشط" : "غير نشط") : emp.active ? "Active" : "Inactive"}
                 </Badge>
                 <Button variant="outline" size="sm" onClick={() => openEdit(emp)}>
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
                 {!isSelf && (
                   <Button variant="outline" size="sm" onClick={() => toggleActive(emp)}>
                     {lang === "ar"
@@ -356,7 +494,7 @@ export function UsersPageClient({
                         : "Activate"}
                   </Button>
                 )}
-                {!isSelf && (
+                {!isSelf && emp.role === "employee" && (
                   <Button variant="outline" size="sm" onClick={() => openResetPin(emp)}>
                     <KeyRound className="h-3.5 w-3.5" />
                   </Button>
@@ -379,7 +517,7 @@ export function UsersPageClient({
 
       {/* Edit Profile Dialog */}
       <Dialog open={!!editingProfile} onOpenChange={(o) => { if (!o) setEditingProfile(null); }}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{lang === "ar" ? "تعديل الموظف" : "Edit Employee"}</DialogTitle>
           </DialogHeader>
@@ -388,14 +526,7 @@ export function UsersPageClient({
               <Label>{t.customer.fullName || "Name"}</Label>
               <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
             </div>
-            <div>
-              <Label>{t.auth.phone}</Label>
-              <Input
-                value={editPhone}
-                onChange={(e) => setEditPhone(e.target.value)}
-                dir="ltr"
-              />
-            </div>
+
             <div>
               <Label>{lang === "ar" ? "الصلاحية" : "Role"}</Label>
               <Select value={editRole} onValueChange={(v) => setEditRole(v as Role)}>
@@ -408,6 +539,52 @@ export function UsersPageClient({
                 </SelectContent>
               </Select>
             </div>
+
+            {editRole === "employee" && (
+              <>
+                <div>
+                  <Label>{t.auth.phone}</Label>
+                  <Input
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    dir="ltr"
+                  />
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setResetPinProfile(editingProfile ?? null)}>
+                  <KeyRound className="h-3.5 w-3.5" />
+                  {lang === "ar" ? "تغيير الرمز" : "Change PIN"}
+                </Button>
+              </>
+            )}
+
+            {editRole === "admin" && (
+              <>
+                <div>
+                  <Label className="flex items-center gap-1">
+                    <Mail className="h-4 w-4" />
+                    Email
+                  </Label>
+                  <Input
+                    type="email"
+                    dir="ltr"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label className="flex items-center gap-1">
+                    <Lock className="h-4 w-4" />
+                    {lang === "ar" ? "كلمة المرور (اختياري - لإعادة التعيين)" : "Password (optional - to reset)"}
+                  </Label>
+                  <Input
+                    type="password"
+                    value={editPassword}
+                    onChange={(e) => setEditPassword(e.target.value)}
+                    placeholder={lang === "ar" ? "أتركه فارغاً إذا لا تريد تغييره" : "Leave empty to keep current"}
+                  />
+                </div>
+              </>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingProfile(null)}>

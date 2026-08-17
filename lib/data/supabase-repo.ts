@@ -257,11 +257,12 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
       return (r.data ?? []).map(toProfile);
     },
 
-    async createProfile(input: { full_name: string; phone: string; role?: Role }) {
+    async createProfile(input: { full_name: string; phone?: string; email?: string; role?: Role }) {
       const r = await profilesTable()
         .insert({
           full_name: input.full_name,
-          phone: input.phone,
+          phone: input.phone ?? null,
+          email: input.email ?? null,
           role: input.role ?? "employee",
           active: true,
         })

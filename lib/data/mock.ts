@@ -152,6 +152,7 @@ const profiles: Profile[] = [
     id: MOCK_USER,
     full_name: "مدير النظام",
     phone: null,
+    email: "admin@laskwt.com",
     role: "admin",
     active: true,
     created_at: "2026-01-01T00:00:00.000Z",
@@ -161,6 +162,7 @@ const profiles: Profile[] = [
     id: "mock-emp-1",
     full_name: "سعيد العنازي",
     phone: "96550001111",
+    email: null,
     role: "employee",
     active: true,
     created_at: "2026-05-01T00:00:00.000Z",
@@ -374,11 +376,12 @@ export function getMockRepository(): Repository {
       return profiles.slice().sort((a, b) => (a.role === b.role ? 0 : a.role === "admin" ? 1 : -1));
     },
 
-    async createProfile(input: { full_name: string; phone: string; role?: Role }) {
+    async createProfile(input: { full_name: string; phone?: string; email?: string; role?: Role }) {
       const created: Profile = {
         id: `mock-emp-${Date.now()}`,
         full_name: input.full_name,
-        phone: input.phone,
+        phone: input.phone ?? null,
+        email: input.email ?? null,
         role: input.role ?? "employee",
         active: true,
         created_at: nowIso(),

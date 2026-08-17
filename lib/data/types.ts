@@ -104,7 +104,7 @@ export interface Repository {
   // Profiles
   getProfile(userId: string): Promise<Profile | null>;
   listProfiles(): Promise<Profile[]>;
-  createProfile(input: { full_name: string; phone: string; role?: Role }): Promise<Profile>;
+  createProfile(input: { full_name: string; phone?: string; email?: string; role?: Role }): Promise<Profile>;
   updateProfile(id: string, input: Partial<Pick<Profile, "full_name" | "phone" | "role" | "active">>): Promise<Profile | null>;
   getEmployeeSales(employeeId: string, rangeDays?: number): Promise<EmployeeSales>;
 }

@@ -66,9 +66,9 @@ export function MeasurementForm({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+    <div className="grid grid-cols-1 gap-6 xl:grid-cols-5">
       {/* Diagram */}
-      <Card className="lg:col-span-2">
+      <Card className="xl:col-span-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Ruler className="h-5 w-5 text-gold" />
@@ -78,18 +78,20 @@ export function MeasurementForm({
             {lang === "ar" ? "مرّر فوق النقاط لرؤية كل قياس" : "Hover the points to see each measurement"}
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex items-start justify-center">
-          <MeasurementDiagram
-            activeField={activeField}
-            onHoverField={setActiveField}
-            filled={filled}
-            className="w-full"
-          />
+        <CardContent className="flex items-center justify-center pb-6">
+          <div className="w-full max-w-[230px]">
+            <MeasurementDiagram
+              activeField={activeField}
+              onHoverField={setActiveField}
+              filled={filled}
+              className="w-full"
+            />
+          </div>
         </CardContent>
       </Card>
 
       {/* Form */}
-      <div className="lg:col-span-3 space-y-6">
+      <div className="xl:col-span-3 space-y-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

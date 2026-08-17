@@ -12,49 +12,74 @@ type Props = {
   className?: string;
 };
 
-const SILHOUETTE = (
+const DishdashaSilhouette = () => (
   <>
-    {/* Head */}
-    <ellipse cx="110" cy="28" rx="11" ry="13" fill="hsl(var(--muted))" opacity="0.6" />
+    {/* === DISHDASHA SILHOUETTE === */}
     {/* Neck */}
-    <rect x="105" y="40" width="10" height="12" rx="3" fill="hsl(var(--muted))" opacity="0.4" />
-
-    {/* Main body / torso — dishdasha shape */}
     <path
-      d={[
-        "M 95 52",
-        "C 90 52, 86 56, 84 64",
-        "L 78 88",
-        "L 76 120",
-        "C 76 160, 74 220, 74 280",
-        "C 74 340, 78 380, 82 400",
-        "C 86 418, 98 424, 110 426",
-        "C 122 424, 134 418, 138 400",
-        "C 142 380, 146 340, 146 280",
-        "C 146 220, 144 160, 144 120",
-        "L 142 88",
-        "L 136 64",
-        "C 134 56, 130 52, 125 52",
-        "C 120 48, 115 46, 110 46",
-        "C 105 46, 100 48, 95 52 Z",
-      ].join(" ")}
+      d="M 108 42
+         C 106 46, 105 50, 105 56
+         C 105 62, 107 68, 110 72
+         C 113 68, 115 62, 115 56
+         C 115 50, 114 46, 112 42 Z"
       fill="hsl(var(--muted))"
-      opacity="0.25"
+      opacity="0.55"
       stroke="hsl(var(--border))"
       strokeWidth="0.8"
+    />
+
+    {/* High collar */}
+    <path
+      d="M 100 38
+         C 102 28, 108 22, 115 24
+         C 122 22, 128 28, 130 38
+         L 124 42
+         C 122 34, 116 30, 110 30
+         C 104 30, 98 34, 96 42 Z"
+      fill="hsl(var(--muted))"
+      opacity="0.45"
+      stroke="hsl(var(--border))"
+      strokeWidth="0.8"
+    />
+
+    {/* Head */}
+    <ellipse cx="115" cy="20" rx="9" ry="10" fill="hsl(var(--muted))" opacity="0.6" />
+
+    {/* Body */}
+    <path
+      d={[
+        "M 105 72",              // neck base
+        "C 98 72, 90 76, 86 84",  // left shoulder taper
+        "L 78 92",                // left shoulder point
+        "L 74 130",               // left side taper
+        "L 72 210",               // left side continues
+        "C 72 270, 76 320, 80 360", // left side hip curve
+        "C 84 395, 92 420, 100 440", // left hem
+        "L 130 440",
+        "C 138 420, 146 395, 150 360",
+        "C 154 320, 158 270, 158 210",
+        "L 156 130",              // right side taper
+        "L 152 92",               // right shoulder point
+        "C 148 84, 140 76, 133 72", // right shoulder taper
+        "C 130 76, 126 72, 120 72 Z" // neck connection right
+      ].join(" ")}
+      fill="hsl(var(--muted))"
+      opacity="0.3"
+      stroke="hsl(var(--border))"
+      strokeWidth="1"
     />
 
     {/* Left sleeve */}
     <path
       d={[
-        "M 84 64",
-        "L 56 70",
-        "C 52 72, 48 80, 46 92",
-        "L 42 128",
-        "C 42 132, 44 136, 48 136",
-        "L 78 132",
-        "L 76 120",
-        "L 78 88 Z",
+        "M 86 84",
+        "L 56 88",
+        "C 50 92, 44 100, 42 112",
+        "L 40 135",
+        "C 40 140, 42 145, 46 145",
+        "L 78 142",
+        "L 76 130",
+        "L 78 92 Z"
       ].join(" ")}
       fill="hsl(var(--muted))"
       opacity="0.2"
@@ -65,14 +90,14 @@ const SILHOUETTE = (
     {/* Right sleeve */}
     <path
       d={[
-        "M 136 64",
-        "L 164 70",
-        "C 168 72, 172 80, 174 92",
-        "L 178 128",
-        "C 178 132, 176 136, 172 136",
-        "L 142 132",
-        "L 144 120",
-        "L 142 88 Z",
+        "M 144 84",
+        "L 174 88",
+        "C 180 92, 186 100, 188 112",
+        "L 190 135",
+        "C 190 140, 188 145, 184 145",
+        "L 152 142",
+        "L 154 130",
+        "L 152 92 Z"
       ].join(" ")}
       fill="hsl(var(--muted))"
       opacity="0.2"
@@ -80,40 +105,14 @@ const SILHOUETTE = (
       strokeWidth="0.8"
     />
 
-    {/* Collar — traditional dishdasha high collar */}
-    <path
-      d={[
-        "M 98 52",
-        "C 100 44, 104 40, 110 40",
-        "C 116 40, 120 44, 122 52",
-        "L 118 56",
-        "C 116 50, 114 48, 110 48",
-        "C 106 48, 104 50, 102 56 Z",
-      ].join(" ")}
-      fill="none"
-      stroke="hsl(var(--border))"
-      strokeWidth="1.2"
-    />
+    {/* Center front line */}
+    <line x1="115" y1="72" x2="115" y2="440" stroke="hsl(var(--border))" strokeDasharray="3 3" strokeWidth="0.8" opacity="0.5" />
 
-    {/* Center front placket line */}
-    <line x1="110" y1="48" x2="110" y2="426" stroke="hsl(var(--border))" strokeDasharray="3 3" strokeWidth="0.8" opacity="0.6" />
-
-    {/* Hem bottom */}
-    <path d="M 82 400 C 94 414, 108 420, 110 426 C 112 420, 126 414, 138 400" fill="none" stroke="hsl(var(--border))" strokeWidth="1" />
-
-    {/* Sleeve cuff lines */}
-    <line x1="46" y1="128" x2="78" y2="132" stroke="hsl(var(--border))" strokeWidth="0.8" opacity="0.5" />
-    <line x1="174" y1="128" x2="142" y2="132" stroke="hsl(var(--border))" strokeWidth="0.8" opacity="0.5" />
-
-    {/* Measurement guide lines — subtle horizontal indicators */}
-    {/* Shoulder line */}
-    <line x1="78" y1="60" x2="142" y2="60" stroke="hsl(var(--gold))" strokeWidth="0.4" opacity="0.25" strokeDasharray="2 2" />
-    {/* Chest line */}
-    <line x1="76" y1="100" x2="144" y2="100" stroke="hsl(var(--gold))" strokeWidth="0.4" opacity="0.25" strokeDasharray="2 2" />
-    {/* Waist line */}
-    <line x1="75" y1="148" x2="145" y2="148" stroke="hsl(var(--gold))" strokeWidth="0.4" opacity="0.25" strokeDasharray="2 2" />
-    {/* Hips line */}
-    <line x1="75" y1="188" x2="145" y2="188" stroke="hsl(var(--gold))" strokeWidth="0.4" opacity="0.25" strokeDasharray="2 2" />
+    {/* Measurement guide lines (subtle) */}
+    <line x1="80" y1="100" x2="150" y2="100" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.15" strokeDasharray="2 2" />
+    <line x1="80" y1="145" x2="150" y2="145" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.15" strokeDasharray="2 2" />
+    <line x1="80" y1="185" x2="150" y2="185" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.15" strokeDasharray="2 2" />
+    <line x1="80" y1="265" x2="150" y2="265" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.15" strokeDasharray="2 2" />
   </>
 );
 
@@ -126,13 +125,13 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
 
   return (
     <svg
-      viewBox="0 0 220 440"
-      className={cn("h-full max-h-[440px] w-full", className)}
+      viewBox="0 0 230 460"
+      className={cn("h-full w-full max-h-[460px]", className)}
       role="img"
-      aria-label="Dishdasha measurement diagram"
+      aria-label={lang === "ar" ? "مخطط توحيدي للقياسات" : "Dishdasha measurement diagram"}
       onMouseLeave={() => onHoverField(null)}
     >
-      {SILHOUETTE}
+      <DishdashaSilhouette />
 
       {DIAGRAM_POINTS.map((p) => {
         const active = activeField === p.key;
@@ -147,15 +146,15 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
             className="diagram-point"
             data-field={p.key}
           >
-            {active && <circle r="10" fill="hsl(var(--gold))" opacity="0.2" className="animate-pulse-dot" />}
+            {active && <circle r="12" fill="hsl(var(--gold))" opacity="0.15" className="animate-pulse-dot" />}
             <circle
-              r={active ? 5 : isFilled ? 4 : 3}
-              fill={active ? "hsl(var(--gold))" : isFilled ? "hsl(var(--gold) / 0.8)" : "hsl(var(--muted-foreground))"}
+              r={active ? 6 : isFilled ? 4.5 : 3.5}
+              fill={active ? "hsl(var(--gold))" : isFilled ? "hsl(var(--gold) / 0.85)" : "hsl(var(--muted-foreground))"}
               stroke="hsl(var(--card))"
               strokeWidth="1.5"
             />
             {isFilled && !active && (
-              <circle r="7" fill="none" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.4" />
+              <circle r="8" fill="none" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.4" />
             )}
             <g transform={`translate(${p.dx}, ${p.dy})`} className="pointer-events-none">
               <text
