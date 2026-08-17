@@ -1,6 +1,6 @@
 export const DEMO_SESSION_COOKIE = "laskwt.demo.session";
-export const DEMO_ADMIN_ID = "mock-admin";
-export const DEMO_EMPLOYEE_ID = "mock-emp-1";
+export const DEMO_ADMIN_ID = "00000000-0000-0000-0000-000000000001";
+export const DEMO_EMPLOYEE_ID = "00000000-0000-0000-0000-000000000002";
 
 export function setDemoSession(userId: string) {
   if (typeof document === "undefined") return;

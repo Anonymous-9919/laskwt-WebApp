@@ -68,6 +68,9 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
     },
 
     async createCustomer(input: CustomerInput, userId: string) {
+      if (!userId || userId.trim() === "") {
+        throw new Error("Invalid user ID: cannot create customer without authenticated user");
+      }
       const r = await customersTable()
         .insert({
           full_name: input.full_name,

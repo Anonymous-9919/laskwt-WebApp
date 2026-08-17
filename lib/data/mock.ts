@@ -11,6 +11,9 @@ import type {
   SyncResult,
 } from "./types";
 
+const MOCK_ADMIN_ID = "00000000-0000-0000-0000-000000000001";
+const MOCK_EMP_ID = "00000000-0000-0000-0000-000000000002";
+
 let seq = 100;
 function nextId(prefix: string) {
   return `${prefix}_${Date.now()}_${seq++}`;
@@ -19,8 +22,6 @@ function nextId(prefix: string) {
 function mockNumber() {
   return `LK-${new Date().getFullYear()}-${String(1000 + (seq++ % 9000))}`;
 }
-
-const MOCK_USER = "mock-admin";
 
 function nowIso() {
   return new Date().toISOString();
@@ -38,7 +39,7 @@ const customers: Customer[] = [
     whatsapp: "96555512345",
     email: "ahmed@example.com",
     notes: null,
-    created_by: MOCK_USER,
+    created_by: MOCK_ADMIN_ID,
     created_at: "2026-06-01T10:00:00.000Z",
     updated_at: "2026-08-10T09:00:00.000Z",
   },
@@ -49,7 +50,7 @@ const customers: Customer[] = [
     whatsapp: "96566654321",
     email: null,
     notes: "يفضل القماش الإيطالي",
-    created_by: MOCK_USER,
+    created_by: MOCK_ADMIN_ID,
     created_at: "2026-07-15T12:30:00.000Z",
     updated_at: "2026-08-01T14:00:00.000Z",
   },
@@ -59,7 +60,7 @@ const measurements: Measurement[] = [
   {
     id: "meas_1",
     customer_id: "cust_1",
-    created_by: MOCK_USER,
+    created_by: MOCK_ADMIN_ID,
     label: "ثوب العيد الأول",
     values: {
       length: 150,
@@ -83,7 +84,7 @@ const measurements: Measurement[] = [
   {
     id: "meas_2",
     customer_id: "cust_1",
-    created_by: MOCK_USER,
+    created_by: MOCK_ADMIN_ID,
     label: "درعية صيفية",
     values: {
       length: 148,
@@ -138,7 +139,7 @@ const orders: Order[] = [
     ],
     notes: null,
     due_date: "2026-08-20",
-    created_by: MOCK_USER,
+    created_by: MOCK_ADMIN_ID,
     shopify_order_id: "5490123456789",
     shopify_sync_status: "synced",
     shopify_synced_at: "2026-08-10T09:05:00.000Z",
@@ -149,7 +150,7 @@ const orders: Order[] = [
 
 const profiles: Profile[] = [
   {
-    id: MOCK_USER,
+    id: MOCK_ADMIN_ID,
     full_name: "مدير النظام",
     phone: null,
     email: "admin@laskwt.com",
@@ -159,7 +160,7 @@ const profiles: Profile[] = [
     updated_at: "2026-01-01T00:00:00.000Z",
   },
   {
-    id: "mock-emp-1",
+    id: MOCK_EMP_ID,
     full_name: "سعيد العنازي",
     phone: "96550001111",
     email: null,
