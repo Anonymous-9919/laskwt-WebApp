@@ -27,6 +27,12 @@ function nowIso() {
   return new Date().toISOString();
 }
 
+function mockUuid(prefix: string) {
+  // Generate a deterministic but valid-looking UUID for mock mode
+  const hash = prefix.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return `${String(hash).padStart(8, "0")}-0000-0000-0000-${String(Date.now()).padStart(12, "0").slice(-12)}`;
+}
+
 function persist() {
   // no-op for mock; real repo persists to Supabase
 }
@@ -378,12 +384,14 @@ export function getMockRepository(): Repository {
     },
 
     async createProfile(input: { full_name: string; phone?: string; email?: string; role?: Role }) {
+      const role = input.role ?? "employee";
+      const prefix = role === "admin" ? "admin" : "emp";
       const created: Profile = {
-        id: `mock-emp-${Date.now()}`,
+        id: mockUuid(prefix),
         full_name: input.full_name,
         phone: input.phone ?? null,
         email: input.email ?? null,
-        role: input.role ?? "employee",
+        role,
         active: true,
         created_at: nowIso(),
         updated_at: nowIso(),
