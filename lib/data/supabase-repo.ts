@@ -107,6 +107,9 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
     },
 
     async createMeasurement(input: MeasurementInput, userId: string) {
+      if (!userId || userId.trim() === "") {
+        throw new Error("Invalid user ID: cannot create measurement without authenticated user");
+      }
       const r = await measurementsTable()
         .insert({
           customer_id: input.customer_id,
@@ -133,6 +136,9 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
     },
 
     async createOrder(input: OrderInput, userId: string) {
+      if (!userId || userId.trim() === "") {
+        throw new Error("Invalid user ID: cannot create order without authenticated user");
+      }
       const rpc = await client.rpc("create_order", {
         customer_id: input.customer_id,
         status: input.status,

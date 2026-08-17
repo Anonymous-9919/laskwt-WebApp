@@ -63,6 +63,9 @@ export function OrderWizard({ userId, userRole = "admin", defaultStatus = "confi
 
   const hydrated = useRef(false);
 
+  // Validate userId - show error if invalid (after hooks)
+  const isInvalidUserId = !userId || userId.trim() === "";
+
   // Pre-selected customer from URL (?customer=)
   useEffect(() => {
     if (!repo || hydrated.current) return;
@@ -158,6 +161,16 @@ export function OrderWizard({ userId, userRole = "admin", defaultStatus = "confi
 
   function goTo(index: number) {
     if (index <= Math.max(stepIndex, 1)) setStep(STEPS[index].key);
+  }
+
+  if (isInvalidUserId) {
+    return (
+      <div className="mx-auto max-w-6xl p-6 text-center">
+        <div className="text-destructive mb-4">{t.auth.invalidCredentials ?? "Invalid session"}</div>
+        <p className="text-muted-foreground mb-4">{lang === "ar" ? "الجلسة غير صالحة. يرجى تسجيل الدخول مرة أخرى." : "Invalid session. Please log in again."}</p>
+        <a href="/login" className="text-gold underline">Go to login</a>
+      </div>
+    );
   }
 
   return (
