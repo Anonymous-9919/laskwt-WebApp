@@ -62,7 +62,7 @@ export function CustomerFormDialog({
     if (open) {
       reset({
         full_name: customer?.full_name ?? "",
-        phone: customer?.phone?.replace(/^\+965/, "") ?? "",
+        phone: customer?.phone ?? "",
         email: customer?.email ?? "",
         notes: customer?.notes ?? "",
       });
@@ -115,13 +115,11 @@ export function CustomerFormDialog({
             <Label htmlFor="cf-phone">{t.customer.phone} / WhatsApp</Label>
             <div className="relative">
               <Phone className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <span className="pointer-events-none absolute start-9 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">+965</span>
               <Input
                 id="cf-phone"
                 dir="ltr"
-                className="ps-[4.5rem]"
-                placeholder="5555 1234"
-                maxLength={8}
+                className="ps-10"
+                placeholder="+965 5555 1234"
                 {...register("phone")}
               />
             </div>

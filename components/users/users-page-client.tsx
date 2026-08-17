@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Search, KeyRound, ShieldCheck, UserRound, Pencil, Phone } from "lucide-react";
+import { Plus, Search, KeyRound, ShieldCheck, UserRound, Pencil, Phone, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -116,6 +116,24 @@ export function UsersPageClient({
     }
   }
 
+  async function deleteUser(p: Profile) {
+    const confirmMsg = lang === "ar" ? `هل أنت متأكد من حذف ${p.full_name}؟` : `Delete ${p.full_name}? This cannot be undone.`;
+    if (!window.confirm(confirmMsg)) return;
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete", id: p.id }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      toast({ title: lang === "ar" ? "تم الحذف" : "Deleted" });
+      await refresh();
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Failed", description: e.message });
+    }
+  }
+
   async function changeRole(p: Profile, role: Role) {
     if (role === p.role) return;
     setUpdatingRole(p.id);
@@ -138,7 +156,7 @@ export function UsersPageClient({
   function openEdit(p: Profile) {
     setEditingProfile(p);
     setEditName(p.full_name ?? "");
-    setEditPhone(p.phone?.replace(/^\+965/, "") ?? "");
+    setEditPhone(p.phone ?? "");
     setEditRole(p.role);
   }
 
@@ -237,7 +255,6 @@ export function UsersPageClient({
                     placeholder="5555 1234"
                     dir="ltr"
                     className="ps-[3.5rem]"
-                    maxLength={8}
                   />
                 </div>
               </div>
@@ -329,11 +346,9 @@ export function UsersPageClient({
                 <Badge variant={emp.active ? "default" : "secondary"}>
                   {lang === "ar" ? (emp.active ? "نشط" : "غير نشط") : emp.active ? "Active" : "Inactive"}
                 </Badge>
-                {!isSelf && (
-                  <Button variant="outline" size="sm" onClick={() => openEdit(emp)}>
+                <Button variant="outline" size="sm" onClick={() => openEdit(emp)}>
                     <Pencil className="h-3.5 w-3.5" />
                   </Button>
-                )}
                 {!isSelf && (
                   <Button variant="outline" size="sm" onClick={() => toggleActive(emp)}>
                     {lang === "ar"
@@ -348,6 +363,11 @@ export function UsersPageClient({
                 {!isSelf && (
                   <Button variant="outline" size="sm" onClick={() => openResetPin(emp)}>
                     <KeyRound className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+                {!isSelf && (
+                  <Button variant="destructive" size="sm" onClick={() => deleteUser(emp)}>
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 )}
               </div>
@@ -381,7 +401,6 @@ export function UsersPageClient({
                   onChange={(e) => setEditPhone(e.target.value)}
                   dir="ltr"
                   className="ps-[3.5rem]"
-                  maxLength={8}
                 />
               </div>
             </div>

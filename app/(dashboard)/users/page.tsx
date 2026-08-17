@@ -14,10 +14,13 @@ export default async function UsersPage() {
 
   const profiles = await listProfilesForAdmin();
 
-  const sales: Record<string, EmployeeSales> = {};
-  for (const p of profiles) {
-    sales[p.id] = await salesForEmployee(p.id, 30);
-  }
+  const salesEntries = await Promise.all(
+    profiles.map(async (p) => {
+      const s = await salesForEmployee(p.id, 30);
+      return [p.id, s] as const;
+    })
+  );
+  const sales: Record<string, EmployeeSales> = Object.fromEntries(salesEntries);
 
   return (
     <UsersPageClient profile={profile} profiles={profiles as Profile[]} sales={sales} />

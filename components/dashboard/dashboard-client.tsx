@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Users, ReceiptText, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,18 +8,23 @@ import { Badge } from "@/components/ui/badge";
 import { getOrderStatusMeta } from "@/lib/orders/status";
 import { formatKWD } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
+import { useRepository } from "@/lib/data/use-repository";
 import type { Order, Customer } from "@/types";
 
-export function DashboardClient({
-  orders,
-  customers,
-  fullName,
-}: {
-  orders: Order[];
-  customers: Customer[];
-  fullName: string | null;
-}) {
+export function DashboardClient({ fullName }: { fullName: string | null }) {
   const { t, lang } = useLanguage();
+  const { repo } = useRepository();
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!repo) return;
+    Promise.all([repo.listOrders(), repo.listCustomers()])
+      .then(([o, c]) => { setOrders(o); setCustomers(c); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [repo]);
 
   const activeOrders = orders.filter((o) => o.status !== "cancelled");
   const completed = orders.filter((o) => o.status === "completed");
@@ -33,9 +39,9 @@ export function DashboardClient({
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard icon={Users} label={t.customer.title} value={customers.length.toString()} />
-        <StatCard icon={ReceiptText} label={lang === "ar" ? "طلبات نشطة" : "Active orders"} value={activeOrders.length.toString()} />
-        <StatCard icon={CheckCircle2} label={lang === "ar" ? "مكتملة" : "Completed"} value={completed.length.toString()} />
+        <StatCard icon={Users} label={t.customer.title} value={loading ? "…" : customers.length.toString()} />
+        <StatCard icon={ReceiptText} label={lang === "ar" ? "طلبات نشطة" : "Active orders"} value={loading ? "…" : activeOrders.length.toString()} />
+        <StatCard icon={CheckCircle2} label={lang === "ar" ? "مكتملة" : "Completed"} value={loading ? "…" : completed.length.toString()} />
       </div>
 
       <Card>
@@ -46,7 +52,11 @@ export function DashboardClient({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {orders.length === 0 ? (
+          {loading ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              {lang === "ar" ? "جارٍ التحميل…" : "Loading…"}
+            </p>
+          ) : orders.length === 0 ? (
             <p className="py-8 text-center text-sm text-muted-foreground">
               {lang === "ar" ? "لا توجد طلبات بعد" : "No orders yet"}
             </p>

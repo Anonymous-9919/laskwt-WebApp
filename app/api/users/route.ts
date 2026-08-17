@@ -17,6 +17,14 @@ export async function POST(request: Request) {
 
   if (hasSupabaseEnv()) {
     const admin = createAdminClient();
+
+    async function countActiveAdmins(excludeId?: string): Promise<number> {
+      let q = admin.from("profiles").select("id", { count: "exact", head: true }).eq("role", "admin").eq("active", true);
+      if (excludeId) q = q.neq("id", excludeId);
+      const { count } = await q;
+      return count ?? 0;
+    }
+
     switch (action) {
       case "create": {
         const { full_name, phone, role } = body as {
@@ -66,6 +74,12 @@ export async function POST(request: Request) {
           role?: Role;
           active?: boolean;
         };
+        if (role !== undefined || active === false) {
+          const remaining = await countActiveAdmins(id);
+          if (remaining === 0) {
+            return NextResponse.json({ error: "Cannot remove the last admin" }, { status: 400 });
+          }
+        }
         const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
         if (full_name !== undefined) patch.full_name = full_name;
         if (phone !== undefined) patch.phone = phone;
@@ -85,6 +99,20 @@ export async function POST(request: Request) {
         const { data, error } = await admin.auth.admin.updateUserById(id, { password });
         if (error) return NextResponse.json({ error: error.message }, { status: 400 });
         return NextResponse.json({ user: data });
+      }
+      case "delete": {
+        const { id } = body as { id: string };
+        if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+        const { data: targetProf } = await admin.from("profiles").select("role").eq("id", id).single();
+        if (targetProf?.role === "admin") {
+          const remaining = await countActiveAdmins(id);
+          if (remaining === 0) {
+            return NextResponse.json({ error: "Cannot delete the last admin" }, { status: 400 });
+          }
+        }
+        const { error: delErr } = await admin.auth.admin.deleteUser(id);
+        if (delErr) return NextResponse.json({ error: delErr.message }, { status: 400 });
+        return NextResponse.json({ ok: true });
       }
       default:
         return NextResponse.json({ error: "Unknown action" }, { status: 400 });

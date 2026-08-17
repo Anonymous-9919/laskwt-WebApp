@@ -360,7 +360,6 @@ function NewCustomerForm({ onCreate }: { onCreate: (c: Customer) => void }) {
           onChange={(e) => setPhone(e.target.value)}
           dir="ltr"
           className="ps-[3.5rem]"
-          maxLength={8}
         />
       </div>
       <Button onClick={submit} disabled={saving || !name || !phone} className="w-full">

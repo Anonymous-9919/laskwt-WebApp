@@ -11,8 +11,10 @@ export default async function MePage() {
     redirect("/");
   }
 
-  const thirty = await salesForEmployee(profile.id, 30);
-  const ninety = await salesForEmployee(profile.id, 90);
+  const [thirty, ninety] = await Promise.all([
+    salesForEmployee(profile.id, 30),
+    salesForEmployee(profile.id, 90),
+  ]);
 
   return <MySalesClient profile={profile} thirty={thirty} ninety={ninety} />;
 }
