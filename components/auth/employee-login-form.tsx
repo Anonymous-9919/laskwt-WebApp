@@ -127,7 +127,7 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
 
         <div>
           <p className="mb-2 text-center text-xs text-muted-foreground">
-            {t.auth.pin} · {pinDigits.length}/6
+            {t.auth.pin} · {pinDigits.length}/4-6
           </p>
           <div className="grid grid-cols-3 gap-2">
             {DIGITS.map((d) => (

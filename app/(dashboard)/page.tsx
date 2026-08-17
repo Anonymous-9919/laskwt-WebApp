@@ -15,8 +15,15 @@ export default async function DashboardPage() {
   if (!profile) redirect("/login");
   if (profile.role !== "admin") redirect("/sell");
 
-  const repo = await getRepository();
-  const [orders, customers] = await Promise.all([repo.listOrders(), repo.listCustomers()]);
+  let orders: import("@/types").Order[] = [];
+  let customers: import("@/types").Customer[] = [];
+
+  try {
+    const repo = await getRepository();
+    [orders, customers] = await Promise.all([repo.listOrders(), repo.listCustomers()]);
+  } catch (e) {
+    console.error("[dashboard] failed to load orders/customers:", e);
+  }
 
   return <DashboardClient orders={orders} customers={customers} fullName={profile.full_name} />;
 }
