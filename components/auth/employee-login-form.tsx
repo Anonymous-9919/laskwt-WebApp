@@ -10,6 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useLanguage } from "@/lib/i18n/context";
 
 const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "⌫", "0"];
+const PIN_LENGTH = 4;
 
 type EmployeeOption = { id: string; full_name: string };
 
@@ -39,15 +40,15 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
       setPin((p) => p.slice(0, -1));
       return;
     }
-    if (pinDigits.length >= 6) return;
+    if (pinDigits.length >= PIN_LENGTH) return;
     setPin((p) => p + d);
   }
 
   async function onSubmit() {
-    if (!selected || pinDigits.length < 4) {
+    if (!selected || pinDigits.length !== PIN_LENGTH) {
       toast({
         variant: "destructive",
-        title: lang === "ar" ? "اختر الموظف وأدخل الرمز" : "Select an employee and enter your PIN",
+        title: lang === "ar" ? "اختر الموظف وأدخل الرمز" : "Select an employee and enter your 4-digit PIN",
       });
       return;
     }
@@ -70,7 +71,7 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
     const res = await fetch("/api/auth/employee-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ employeeId: selected, pin }),
+      body: JSON.stringify({ employeeId: selected, pin: pinDigits }),
     });
     if (!res.ok) {
       const err = await res.json();
@@ -82,8 +83,6 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
     router.push("/");
     router.refresh();
   }
-
-  const selectedEmployee = employees.find((e) => e.id === selected);
 
   return (
     <Card className="shadow-xl">
@@ -119,15 +118,9 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
           </SelectContent>
         </Select>
 
-        {selectedEmployee && (
-          <p className="text-center text-sm text-muted-foreground">
-            {selectedEmployee.full_name || "—"}
-          </p>
-        )}
-
         <div>
           <p className="mb-2 text-center text-xs text-muted-foreground">
-            {t.auth.pin} · {pinDigits.length}/4-6
+            {t.auth.pin} · {pinDigits.length}/{PIN_LENGTH}
           </p>
           <div className="grid grid-cols-3 gap-2">
             {DIGITS.map((d) => (
@@ -148,7 +141,7 @@ export function EmployeeLoginForm({ demoMode }: { demoMode: boolean }) {
           </div>
         </div>
 
-        <Button type="button" className="w-full" size="lg" onClick={onSubmit} disabled={submitting || !selected || pinDigits.length < 4}>
+        <Button type="button" className="w-full" size="lg" onClick={onSubmit} disabled={submitting || !selected || pinDigits.length !== PIN_LENGTH}>
           {submitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : lang === "ar" ? (
