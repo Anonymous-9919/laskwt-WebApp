@@ -73,14 +73,13 @@ export function SellPageClient({ profile }: { profile: { id: string; full_name: 
   const goNext = useCallback(() => setStep(STEPS[Math.min(stepIndex + 1, STEPS.length - 1)].key), [stepIndex]);
   const goBack = useCallback(() => setStep(STEPS[Math.max(stepIndex - 1, 0)].key), [stepIndex]);
 
-  function refreshCustomers() {
-    if (!repo) return;
-    repo.listCustomers().then((c) => { setCustomers(c); setLoadingCustomers(false); });
-  }
-
   useEffect(() => {
-    if (!repo) return;
-    refreshCustomers();
+    if (!repo) {
+      setCustomers([]);
+      setLoadingCustomers(false);
+      return;
+    }
+    repo.listCustomers().then((c) => { setCustomers(c); setLoadingCustomers(false); });
   }, [repo]);
 
   useEffect(() => {
