@@ -19,6 +19,14 @@ import type {
   EmployeeSales,
 } from "./types";
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function assertValidUserId(userId: string): void {
+  if (!userId || userId.trim() === "" || !UUID_REGEX.test(userId.trim())) {
+    throw new Error("Invalid user ID: must be a valid UUID");
+  }
+}
+
 function toCustomer(row: any): Customer {
   return row;
 }
@@ -68,9 +76,7 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
     },
 
     async createCustomer(input: CustomerInput, userId: string) {
-      if (!userId || userId.trim() === "") {
-        throw new Error("Invalid user ID: cannot create customer without authenticated user");
-      }
+      assertValidUserId(userId);
       const r = await customersTable()
         .insert({
           full_name: input.full_name,
@@ -78,7 +84,7 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
           whatsapp: input.whatsapp ?? input.phone,
           email: input.email ?? null,
           notes: input.notes ?? null,
-          created_by: userId,
+          created_by: userId.trim(),
         })
         .select()
         .single();
@@ -107,13 +113,11 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
     },
 
     async createMeasurement(input: MeasurementInput, userId: string) {
-      if (!userId || userId.trim() === "") {
-        throw new Error("Invalid user ID: cannot create measurement without authenticated user");
-      }
+      assertValidUserId(userId);
       const r = await measurementsTable()
         .insert({
           customer_id: input.customer_id,
-          created_by: userId,
+          created_by: userId.trim(),
           label: input.label ?? null,
           values: input.values,
         })
@@ -136,9 +140,8 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
     },
 
     async createOrder(input: OrderInput, userId: string) {
-      if (!userId || userId.trim() === "") {
-        throw new Error("Invalid user ID: cannot create order without authenticated user");
-      }
+      assertValidUserId(userId);
+      const cleanUserId = userId.trim();
       const rpc = await client.rpc("create_order", {
         customer_id: input.customer_id,
         status: input.status,
@@ -153,7 +156,7 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
         items: input.items as any,
         notes: input.notes ?? null,
         due_date: input.due_date ?? null,
-        created_by: userId,
+        created_by: cleanUserId,
       });
 
       if (rpc.error) {
@@ -176,7 +179,7 @@ export function createSupabaseRepository(client: SupabaseClient): Repository {
             items: input.items as any,
             notes: input.notes ?? null,
             due_date: input.due_date ?? null,
-            created_by: userId,
+            created_by: cleanUserId,
           })
           .select()
           .single();

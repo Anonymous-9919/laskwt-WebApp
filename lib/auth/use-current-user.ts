@@ -13,7 +13,9 @@ function decodeUserIdFromCookie(): string | null {
     const parts = raw.split(".");
     if (parts.length < 2) return null;
     const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")));
-    return payload.sub ?? null;
+    const sub = payload.sub;
+    if (!sub || typeof sub !== "string" || sub.trim() === "") return null;
+    return sub;
   } catch {
     return null;
   }

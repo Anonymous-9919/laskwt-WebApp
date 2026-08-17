@@ -15,5 +15,8 @@ export function clearDemoSession() {
 export function getDemoSession(): string | null {
   if (typeof document === "undefined") return null;
   const m = document.cookie.match(/(?:^|;\s*)laskwt\.demo\.session=([^;]*)/);
-  return m ? decodeURIComponent(m[1]) : null;
+  if (!m) return null;
+  const value = decodeURIComponent(m[1]);
+  if (!value || value.trim() === "") return null;
+  return value;
 }

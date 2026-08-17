@@ -64,7 +64,8 @@ export function OrderWizard({ userId, userRole = "admin", defaultStatus = "confi
   const hydrated = useRef(false);
 
   // Validate userId - show error if invalid (after hooks)
-  const isInvalidUserId = !userId || userId.trim() === "";
+  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const isInvalidUserId = !userId || userId.trim() === "" || !UUID_REGEX.test(userId.trim());
 
   // Pre-selected customer from URL (?customer=)
   useEffect(() => {
