@@ -21,7 +21,7 @@ const ADMIN_NAV: { href: string; key: NavKey; icon: React.ComponentType<{ classN
 ];
 
 const EMPLOYEE_NAV: { href: string; key: NavKey; icon: React.ComponentType<{ className?: string }>; exact?: boolean }[] = [
-  { href: "/sell", key: "sell", icon: ShoppingCart, exact: true },
+  { href: "/orders", key: "orders", icon: ReceiptText, exact: true },
   { href: "/me", key: "mySales", icon: TrendingUp, exact: true },
 ];
 

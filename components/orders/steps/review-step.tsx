@@ -27,7 +27,7 @@ import { computeOrderTotals, canCompleteOrder, BASE_PRICES } from "@/lib/pricing
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { cn, formatKWD } from "@/lib/utils";
-import type { Customer, DiscountType, Measurements, SelectedStyles } from "@/types";
+import type { Customer, DiscountType, Measurements, SelectedStyles, OrderStatus } from "@/types";
 import type { OrderItemInput } from "@/lib/data/types";
 
 type Props = {
@@ -49,6 +49,7 @@ type Props = {
   measurementLabel: string;
   onCreated?: () => void;
   userId: string;
+  defaultStatus?: string;
   customBasePrice?: number;
   onCustomBasePriceChange?: (v: number) => void;
   customStylePrices?: Record<string, number>;
@@ -107,7 +108,7 @@ export function ReviewStep(props: Props) {
       const order = await repo.createOrder(
         {
           customer_id: props.customer.id,
-          status: "confirmed",
+          status: (props.defaultStatus ?? "confirmed") as OrderStatus,
           subtotal: totals.subtotal,
           customization_total: totals.customization,
           discount_type: props.discountType,

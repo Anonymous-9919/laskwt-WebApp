@@ -11,7 +11,10 @@ export const metadata = {
 export default async function NewOrderPage() {
   const profile = await getCurrentProfileServer();
   if (!profile) redirect("/login");
-  if (profile.role !== "admin") redirect("/sell");
+
+  // Both admins and employees can create orders
+  const defaultStatus = profile.role === "admin" ? "confirmed" : "quotation";
+
   return (
     <Suspense
       fallback={
@@ -22,7 +25,7 @@ export default async function NewOrderPage() {
         </div>
       }
     >
-      <OrderWizard userId={profile.id} />
+      <OrderWizard userId={profile.id} userRole={profile.role} defaultStatus={defaultStatus} />
     </Suspense>
   );
 }

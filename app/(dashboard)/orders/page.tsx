@@ -11,7 +11,8 @@ export const metadata = {
 export default async function OrdersPage() {
   const profile = await getCurrentProfileServer();
   if (!profile) redirect("/login");
-  if (profile.role !== "admin") redirect("/sell");
+
+  // Both admins and employees can view orders
   return (
     <Suspense
       fallback={
@@ -21,7 +22,7 @@ export default async function OrdersPage() {
         </div>
       }
     >
-      <OrdersListClient />
+      <OrdersListClient userId={profile.id} userRole={profile.role} />
     </Suspense>
   );
 }

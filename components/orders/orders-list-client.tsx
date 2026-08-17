@@ -22,7 +22,7 @@ const STATUS_FILTERS: ("all" | OrderStatus)[] = [
   "cancelled",
 ];
 
-export function OrdersListClient() {
+export function OrdersListClient({ userId, userRole }: { userId: string; userRole: "admin" | "employee" }) {
   const { t, lang } = useLanguage();
   const { repo } = useRepository();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -53,9 +53,10 @@ export function OrdersListClient() {
     return orders.filter((o) => {
       if (statusFilter !== "all" && o.status !== statusFilter) return false;
       if (search.trim() && !o.number.toLowerCase().includes(search.toLowerCase())) return false;
+      if (userRole === "employee" && o.created_by !== userId) return false;
       return true;
     });
-  }, [orders, statusFilter, search]);
+  }, [orders, statusFilter, search, userRole, userId]);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">

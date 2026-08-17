@@ -38,7 +38,7 @@ const STEPS = [
 
 type StepKey = (typeof STEPS)[number]["key"];
 
-export function OrderWizard({ userId }: { userId: string }) {
+export function OrderWizard({ userId, userRole = "admin", defaultStatus = "confirmed" }: { userId: string; userRole?: "admin" | "employee"; defaultStatus?: string }) {
   const { t, lang } = useLanguage();
   const searchParams = useSearchParams();
   const { repo } = useRepository();
@@ -277,6 +277,7 @@ export function OrderWizard({ userId }: { userId: string }) {
           onDueDateChange={setDueDate}
            measurementLabel={measurementLabel}
           userId={userId}
+          defaultStatus={defaultStatus}
           onCreated={async () => {
             if (repo && userId) await repo.clearDraft(userId, "order");
             setShowDraftBanner(false);

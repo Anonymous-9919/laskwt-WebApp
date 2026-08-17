@@ -45,6 +45,9 @@ export function UsersPageClient({
   const [createPin, setCreatePin] = useState("");
   const [createPassword, setCreatePassword] = useState("");
   const [updatingRole, setUpdatingRole] = useState<string | null>(null);
+  const [promotingProfile, setPromotingProfile] = useState<Profile | null>(null);
+  const [promoteEmail, setPromoteEmail] = useState("");
+  const [promotePassword, setPromotePassword] = useState("");
 
   const [editingProfile, setEditingProfile] = useState<Profile | null>(null);
   const [editName, setEditName] = useState("");
@@ -181,29 +184,10 @@ export function UsersPageClient({
   async function changeRole(p: Profile, role: Role) {
     if (role === p.role) return;
 
-    if (role === "admin" && p.role === "employee") {
-      const email = window.prompt(lang === "ar" ? "أدخل بريد المدير الإلكتروني:" : "Enter admin email:");
-      const password = window.prompt(lang === "ar" ? "أدخل كلمة مرور للمدير:" : "Enter admin password:");
-      if (!email || !password || password.length < 6) {
-        toast({ variant: "destructive", title: lang === "ar" ? "البريد وكلمة المرور مطلوبة (6 أحرف على الأقل)" : "Email and password required (6+ chars)" });
-        return;
-      }
-      setUpdatingRole(p.id);
-      try {
-        const res = await fetch("/api/users", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "promoteToAdmin", id: p.id, email, password, phone: p.phone, full_name: p.full_name }),
-        });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error);
-        toast({ title: lang === "ar" ? "تمت الترقية إلى مدير" : "Promoted to admin" });
-        await refresh();
-      } catch (e: any) {
-        toast({ variant: "destructive", title: "Failed", description: e.message });
-      } finally {
-        setUpdatingRole(null);
-      }
+    if (role === "admin" && p.role !== "admin") {
+      setPromotingProfile(p);
+      setPromoteEmail(p.email ?? "");
+      setPromotePassword("");
       return;
     }
 
@@ -221,6 +205,31 @@ export function UsersPageClient({
       toast({ variant: "destructive", title: "Failed", description: e.message });
     } finally {
       setUpdatingRole(null);
+    }
+  }
+
+  async function savePromotion() {
+    if (!promotingProfile) return;
+    if (!promoteEmail || promotePassword.length < 6) {
+      toast({ variant: "destructive", title: lang === "ar" ? "البريد وكلمة المرور مطلوبة (6 أحرف على الأقل)" : "Email and password required (6+ chars)" });
+      return;
+    }
+    setUpdatingRole(promotingProfile.id);
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "promoteToAdmin", id: promotingProfile.id, email: promoteEmail, password: promotePassword, phone: promotingProfile.phone, full_name: promotingProfile.full_name }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      toast({ title: lang === "ar" ? "تمت الترقية إلى مدير" : "Promoted to admin" });
+      await refresh();
+    } catch (e: any) {
+      toast({ variant: "destructive", title: "Failed", description: e.message });
+    } finally {
+      setUpdatingRole(null);
+      setPromotingProfile(null);
     }
   }
 
@@ -624,6 +633,61 @@ export function UsersPageClient({
             </Button>
             <Button onClick={saveResetPin} disabled={resetSaving || newPin.replace(/\D/g, "").length !== 6}>
               {resetSaving ? (lang === "ar" ? "جارٍ الحفظ…" : "Saving…") : t.common.save}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Promote to Admin Dialog */}
+      <Dialog open={!!promotingProfile} onOpenChange={(o) => { if (!o) setPromotingProfile(null); }}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{lang === "ar" ? "ترقية إلى مدير" : "Promote to Admin"}</DialogTitle>
+            <DialogDescription>
+              {promotingProfile?.full_name ?? ""}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1">
+                <Mail className="h-4 w-4" />
+                {lang === "ar" ? "بريد المدير" : "Admin Email"}
+              </Label>
+              <Input
+                type="email"
+                dir="ltr"
+                value={promoteEmail}
+                onChange={(e) => setPromoteEmail(e.target.value)}
+                placeholder="admin@example.com"
+                autoFocus
+              />
+            </div>
+            <div className="space-y-2">
+              <Label className="flex items-center gap-1">
+                <Lock className="h-4 w-4" />
+                {lang === "ar" ? "كلمة المرور" : "Password"}
+              </Label>
+              <Input
+                type="password"
+                value={promotePassword}
+                onChange={(e) => setPromotePassword(e.target.value)}
+                placeholder={lang === "ar" ? "الحد الأدنى 6 أحرف" : "Min 6 characters"}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {lang === "ar"
+                ? "سيتم استخدام البريد وكلمة المرور لتسجيل الدخول كمدير"
+                : "Email and password will be used for admin login"}
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPromotingProfile(null)}>
+              {t.common.cancel}
+            </Button>
+            <Button onClick={savePromotion} disabled={updatingRole === promotingProfile?.id || !promoteEmail || promotePassword.length < 6}>
+              {updatingRole === promotingProfile?.id
+                ? (lang === "ar" ? "جارٍ الترقية…" : "Promoting…")
+                : (lang === "ar" ? "ترقية" : "Promote")}
             </Button>
           </DialogFooter>
         </DialogContent>
