@@ -6,15 +6,24 @@ import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/shell/sidebar";
 import { Topbar } from "@/components/shell/topbar";
 import { useAuthProfile } from "@/lib/auth/auth-context";
+import { useRepository } from "@/lib/data/use-repository";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { profile, loading } = useAuthProfile();
+  const { repo } = useRepository();
 
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!repo) return;
+    // These lists power the most-used dashboard destinations. Starting them here
+    // lets navigation reuse the in-flight or completed request.
+    void Promise.all([repo.listOrders(), repo.listCustomers()]);
+  }, [repo]);
 
   if (loading || !profile) {
     return <div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-gold border-t-transparent" /></div>;
