@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UserRound, Loader2, Search, Plus, MessageCircle } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,18 +25,27 @@ export function CustomerStep({ repo, value, onSelect, userId }: Props) {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [createOpen, setCreateOpen] = useState(false);
+  const initialLoad = useRef(true);
 
   useEffect(() => {
     if (!repo) return;
     let mounted = true;
-    const delay = setTimeout(async () => {
+    const load = async () => {
       try {
         const rows = await repo.listCustomers(search.trim() || undefined);
         if (mounted) setCustomers(rows);
       } finally {
         if (mounted) setLoading(false);
       }
-    }, 250);
+    };
+
+    if (initialLoad.current) {
+      initialLoad.current = false;
+      void load();
+      return () => { mounted = false; };
+    }
+
+    const delay = setTimeout(() => { void load(); }, 250);
     return () => {
       mounted = false;
       clearTimeout(delay);

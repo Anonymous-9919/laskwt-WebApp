@@ -26,6 +26,7 @@ export function CustomersClient() {
   const [editing, setEditing] = useState<Customer | null>(null);
   const [, startTransition] = useTransition();
   const searchRef = useRef(search);
+  const initialLoad = useRef(true);
   searchRef.current = search;
 
   async function load(query: string) {
@@ -38,6 +39,11 @@ export function CustomersClient() {
 
   useEffect(() => {
     if (!repo) return;
+    if (initialLoad.current) {
+      initialLoad.current = false;
+      void load(searchRef.current);
+      return;
+    }
     const timer = setTimeout(() => load(searchRef.current), 350);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
