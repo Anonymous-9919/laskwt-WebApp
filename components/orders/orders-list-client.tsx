@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRepository } from "@/lib/data/use-repository";
 import { useLanguage } from "@/lib/i18n/context";
+import { useAuthProfile } from "@/lib/auth/auth-context";
 import { getOrderStatusMeta, getSyncStatusMeta } from "@/lib/orders/status";
 import { formatKWD, formatDate } from "@/lib/utils";
 import type { Customer, Order, OrderStatus } from "@/types";
@@ -22,9 +23,10 @@ const STATUS_FILTERS: ("all" | OrderStatus)[] = [
   "cancelled",
 ];
 
-export function OrdersListClient({ userId, userRole }: { userId: string; userRole: "admin" | "employee" }) {
+export function OrdersListClient() {
   const { t, lang } = useLanguage();
   const { repo } = useRepository();
+  const { profile } = useAuthProfile();
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Record<string, Customer>>({});
   const [loading, setLoading] = useState(true);
@@ -53,10 +55,10 @@ export function OrdersListClient({ userId, userRole }: { userId: string; userRol
     return orders.filter((o) => {
       if (statusFilter !== "all" && o.status !== statusFilter) return false;
       if (search.trim() && !o.number.toLowerCase().includes(search.toLowerCase())) return false;
-      if (userRole === "employee" && o.created_by !== userId) return false;
+      if (profile?.role === "employee" && o.created_by !== profile.id) return false;
       return true;
     });
-  }, [orders, statusFilter, search, userRole, userId]);
+  }, [orders, statusFilter, search, profile]);
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">

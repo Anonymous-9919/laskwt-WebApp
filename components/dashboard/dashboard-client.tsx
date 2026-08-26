@@ -11,11 +11,13 @@ import { getOrderStatusMeta } from "@/lib/orders/status";
 import { formatKWD } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { useRepository } from "@/lib/data/use-repository";
+import { useAuthProfile } from "@/lib/auth/auth-context";
 import type { Order, Customer, Profile } from "@/types";
 
-export function DashboardClient({ fullName }: { fullName: string | null }) {
+export function DashboardClient() {
   const { t, lang } = useLanguage();
   const { repo } = useRepository();
+  const { profile } = useAuthProfile();
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -62,7 +64,7 @@ export function DashboardClient({ fullName }: { fullName: string | null }) {
       <div>
         <h1 className="font-serif text-2xl font-semibold">{t.nav.dashboard}</h1>
         <p className="text-sm text-muted-foreground">
-          {lang === "ar" ? "أهلاً،" : "Welcome,"} {fullName ?? (lang === "ar" ? "موظف" : "staff")}
+          {lang === "ar" ? "أهلاً،" : "Welcome,"} {profile?.full_name ?? (lang === "ar" ? "موظف" : "staff")}
         </p>
       </div>
 

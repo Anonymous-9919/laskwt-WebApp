@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Customer, Order } from "@/types";
 import type { Repository } from "./types";
 import { getMockRepository } from "./mock";
 import { hasSupabaseEnv } from "./env";
@@ -25,8 +26,13 @@ function cacheCommonLists(repository: Repository): Repository {
     return ordersPromise;
   };
 
-  const clearCustomers = () => { customersPromise = null; };
-  const clearOrders = () => { ordersPromise = null; };
+  const updateCustomers = (update: (customers: Customer[]) => Customer[]) => {
+    if (customersPromise) customersPromise = customersPromise.then(update);
+  };
+
+  const updateOrders = (update: (orders: Order[]) => Order[]) => {
+    if (ordersPromise) ordersPromise = ordersPromise.then(update);
+  };
 
   return {
     ...repository,
@@ -34,27 +40,27 @@ function cacheCommonLists(repository: Repository): Repository {
     listOrders: getOrders,
     async createCustomer(input, userId) {
       const customer = await repository.createCustomer(input, userId);
-      clearCustomers();
+      updateCustomers((customers) => [customer, ...customers]);
       return customer;
     },
     async updateCustomer(id, input) {
       const customer = await repository.updateCustomer(id, input);
-      clearCustomers();
+      if (customer) updateCustomers((customers) => customers.map((row) => row.id === id ? customer : row));
       return customer;
     },
     async createOrder(input, userId) {
       const order = await repository.createOrder(input, userId);
-      clearOrders();
+      updateOrders((orders) => [order, ...orders]);
       return order;
     },
     async updateOrder(id, input) {
       const order = await repository.updateOrder(id, input);
-      clearOrders();
+      if (order) updateOrders((orders) => orders.map((row) => row.id === id ? order : row));
       return order;
     },
     async setShopifySync(id, result) {
       const order = await repository.setShopifySync(id, result);
-      clearOrders();
+      if (order) updateOrders((orders) => orders.map((row) => row.id === id ? order : row));
       return order;
     },
   };
