@@ -41,3 +41,5 @@ prod-server.log
 !public/logo-footer.png
 !public/favicon.png
 !app/icon.png
+!ICONS/front.png
+!ICONS/back.png
