@@ -85,6 +85,13 @@ const embroideryPreviews: Record<string, string> = {
   ),
 };
 
+const fabricPreviews: Record<string, string> = {
+  fabric_without: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M16 10 L64 30 M64 10 L16 30" stroke="currentColor" stroke-width="2"/><rect x="14" y="8" width="52" height="24" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`),
+  fabric_cotton: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M18 26 Q20 10 32 18 Q38 4 46 18 Q60 10 62 26 Q54 34 40 34 Q26 34 18 26Z" fill="none" stroke="currentColor" stroke-width="2"/></svg>`),
+  fabric_linen: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M18 8 C35 15 45 25 62 32 M18 20 C35 27 45 13 62 20" fill="none" stroke="currentColor" stroke-width="2"/></svg>`),
+  fabric_wool: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M12 20 Q20 8 28 20 T44 20 T60 20 T76 20" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>`),
+};
+
 const previewMap: Record<StyleKind, Record<string, string>> = {
   collar: collarPreviews,
   cuff: cuffPreviews,
@@ -92,6 +99,7 @@ const previewMap: Record<StyleKind, Record<string, string>> = {
   front: frontPreviews,
   buttons: buttonPreviews,
   embroidery: embroideryPreviews,
+  fabric: fabricPreviews,
 };
 
 export const STYLE_CATALOG: StyleOption[] = [
@@ -105,7 +113,7 @@ export const STYLE_CATALOG: StyleOption[] = [
   { id: "cuff-tarbush", kind: "cuff", key: "cuff_tarbush", label_ar: "طربوش", label_en: "Tarbush", price_addition: 2, preview_svg: cuffPreviews.cuff_tarbush, active: true, sort_order: 3 },
   { id: "cuff-cufflinks", kind: "cuff", key: "cuff_cufflinks", label_ar: "كفلكس", label_en: "Cufflinks", price_addition: 3, preview_svg: cuffPreviews.cuff_cufflinks, active: true, sort_order: 4 },
 
-  { id: "pocket-none", kind: "pocket", key: "pocket_none", label_ar: "بدون", label_en: "None", price_addition: 0, preview_svg: pocketPreviews.pocket_none, active: true, sort_order: 1 },
+  { id: "pocket-none", kind: "pocket", key: "pocket_none", label_ar: "بدون", label_en: "None", price_addition: 0, preview_svg: pocketPreviews.pocket_none, active: false, sort_order: 1 },
   { id: "pocket-single", kind: "pocket", key: "pocket_single", label_ar: "جيب مربع", label_en: "Square Pocket", price_addition: 0, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 2 },
   { id: "pocket-double", kind: "pocket", key: "pocket_double", label_ar: "جيب مدور", label_en: "Round Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_double, active: true, sort_order: 3 },
   { id: "pocket-hidden", kind: "pocket", key: "pocket_hidden", label_ar: "جيب جانبي مخفي", label_en: "Hidden Side Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_hidden, active: true, sort_order: 4 },
@@ -127,9 +135,14 @@ export const STYLE_CATALOG: StyleOption[] = [
   { id: "emb-collar-tassel", kind: "embroidery", key: "emb_collar_tassel", label_ar: "هدب على الياقة", label_en: "Collar Tassel", price_addition: 5, preview_svg: embroideryPreviews.emb_collar_tassel, active: true, sort_order: 2 },
   { id: "emb-neckline-zari", kind: "embroidery", key: "emb_neckline_zari", label_ar: "زري على الصدر", label_en: "Neckline Zari", price_addition: 6, preview_svg: embroideryPreviews.emb_neckline_zari, active: true, sort_order: 3 },
   { id: "emb-sleeves-zari", kind: "embroidery", key: "emb_sleeves_zari", label_ar: "زري على الأكمام", label_en: "Sleeves Zari", price_addition: 6, preview_svg: embroideryPreviews.emb_sleeves_zari, active: true, sort_order: 4 },
+
+  { id: "fabric-without", kind: "fabric", key: "fabric_without", label_ar: "بدون خام", label_en: "Without Fabrics", price_addition: 0, preview_svg: fabricPreviews.fabric_without, active: true, sort_order: 1 },
+  { id: "fabric-cotton", kind: "fabric", key: "fabric_cotton", label_ar: "قطن", label_en: "Cotton", price_addition: 5, preview_svg: fabricPreviews.fabric_cotton, active: true, sort_order: 2 },
+  { id: "fabric-linen", kind: "fabric", key: "fabric_linen", label_ar: "كتان", label_en: "Linen", price_addition: 7, preview_svg: fabricPreviews.fabric_linen, active: true, sort_order: 3 },
+  { id: "fabric-wool", kind: "fabric", key: "fabric_wool", label_ar: "صوف", label_en: "Wool Blend", price_addition: 10, preview_svg: fabricPreviews.fabric_wool, active: true, sort_order: 4 },
 ];
 
-export const STYLE_KINDS: StyleKind[] = ["collar", "cuff", "pocket", "front", "buttons", "embroidery"];
+export const STYLE_KINDS: StyleKind[] = ["collar", "pocket", "fabric"];
 
 export function optionsForKind(kind: StyleKind): StyleOption[] {
   return STYLE_CATALOG.filter((o) => o.kind === kind && o.active).sort((a, b) => a.sort_order - b.sort_order);

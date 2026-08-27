@@ -89,7 +89,7 @@ export function SellPageClient({ profile }: { profile: { id: string; full_name: 
         const p = draft.payload as DraftOrderPayload;
         if (p.customer) setCustomer(p.customer);
         if (p.measurements) setMeasurements(p.measurements);
-        if (p.styles) setStyles(p.styles);
+        if (p.styles) setStyles({ ...DEFAULT_STYLES, ...p.styles });
         if (p.productType) setProductType(p.productType);
         if (p.quantity) setQuantity(p.quantity);
         if (p.notes) setNotes(p.notes);

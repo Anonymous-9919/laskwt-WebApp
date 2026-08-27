@@ -3,8 +3,8 @@ import { getOption } from "@/lib/styles/catalog";
 import { hasAllRequired } from "@/lib/measurements/fields";
 
 export const BASE_PRICES: Record<"dascha" | "thobe", number> = {
-  dascha: 20,
-  thobe: 15,
+  dascha: 13,
+  thobe: 13,
 };
 
 export const DEFAULT_STYLES: SelectedStyles = {
@@ -14,11 +14,12 @@ export const DEFAULT_STYLES: SelectedStyles = {
   front: "front_flat_flat",
   buttons: "buttons_plain",
   embroidery: "emb_none",
+  fabric: "fabric_without",
 };
 
 export function customizationTotal(styles: SelectedStyles, customStylePrices?: Record<string, number>): number {
-  const kinds: StyleKind[] = ["collar", "cuff", "pocket", "front", "buttons", "embroidery"];
-  return kinds.reduce((sum, kind) => {
+  const kinds: StyleKind[] = ["fabric"];
+  const fabricTotal = kinds.reduce((sum, kind) => {
     const opt = getOption(kind, styles[kind]);
     if (!opt) return sum;
     if (customStylePrices && opt.key in customStylePrices) {
@@ -26,6 +27,7 @@ export function customizationTotal(styles: SelectedStyles, customStylePrices?: R
     }
     return sum + (opt.price_addition ?? 0);
   }, 0);
+  return fabricTotal + (customStylePrices?.other ?? 0);
 }
 
 export function computeOrderTotals(input: {

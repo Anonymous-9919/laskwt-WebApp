@@ -7,7 +7,6 @@ import {
   BadgeCheck,
   CalendarClock,
   CheckCircle2,
-  ClipboardList,
   Loader2,
   Package,
   ReceiptText,
@@ -24,7 +23,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRepository } from "@/lib/data/use-repository";
 import { useLanguage } from "@/lib/i18n/context";
 import { computeOrderTotals, canCompleteOrder, BASE_PRICES } from "@/lib/pricing/calculator";
-import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
+import { getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { cn, formatKWD } from "@/lib/utils";
 import type { Customer, DiscountType, Measurements, SelectedStyles, OrderStatus } from "@/types";
@@ -72,6 +71,9 @@ export function ReviewStep(props: Props) {
     customBasePrice: props.customBasePrice,
     customStylePrices: props.customStylePrices,
   });
+  const fabric = getOption("fabric", props.styles.fabric);
+  const fabricPrice = fabric ? props.customStylePrices?.[fabric.key] ?? fabric.price_addition : 0;
+  const otherPrice = props.customStylePrices?.other ?? 0;
 
   const check = canCompleteOrder({
     measurements: props.measurements,
@@ -286,22 +288,27 @@ export function ReviewStep(props: Props) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ReceiptText className="h-5 w-5 text-gold" />
-            {t.pricing.pricePreview}
+            {lang === "ar" ? "السعر التفصيلي" : "Price Summary"}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">{t.order[`product_${props.productType}`]}</span>
-            <span className="font-medium" dir="ltr">
-              {props.quantity} × {formatKWD(totals.basePrice)}
-            </span>
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{lang === "ar" ? "ديزاين" : "Design"}</p>
+            <SummaryPriceRow
+              label={lang === "ar" ? "كلاسيك" : "Classic"}
+              value={props.customBasePrice ?? BASE_PRICES[props.productType]}
+              onChange={props.onCustomBasePriceChange}
+            />
           </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">{t.common.customization}</span>
-            <span className="font-medium" dir="ltr">
-              +{formatKWD(totals.customization)}
-            </span>
+          <div className="rounded-lg border bg-muted/30 p-3">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{lang === "ar" ? "قسم الأقمشة" : "Fabrics Section"}</p>
+            <SummaryPriceRow
+              label={fabric ? (lang === "ar" ? fabric.label_ar : fabric.label_en) : (lang === "ar" ? "بدون خام" : "Without Fabrics")}
+              value={fabricPrice}
+              onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)}
+            />
           </div>
+          <SummaryPriceRow label={lang === "ar" ? "اخرى" : "Others"} value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t.common.subtotal}</span>
             <span className="font-medium" dir="ltr">
@@ -322,53 +329,13 @@ export function ReviewStep(props: Props) {
             </span>
           </div>
 
-          {/* Selected styles with editable prices */}
-          <div className="pt-2">
-            <p className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-              <ClipboardList className="h-3.5 w-3.5" />
-              {t.order.stepStyle}
-            </p>
-            <ul className="space-y-2">
-              {STYLE_KINDS.map((kind) => {
-                const opt = getOption(kind, props.styles[kind]);
-                if (!opt) return null;
-                const defaultPrice = opt.price_addition;
-                const currentPrice = props.customStylePrices?.[opt.key] ?? defaultPrice;
-                return (
-                  <li key={kind} className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">
-                      {lang === "ar" ? opt.label_ar : opt.label_en}
-                    </span>
-                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                      <Input
-                        type="number"
-                        min={0}
-                        step={0.5}
-                        dir="ltr"
-                        className="h-6 w-16 px-1 py-0 text-xs"
-                        value={currentPrice}
-                        onChange={(e) => {
-                          const val = parseFloat(e.target.value);
-                          if (!isNaN(val) && val >= 0) {
-                            props.onCustomStylePriceChange?.(opt.key, val);
-                          }
-                        }}
-                      />
-                      <span className="text-muted-foreground">KWD</span>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
           <Button
             className="w-full"
             disabled={!check.ok || creating || !repo}
             onClick={handleCreate}
           >
             {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <BadgeCheck className="h-4 w-4" />}
-            {t.order.createOrder}
+            {lang === "ar" ? "إنشاء طلب" : "Create Order"}
           </Button>
           {!check.ok && (
             <p className="text-center text-xs text-muted-foreground">
@@ -378,6 +345,29 @@ export function ReviewStep(props: Props) {
           )}
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function SummaryPriceRow({ label, value, onChange }: { label: string; value: number; onChange?: (value: number) => void }) {
+  return (
+    <div className="flex items-center justify-between gap-3 text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      <div className="flex items-center gap-1">
+        <Input
+          type="number"
+          min={0}
+          step={0.5}
+          dir="ltr"
+          className="h-7 w-20 px-2 py-0 text-xs font-medium"
+          value={value}
+          onChange={(event) => {
+            const next = parseFloat(event.target.value);
+            if (!Number.isNaN(next) && next >= 0) onChange?.(next);
+          }}
+        />
+        <span className="text-xs text-muted-foreground">KWD</span>
+      </div>
     </div>
   );
 }

@@ -138,6 +138,7 @@ const orders: Order[] = [
           front: "front_flat_leaf",
           buttons: "buttons_pearl",
           embroidery: "emb_none",
+          fabric: "fabric_without",
         },
         customization_total: 4,
         line_total: 24,

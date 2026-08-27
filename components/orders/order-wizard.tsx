@@ -96,7 +96,7 @@ export function OrderWizard({ userId, userRole = "admin", defaultStatus = "confi
           const p = draft.payload as DraftOrderPayload;
           if (p.customer) setCustomer(p.customer);
           if (p.measurements) setMeasurements(p.measurements);
-          if (p.styles) setStyles(p.styles);
+          if (p.styles) setStyles({ ...DEFAULT_STYLES, ...p.styles });
           if (p.measurementLabel !== undefined) setMeasurementLabel(p.measurementLabel);
           if (p.productType) setProductType(p.productType);
           if (p.quantity) setQuantity(p.quantity);
@@ -263,9 +263,9 @@ export function OrderWizard({ userId, userRole = "admin", defaultStatus = "confi
       {step === "style" && (
         <div className="space-y-6">
           <div>
-            <h2 className="font-serif text-xl font-semibold">{t.order.stepStyle}</h2>
+            <h2 className="font-serif text-xl font-semibold">{lang === "ar" ? "ديزاين" : "Design"}</h2>
             <p className="text-sm text-muted-foreground">
-              {lang === "ar" ? "اختر الستايل المطلوب لكل جزء" : "Choose the desired style for each part"}
+              {lang === "ar" ? "اختر الديزاين والقماش المطلوبين" : "Choose the design and fabric"}
             </p>
           </div>
           <StyleSelector value={styles} onChange={setStyles} />

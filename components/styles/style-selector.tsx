@@ -30,6 +30,7 @@ const KIND_LABEL: Record<StyleKind, { ar: string; en: string }> = {
   front: { ar: "ديزاين", en: "Design" },
   buttons: { ar: "الأزرار", en: "Buttons" },
   embroidery: { ar: "التطريز", en: "Embroidery" },
+  fabric: { ar: "قسم الأقمشة", en: "Fabrics Section" },
 };
 
 const STYLE_IMAGES: Record<string, StaticImageData> = {

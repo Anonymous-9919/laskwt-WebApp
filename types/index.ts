@@ -22,7 +22,7 @@ export type MeasurementKey =
 
 export type Measurements = Partial<Record<MeasurementKey, number>>;
 
-export type StyleKind = "collar" | "cuff" | "pocket" | "front" | "buttons" | "embroidery";
+export type StyleKind = "collar" | "cuff" | "pocket" | "front" | "buttons" | "embroidery" | "fabric";
 
 export type StyleOption = {
   id: string;
