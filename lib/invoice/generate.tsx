@@ -32,6 +32,22 @@ export async function downloadInvoice(
   URL.revokeObjectURL(url);
 }
 
+export async function printInvoice(
+  order: Order,
+  customer: Customer | null,
+  lang: InvoiceLang
+): Promise<void> {
+  const blob = await generateInvoiceBlob(order, customer, lang);
+  const url = URL.createObjectURL(blob);
+  const printWindow = window.open(url, "_blank");
+  if (!printWindow) {
+    URL.revokeObjectURL(url);
+    throw new Error("Unable to open invoice for printing");
+  }
+  printWindow.addEventListener("load", () => printWindow.print(), { once: true });
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
 export async function shareInvoiceViaWhatsApp(
   order: Order,
   customer: Customer | null,

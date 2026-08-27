@@ -49,16 +49,23 @@ export async function registerInvoiceFonts(baseUrl?: string) {
   Font.register({ family: "Cairo", src: src(CAIRO_FONT_FILES[500]), fontWeight: 500 });
 }
 
-const GREY = "#3F454B";
-const INK = "#16160F";
-const MUTED = "#6B6257";
-const LINE = "#E7DFD0";
-const PAPER = "#F6F3EC";
+const GREY = "#2B302C";
+const INK = "#1D221E";
+const MUTED = "#69716B";
+const LINE = "#DED9CE";
+const PAPER = "#FBFAF6";
 const WHITE = "#FFFFFF";
+const GOLD = "#B89A62";
+const LASKWT = {
+  website: "laskwt.com",
+  email: "info@laskwt.com",
+  phone: "+965 9606 4466",
+  address: "Salmiya, Blajat Street, Kuwait City, Kuwait",
+};
 
 const styles = StyleSheet.create({
   page: {
-    padding: 32,
+    padding: 40,
     fontSize: 10,
     color: INK,
     fontFamily: "Inter",
@@ -66,15 +73,10 @@ const styles = StyleSheet.create({
   },
   // ── Header band ─────────────────────────────────────────
   headerBand: {
-    backgroundColor: WHITE,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderBottomWidth: 3,
-    borderBottomColor: GREY,
-    borderRadius: 8,
-    marginBottom: 20,
-    paddingHorizontal: 24,
-    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: INK,
+    marginBottom: 18,
+    paddingBottom: 14,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -83,24 +85,24 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   brandLogo: {
-    width: 44,
-    height: 38,
+    width: 82,
+    height: 68,
     objectFit: "contain",
   },
   brandSub: {
-    fontSize: 8,
+    fontSize: 7.5,
     color: MUTED,
     marginTop: 1,
   },
   invoiceTag: {
-    fontSize: 13,
-    fontWeight: 700,
-    color: GREY,
-    letterSpacing: 3,
+    fontFamily: "Times-Bold",
+    fontSize: 27,
+    color: INK,
+    letterSpacing: 0,
   },
   invoiceTagAr: {
     fontFamily: "Cairo",
-    fontSize: 13,
+    fontSize: 20,
     fontWeight: 700,
     color: GREY,
     letterSpacing: 1,
@@ -110,7 +112,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 14,
+    marginBottom: 16,
   },
   metaLabel: {
     fontSize: 7.5,
@@ -168,10 +170,9 @@ const styles = StyleSheet.create({
   },
   infoCard: {
     flex: 1,
-    backgroundColor: WHITE,
-    borderWidth: 1,
-    borderColor: LINE,
-    borderRadius: 8,
+    backgroundColor: "#F1EEE4",
+    borderLeftWidth: 3,
+    borderLeftColor: INK,
     padding: 12,
   },
   infoCardTitle: {
@@ -200,10 +201,10 @@ const styles = StyleSheet.create({
   },
   // ── Section title ───────────────────────────────────────
   sectionTitle: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 700,
     color: INK,
-    marginTop: 10,
+    marginTop: 14,
     marginBottom: 8,
     textTransform: "uppercase",
     letterSpacing: 0.8,
@@ -217,22 +218,22 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sectionRule: {
-    height: 2,
-    backgroundColor: GREY,
-    width: 32,
+    height: 1,
+    backgroundColor: GOLD,
+    width: "100%",
     marginBottom: 8,
   },
   // ── Items table ─────────────────────────────────────────
   table: {
     borderWidth: 1,
     borderColor: LINE,
-    borderRadius: 8,
+    borderRadius: 0,
     overflow: "hidden",
     marginBottom: 12,
   },
   tableHead: {
     flexDirection: "row",
-    backgroundColor: INK,
+    backgroundColor: GREY,
     paddingHorizontal: 10,
     paddingVertical: 7,
   },
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
     borderTopColor: LINE,
   },
   tableRowAlt: {
-    backgroundColor: "#EDE8DE",
+    backgroundColor: "#F1EEE4",
   },
   tableCell: {
     fontSize: 9.5,
@@ -325,8 +326,8 @@ const styles = StyleSheet.create({
     fontWeight: 600,
   },
   grandTotal: {
-    backgroundColor: INK,
-    borderRadius: 6,
+    borderTopWidth: 3,
+    borderTopColor: INK,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginTop: 6,
@@ -337,33 +338,31 @@ const styles = StyleSheet.create({
   grandLabel: {
     fontSize: 11,
     fontWeight: 700,
-    color: WHITE,
+    color: INK,
   },
   grandLabelAr: {
     fontFamily: "Cairo",
     fontSize: 12,
     fontWeight: 700,
-    color: WHITE,
+    color: INK,
   },
   grandValue: {
     fontSize: 14,
     fontWeight: 700,
-    color: WHITE,
+    color: INK,
   },
   grandValueAr: {
     fontFamily: "Cairo",
     fontSize: 14,
     fontWeight: 700,
-    color: WHITE,
+    color: INK,
   },
   // ── Footer ──────────────────────────────────────────────
   footer: {
     position: "absolute",
-    bottom: 22,
-    left: 32,
-    right: 32,
-    borderTopWidth: 1,
-    borderTopColor: LINE,
+    bottom: 24,
+    left: 40,
+    right: 40,
     paddingTop: 8,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -421,9 +420,6 @@ export function InvoiceDocument({
   const businessName = isAr
     ? business?.name_ar ?? t.invoice.businessName
     : business?.name_en ?? "Laskwt";
-  const footer = isAr
-    ? business?.footer_note_ar ?? t.invoice.thankYou
-    : business?.footer_note_en ?? t.invoice.thankYou;
 
   const status = STATUS_STYLES[order.status];
   const createdDate = new Intl.DateTimeFormat(isAr ? "ar-KW" : "en-GB", {
@@ -432,9 +428,7 @@ export function InvoiceDocument({
     day: "2-digit",
   }).format(new Date(order.created_at));
 
-  const businessLines: string[] = [];
-  if (business?.address) businessLines.push(business.address);
-  if (business?.phone) businessLines.push(business.phone);
+  const businessLines = [LASKWT.website, business?.phone ?? LASKWT.phone, business?.address ?? LASKWT.address];
   if (business?.vat_number) businessLines.push(`VAT: ${business.vat_number}`);
 
   return (
@@ -459,6 +453,7 @@ export function InvoiceDocument({
             <Text style={isAr ? styles.invoiceTagAr : styles.invoiceTag}>
               {t.invoice.invoice}
             </Text>
+            <Text style={[styles.brandSub, fontStyle]}>{order.number}</Text>
           </View>
         </View>
 
@@ -625,8 +620,17 @@ export function InvoiceDocument({
 
         {/* Footer */}
         <View style={styles.footer} fixed>
-          <Text style={[styles.footerText, fontStyle]}>{footer}</Text>
-          <Text style={styles.pageNo} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
+          <View>
+            <Text style={[styles.footerText, fontStyle]}>{LASKWT.website}  |  {LASKWT.email}  |  {business?.phone ?? LASKWT.phone}</Text>
+            <Text style={[styles.footerText, fontStyle, { marginTop: 2 }]}>{business?.address ?? LASKWT.address}</Text>
+          </View>
+          <View style={{ flexDirection: "row", gap: 6, alignItems: "center" }}>
+            <Link href="https://www.instagram.com/las_kwt/" style={styles.footerLink}>Instagram</Link>
+            <Link href="https://facebook.com/las.kwt" style={styles.footerLink}>Facebook</Link>
+            <Link href="https://tiktok.com/@las_kwt" style={styles.footerLink}>TikTok</Link>
+            <Link href="https://www.snapchat.com/add/las_kwt" style={styles.footerLink}>Snapchat</Link>
+            <Text style={styles.pageNo} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
+          </View>
         </View>
       </Page>
     </Document>

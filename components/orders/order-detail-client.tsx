@@ -27,7 +27,7 @@ import { getOrderStatusMeta, getSyncStatusMeta } from "@/lib/orders/status";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { formatKWD, formatDate } from "@/lib/utils";
-import { downloadInvoice, shareInvoiceViaWhatsApp } from "@/lib/invoice/generate";
+import { downloadInvoice, printInvoice, shareInvoiceViaWhatsApp } from "@/lib/invoice/generate";
 import { SyncToShopifyButton } from "@/components/orders/sync-button";
 import type { Customer, Order, OrderStatus } from "@/types";
 
@@ -38,7 +38,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
   const [order, setOrder] = useState<Order | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState<"pdf" | "whatsapp" | null>(null);
+  const [busy, setBusy] = useState<"print" | "pdf" | "whatsapp" | null>(null);
   const [statusSaving, setStatusSaving] = useState(false);
   const [newStatus, setNewStatus] = useState<OrderStatus>(order?.status ?? "confirmed");
 
@@ -104,7 +104,18 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" onClick={() => window.print()}>
+          <Button
+            variant="outline"
+            disabled={busy === "print"}
+            onClick={async () => {
+              setBusy("print");
+              try {
+                await printInvoice(order, customer, lang);
+              } finally {
+                setBusy(null);
+              }
+            }}
+          >
             <Printer className="h-4 w-4" />
             {t.order.print}
           </Button>
