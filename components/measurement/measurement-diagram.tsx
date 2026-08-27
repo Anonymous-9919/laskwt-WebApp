@@ -53,8 +53,8 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
           className="diagram-point"
           data-field={point.key}
         >
-          {active && <circle r="12" fill="hsl(var(--gold))" opacity="0.15" className="animate-pulse-dot" />}
-          <circle r={active ? 6 : isFilled ? 4.5 : 3.5} fill={active ? "hsl(var(--gold))" : isFilled ? "hsl(var(--gold) / 0.85)" : "hsl(var(--muted-foreground))"} stroke="hsl(var(--card))" strokeWidth="1.5" />
+          {active && <circle r="10" fill="hsl(var(--card))" stroke="hsl(var(--gold))" strokeWidth="1.5" />}
+          <circle r={active ? 5 : isFilled ? 4.5 : 3.5} fill={active ? "hsl(var(--gold))" : isFilled ? "hsl(var(--gold) / 0.85)" : "hsl(var(--muted-foreground))"} stroke="hsl(var(--card))" strokeWidth="1.5" />
           {isFilled && !active && <circle r="8" fill="none" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.4" />}
           <g transform={`translate(${point.dx}, ${point.dy})`} className="pointer-events-none">
             <text x={point.anchor === "end" ? -4 : point.anchor === "start" ? 4 : 0} y="0" textAnchor={point.anchor ?? "middle"} dominantBaseline="middle" fontSize="8.5" fontWeight={active ? 700 : 500} fill={active ? "hsl(var(--gold))" : "hsl(var(--muted-foreground))"} className="select-none" style={{ paintOrder: "stroke", stroke: "hsl(var(--card))", strokeWidth: 2.5 }}>
