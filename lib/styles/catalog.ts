@@ -137,9 +137,11 @@ export const STYLE_CATALOG: StyleOption[] = [
   { id: "emb-sleeves-zari", kind: "embroidery", key: "emb_sleeves_zari", label_ar: "زري على الأكمام", label_en: "Sleeves Zari", price_addition: 6, preview_svg: embroideryPreviews.emb_sleeves_zari, active: true, sort_order: 4 },
 
   { id: "fabric-without", kind: "fabric", key: "fabric_without", label_ar: "بدون خام", label_en: "Without Fabrics", price_addition: 0, preview_svg: fabricPreviews.fabric_without, active: true, sort_order: 1 },
-  { id: "fabric-cotton", kind: "fabric", key: "fabric_cotton", label_ar: "قطن", label_en: "Cotton", price_addition: 5, preview_svg: fabricPreviews.fabric_cotton, active: true, sort_order: 2 },
-  { id: "fabric-linen", kind: "fabric", key: "fabric_linen", label_ar: "كتان", label_en: "Linen", price_addition: 7, preview_svg: fabricPreviews.fabric_linen, active: true, sort_order: 3 },
-  { id: "fabric-wool", kind: "fabric", key: "fabric_wool", label_ar: "صوف", label_en: "Wool Blend", price_addition: 10, preview_svg: fabricPreviews.fabric_wool, active: true, sort_order: 4 },
+  { id: "fabric-japanese", kind: "fabric", key: "fabric_cotton", label_ar: "ياباني أصلي", label_en: "Japanese Original", price_addition: 5, preview_svg: fabricPreviews.fabric_cotton, active: true, sort_order: 2 },
+  { id: "fabric-korean", kind: "fabric", key: "fabric_linen", label_ar: "كوري فور ستيشن", label_en: "Korean Four Station", price_addition: 7, preview_svg: fabricPreviews.fabric_linen, active: true, sort_order: 3 },
+  { id: "fabric-silk", kind: "fabric", key: "fabric_wool", label_ar: "سلك", label_en: "Silk", price_addition: 10, preview_svg: fabricPreviews.fabric_wool, active: true, sort_order: 4 },
+  { id: "fabric-bureisem", kind: "fabric", key: "fabric_bureisem", label_ar: "بريسم", label_en: "Bureisem", price_addition: 8, preview_svg: fabricPreviews.fabric_wool, active: true, sort_order: 5 },
+  { id: "fabric-polyester-blend", kind: "fabric", key: "fabric_polyester_blend", label_ar: "بوليستر مخلوط", label_en: "Polyester Blend", price_addition: 4, preview_svg: fabricPreviews.fabric_linen, active: true, sort_order: 6 },
 ];
 
 export const STYLE_KINDS: StyleKind[] = ["collar", "pocket", "fabric"];

@@ -7,6 +7,7 @@ import {
   BadgeCheck,
   CalendarClock,
   CheckCircle2,
+  ClipboardList,
   Loader2,
   Package,
   ReceiptText,
@@ -292,23 +293,18 @@ export function ReviewStep(props: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm">
-          <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{lang === "ar" ? "ديزاين" : "Design"}</p>
-            <SummaryPriceRow
-              label={lang === "ar" ? "كلاسيك" : "Classic"}
-              value={props.customBasePrice ?? BASE_PRICES[props.productType]}
-              onChange={props.onCustomBasePriceChange}
-            />
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t.order[`product_${props.productType}`]}</span>
+            <span className="font-medium" dir="ltr">
+              {props.quantity} × {formatKWD(totals.basePrice)}
+            </span>
           </div>
-          <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{lang === "ar" ? "قسم الأقمشة" : "Fabrics Section"}</p>
-            <SummaryPriceRow
-              label={fabric ? (lang === "ar" ? fabric.label_ar : fabric.label_en) : (lang === "ar" ? "بدون خام" : "Without Fabrics")}
-              value={fabricPrice}
-              onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)}
-            />
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t.common.customization}</span>
+            <span className="font-medium" dir="ltr">
+              +{formatKWD(totals.customization)}
+            </span>
           </div>
-          <SummaryPriceRow label={lang === "ar" ? "اخرى" : "Others"} value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t.common.subtotal}</span>
             <span className="font-medium" dir="ltr">
@@ -327,6 +323,18 @@ export function ReviewStep(props: Props) {
             <span className="font-serif text-xl font-bold text-gold" dir="ltr">
               {formatKWD(totals.total)}
             </span>
+          </div>
+          <Separator />
+          <div className="pt-1">
+            <p className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <ClipboardList className="h-3.5 w-3.5" />
+              Design - ديزاين
+            </p>
+            <div className="space-y-2">
+              <SummaryPriceRow label="Classic - كلاسيك" value={props.customBasePrice ?? BASE_PRICES[props.productType]} onChange={props.onCustomBasePriceChange} />
+              <SummaryPriceRow label={`Fabric - الأقمشة: ${fabric ? (lang === "ar" ? fabric.label_ar : fabric.label_en) : (lang === "ar" ? "بدون خام" : "Without Fabrics")}`} value={fabricPrice} onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)} />
+              <SummaryPriceRow label="Others - اخرى" value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
+            </div>
           </div>
 
           <Button
