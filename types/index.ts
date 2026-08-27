@@ -78,6 +78,7 @@ export type OrderItem = {
   quantity: number;
   base_price: number;
   styles: SelectedStyles;
+  custom_style_prices?: Record<string, number>;
   customization_total: number;
   line_total: number;
 };

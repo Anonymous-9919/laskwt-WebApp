@@ -107,6 +107,7 @@ export function ReviewStep(props: Props) {
         quantity: props.quantity,
         base_price: totals.basePrice,
         styles: props.styles,
+        custom_style_prices: props.customStylePrices,
         customization_total: totals.customization,
         line_total: totals.total,
       };

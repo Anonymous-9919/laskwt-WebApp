@@ -31,6 +31,7 @@ export type OrderItemInput = {
   quantity: number;
   base_price: number;
   styles: OrderItem["styles"];
+  custom_style_prices?: Record<string, number>;
   customization_total: number;
   line_total: number;
 };
