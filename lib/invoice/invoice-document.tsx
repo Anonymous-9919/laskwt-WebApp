@@ -1,13 +1,17 @@
 import React from "react";
 import {
   Document,
+  Circle,
   Font,
   Image,
   Link,
   Page,
+  Path,
+  Rect,
   StyleSheet,
   Text,
   View,
+  Svg,
 } from "@react-pdf/renderer";
 import type { BusinessProfile, Customer, Order, OrderStatus } from "@/types";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
@@ -397,6 +401,17 @@ function fmt(value: number) {
   return `KWD ${value.toFixed(3)}`;
 }
 
+function SocialIcon({ name, href }: { name: "instagram" | "facebook" | "tiktok" | "snapchat"; href: string }) {
+  const icon = name === "instagram"
+    ? <><Rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke={WHITE} strokeWidth="2" /><Circle cx="12" cy="12" r="4" fill="none" stroke={WHITE} strokeWidth="2" /><Circle cx="17.4" cy="6.7" r="1" fill={WHITE} /></>
+    : name === "facebook"
+      ? <Path d="M14 22V13h3l.5-3.5H14V7.3c0-1 .3-1.8 1.8-1.8H18V2.4c-.4-.1-1.5-.2-2.8-.2-2.8 0-4.7 1.7-4.7 4.9v2.4H7.3V13h3.2v9H14Z" fill={WHITE} />
+      : name === "tiktok"
+        ? <Path d="M15 3c.5 2.6 2 4.1 4.5 4.4v3.2c-1.6 0-3-.5-4.4-1.5v6.6a5.2 5.2 0 1 1-4.5-5.2v3.1a2.2 2.2 0 1 0 1.4 2V3H15Z" fill={WHITE} />
+        : <><Path d="M12 3.2c-3.3 0-5.8 2.6-5.8 5.9 0 1.2.3 2.2.8 3.1l-1.3 2.6 2.7-.4c1 .7 2.2 1.1 3.6 1.1s2.6-.4 3.6-1.1l2.7.4-1.3-2.6c.5-.9.8-1.9.8-3.1 0-3.3-2.5-5.9-5.8-5.9Z" fill={WHITE} /><Path d="M9 16l-1 2 2-1 2 1 2-1 2 1-1-2" fill="none" stroke={WHITE} strokeWidth="1.4" /></>;
+  return <Link href={href} style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: INK, padding: 3 }}><Svg width="10" height="10" viewBox="0 0 24 24">{icon}</Svg></Link>;
+}
+
 export function InvoiceDocument({
   order,
   customer,
@@ -624,11 +639,11 @@ export function InvoiceDocument({
             <Text style={[styles.footerText, fontStyle]}>{LASKWT.website}  |  {LASKWT.email}  |  {business?.phone ?? LASKWT.phone}</Text>
             <Text style={[styles.footerText, fontStyle, { marginTop: 2 }]}>{business?.address ?? LASKWT.address}</Text>
           </View>
-          <View style={{ flexDirection: "row", gap: 6, alignItems: "center" }}>
-            <Link href="https://www.instagram.com/las_kwt/" style={styles.footerLink}>Instagram</Link>
-            <Link href="https://facebook.com/las.kwt" style={styles.footerLink}>Facebook</Link>
-            <Link href="https://tiktok.com/@las_kwt" style={styles.footerLink}>TikTok</Link>
-            <Link href="https://www.snapchat.com/add/las_kwt" style={styles.footerLink}>Snapchat</Link>
+          <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
+            <SocialIcon name="instagram" href="https://www.instagram.com/las_kwt/" />
+            <SocialIcon name="facebook" href="https://facebook.com/las.kwt" />
+            <SocialIcon name="tiktok" href="https://tiktok.com/@las_kwt" />
+            <SocialIcon name="snapchat" href="https://www.snapchat.com/add/las_kwt" />
             <Text style={styles.pageNo} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
           </View>
         </View>

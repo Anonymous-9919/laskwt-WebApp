@@ -7,6 +7,7 @@ import {
 } from "@/lib/invoice/invoice-document";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function GET(req: NextRequest) {
   const orderId = req.nextUrl.searchParams.get("order");
@@ -40,6 +41,7 @@ export async function GET(req: NextRequest) {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `inline; filename="${order.number}-invoice.pdf"`,
+        "Cache-Control": "no-store, max-age=0",
       },
     });
   } catch (err) {

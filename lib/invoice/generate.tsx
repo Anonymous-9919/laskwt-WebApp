@@ -1,19 +1,21 @@
-import { pdf } from "@react-pdf/renderer";
 import type { Customer, Order } from "@/types";
-import { InvoiceDocument, registerInvoiceFonts } from "./invoice-document";
 
 export type InvoiceLang = "ar" | "en";
 
+const INVOICE_TEMPLATE_VERSION = "editorial-20260827";
+
+function invoiceUrl(order: Order, lang: InvoiceLang): string {
+  return `/api/pdf?order=${encodeURIComponent(order.id)}&lang=${lang}&template=${INVOICE_TEMPLATE_VERSION}`;
+}
+
 export async function generateInvoiceBlob(
   order: Order,
-  customer: Customer | null,
+  _customer: Customer | null,
   lang: InvoiceLang
 ): Promise<Blob> {
-  await registerInvoiceFonts();
-  const doc = pdf(
-    <InvoiceDocument order={order} customer={customer} lang={lang} />
-  );
-  return doc.toBlob();
+  const response = await fetch(invoiceUrl(order, lang), { cache: "no-store" });
+  if (!response.ok) throw new Error("Unable to generate invoice PDF");
+  return response.blob();
 }
 
 export async function downloadInvoice(
@@ -37,15 +39,11 @@ export async function printInvoice(
   customer: Customer | null,
   lang: InvoiceLang
 ): Promise<void> {
-  const blob = await generateInvoiceBlob(order, customer, lang);
-  const url = URL.createObjectURL(blob);
-  const printWindow = window.open(url, "_blank");
+  const printWindow = window.open(invoiceUrl(order, lang), "_blank");
   if (!printWindow) {
-    URL.revokeObjectURL(url);
     throw new Error("Unable to open invoice for printing");
   }
   printWindow.addEventListener("load", () => printWindow.print(), { once: true });
-  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
 export async function shareInvoiceViaWhatsApp(
@@ -74,7 +72,7 @@ export async function shareInvoiceViaWhatsApp(
     }
   }
 
-  const url = `/api/pdf?order=${encodeURIComponent(order.id)}&lang=${lang}`;
+  const url = invoiceUrl(order, lang);
   const phone = (customer?.phone ?? "").replace(/\D/g, "");
   const message = encodeURIComponent(`Invoice ${order.number}: ${window.location.origin}${url}`);
   window.open(`https://wa.me/${phone}?text=${message}`, "_blank", "noopener");
