@@ -75,11 +75,11 @@ export function MeasurementForm({
             {t.measurement.diagram}
           </CardTitle>
           <CardDescription>
-            {lang === "ar" ? "مرّر فوق النقاط لرؤية كل قياس" : "Hover the points to see each measurement"}
+            {lang === "ar" ? "اسحب المخطط للتدوير أو مرّر فوق النقاط لرؤية القياس" : "Drag to rotate, or hover a point to view its measurement"}
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-center pb-6">
-          <div className="w-full max-w-[230px]">
+        <CardContent className="flex min-h-[560px] items-center justify-center pb-6">
+          <div className="w-full max-w-[420px]">
             <MeasurementDiagram
               activeField={activeField}
               onHoverField={setActiveField}
