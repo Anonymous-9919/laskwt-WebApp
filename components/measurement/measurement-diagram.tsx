@@ -67,7 +67,7 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
   }
 
   return (
-    <div className={cn("relative w-full select-none [perspective:1200px]", className)}>
+    <div className={cn("relative w-full select-none pb-10 [perspective:1200px]", className)}>
       <div
         className="relative aspect-[300/470] w-full touch-pan-y [transform-style:preserve-3d] transition-transform duration-500 ease-out"
         style={{ transform: `rotateY(${side === "front" ? 0 : 180}deg)` }}
@@ -85,7 +85,7 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
           {renderPoints("back")}
         </svg>
       </div>
-      <button type="button" onClick={() => setSide((current) => current === "front" ? "back" : "front")} className="absolute bottom-3 start-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border bg-card/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur hover:bg-accent" aria-label={lang === "ar" ? "تدوير المخطط" : "Rotate diagram"}>
+      <button type="button" onClick={() => setSide((current) => current === "front" ? "back" : "front")} className="absolute bottom-0 start-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full border bg-card/90 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur hover:bg-accent" aria-label={lang === "ar" ? "تدوير المخطط" : "Rotate diagram"}>
         <Rotate3D className="h-3.5 w-3.5 text-gold" />
         {side === "front" ? (lang === "ar" ? "الأمام" : "Front") : (lang === "ar" ? "الخلف" : "Back")}
       </button>

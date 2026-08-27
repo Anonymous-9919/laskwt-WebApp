@@ -15,7 +15,7 @@ export type DiagramPoint = {
 // Each side uses a 300 x 470 panel, matching the rotatable diagram card.
 export const DIAGRAM_POINTS: DiagramPoint[] = [
   { key: "length", side: "front", labelAr: "الطول الكلي", labelEn: "Length", x: 74, y: 400, anchor: "end", dx: -8, dy: 0 },
-  { key: "shoulder", side: "front", labelAr: "الكتف", labelEn: "Shoulder", x: 160, y: 54, anchor: "middle", dx: 0, dy: -10 },
+  { key: "shoulder", side: "front", labelAr: "الكتف", labelEn: "Shoulder", x: 245, y: 72, anchor: "start", dx: 10, dy: 2 },
   { key: "chest", side: "front", labelAr: "الصدر", labelEn: "Chest", x: 160, y: 124, anchor: "middle", dx: 0, dy: -10 },
   { key: "waist", side: "front", labelAr: "الخصر", labelEn: "Waist", x: 160, y: 204, anchor: "middle", dx: 0, dy: -10 },
   { key: "hips", side: "front", labelAr: "الأرداف", labelEn: "Hips", x: 160, y: 277, anchor: "middle", dx: 0, dy: -10 },
