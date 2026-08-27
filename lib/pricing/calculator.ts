@@ -1,5 +1,5 @@
-import type { DiscountType, Measurements, SelectedStyles, StyleKind } from "@/types";
-import { getOption } from "@/lib/styles/catalog";
+import type { DiscountType, Measurements, SelectedStyles } from "@/types";
+import { getOption, STYLE_KINDS } from "@/lib/styles/catalog";
 import { hasAllRequired } from "@/lib/measurements/fields";
 
 export const BASE_PRICES: Record<"dascha" | "thobe", number> = {
@@ -18,16 +18,11 @@ export const DEFAULT_STYLES: SelectedStyles = {
 };
 
 export function customizationTotal(styles: SelectedStyles, customStylePrices?: Record<string, number>): number {
-  const kinds: StyleKind[] = ["fabric"];
-  const fabricTotal = kinds.reduce((sum, kind) => {
-    const opt = getOption(kind, styles[kind]);
-    if (!opt) return sum;
-    if (customStylePrices && opt.key in customStylePrices) {
-      return sum + (customStylePrices[opt.key] ?? 0);
-    }
-    return sum + (opt.price_addition ?? 0);
+  const designTotal = STYLE_KINDS.reduce((sum, kind) => {
+    const option = getOption(kind, styles[kind]);
+    return sum + (option ? customStylePrices?.[option.key] ?? option.price_addition : 0);
   }, 0);
-  return fabricTotal + (customStylePrices?.other ?? 0);
+  return designTotal + (customStylePrices?.other ?? 0);
 }
 
 export function computeOrderTotals(input: {

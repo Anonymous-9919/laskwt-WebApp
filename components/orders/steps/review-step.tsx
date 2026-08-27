@@ -308,6 +308,19 @@ export function ReviewStep(props: Props) {
               +{formatKWD(totals.customization)}
             </span>
           </div>
+          <Separator />
+          <div className="pt-1">
+            <p className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <ClipboardList className="h-3.5 w-3.5" />
+              {lang === "ar" ? "ديزاين" : "Design"}
+            </p>
+            <div className="space-y-2">
+              <SummaryPriceRow label={lang === "ar" ? "كلاسيك" : "Classic"} value={props.customBasePrice ?? BASE_PRICES[props.productType]} onChange={props.onCustomBasePriceChange} />
+              <SummaryPriceRow label={fabricLabel} value={fabricPrice} onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)} />
+              <SummaryPriceRow label={lang === "ar" ? "اخرى" : "Others"} value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
+            </div>
+          </div>
+          <Separator />
           <div className="flex justify-between">
             <span className="text-muted-foreground">{t.common.subtotal}</span>
             <span className="font-medium" dir="ltr">
@@ -326,18 +339,6 @@ export function ReviewStep(props: Props) {
             <span className="font-serif text-xl font-bold text-gold" dir="ltr">
               {formatKWD(totals.total)}
             </span>
-          </div>
-          <Separator />
-          <div className="pt-1">
-            <p className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
-              <ClipboardList className="h-3.5 w-3.5" />
-              {lang === "ar" ? "ديزاين" : "Design"}
-            </p>
-            <div className="space-y-2">
-              <SummaryPriceRow label={lang === "ar" ? "كلاسيك" : "Classic"} value={props.customBasePrice ?? BASE_PRICES[props.productType]} onChange={props.onCustomBasePriceChange} />
-              <SummaryPriceRow label={fabricLabel} value={fabricPrice} onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)} />
-              <SummaryPriceRow label={lang === "ar" ? "اخرى" : "Others"} value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
-            </div>
           </div>
 
           <Button
