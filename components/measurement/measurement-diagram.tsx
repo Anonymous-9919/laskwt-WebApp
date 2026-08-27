@@ -29,7 +29,8 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
   }, [activeField]);
 
   function labelFor(point: DiagramPoint) {
-    return lang === "ar" ? point.labelAr : point.labelEn;
+    const label = lang === "ar" ? point.labelAr : point.labelEn;
+    return point.referenceNumber ? `${point.referenceNumber}. ${label}` : label;
   }
 
   function finishDrag(event: PointerEvent<HTMLDivElement>) {
@@ -44,15 +45,27 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
       const active = activeField === point.key;
       const isFilled = filled.includes(point.key);
       return (
-        <g
-          key={point.key}
+        <g key={point.key}>
+          {point.guide && (
+            <line
+              x1={point.guide.x1}
+              y1={point.guide.y1}
+              x2={point.guide.x2}
+              y2={point.guide.y2}
+              stroke="hsl(var(--gold))"
+              strokeWidth="1"
+              strokeDasharray="4 3"
+              opacity={active ? "0.9" : "0.45"}
+            />
+          )}
+          <g
           transform={`translate(${point.x}, ${point.y})`}
           onMouseEnter={() => onHoverField(point.key)}
           onClick={() => onHoverField(active ? null : point.key)}
           style={{ cursor: "pointer" }}
           className="diagram-point"
           data-field={point.key}
-        >
+          >
           {active && <circle r="10" fill="hsl(var(--card))" stroke="hsl(var(--gold))" strokeWidth="1.5" />}
           <circle r={active ? 5 : isFilled ? 4.5 : 3.5} fill={active ? "hsl(var(--gold))" : isFilled ? "hsl(var(--gold) / 0.85)" : "hsl(var(--muted-foreground))"} stroke="hsl(var(--card))" strokeWidth="1.5" />
           {isFilled && !active && <circle r="8" fill="none" stroke="hsl(var(--gold))" strokeWidth="0.5" opacity="0.4" />}
@@ -60,6 +73,7 @@ export function MeasurementDiagram({ activeField, onHoverField, filled = [], cla
             <text x={point.anchor === "end" ? -4 : point.anchor === "start" ? 4 : 0} y="0" textAnchor={point.anchor ?? "middle"} dominantBaseline="middle" fontSize="8.5" fontWeight={active ? 700 : 500} fill={active ? "hsl(var(--gold))" : "hsl(var(--muted-foreground))"} className="select-none" style={{ paintOrder: "stroke", stroke: "hsl(var(--card))", strokeWidth: 2.5 }}>
               {labelFor(point)}
             </text>
+          </g>
           </g>
         </g>
       );

@@ -1,10 +1,22 @@
 "use client";
 
 import { Check, Plus } from "lucide-react";
+import Image, { type StaticImageData } from "next/image";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { STYLE_KINDS, optionsForKind, getOption } from "@/lib/styles/catalog";
 import type { SelectedStyles, StyleKind } from "@/types";
+import collarClassic from "@/ICONS/كولر قلابي.png";
+import collarHighBand from "@/ICONS/كولر واقف.png";
+import collarMasri from "@/ICONS/كولر صيني.png";
+import collarLight from "@/ICONS/كولر خفيف.png";
+import pocketSquare from "@/ICONS/جيب مربع.png";
+import pocketRound from "@/ICONS/جيب مدور.png";
+import pocketHiddenSide from "@/ICONS/جيب جانبي مخفي.png";
+import pocketAngle from "@/ICONS/جيب بزاوية.png";
+import pocketFlap from "@/ICONS/جيب بغطاء.png";
+import pocketPen from "@/ICONS/جيب قلم.png";
+import pocketMobile from "@/ICONS/جيب موبايل.png";
 
 type Props = {
   value: SelectedStyles;
@@ -15,9 +27,23 @@ const KIND_LABEL: Record<StyleKind, { ar: string; en: string }> = {
   collar: { ar: "الياقة", en: "Collar" },
   cuff: { ar: "الكُم", en: "Cuff" },
   pocket: { ar: "الجيب", en: "Pocket" },
-  front: { ar: "الأمام", en: "Front" },
+  front: { ar: "ديزاين", en: "Design" },
   buttons: { ar: "الأزرار", en: "Buttons" },
   embroidery: { ar: "التطريز", en: "Embroidery" },
+};
+
+const STYLE_IMAGES: Record<string, StaticImageData> = {
+  collar_classic: collarClassic,
+  collar_high_band: collarHighBand,
+  collar_masri: collarMasri,
+  collar_none: collarLight,
+  pocket_single: pocketSquare,
+  pocket_double: pocketRound,
+  pocket_hidden: pocketHiddenSide,
+  pocket_angle: pocketAngle,
+  pocket_flap: pocketFlap,
+  pocket_pen: pocketPen,
+  pocket_mobile: pocketMobile,
 };
 
 export function StyleSelector({ value, onChange }: Props) {
@@ -45,6 +71,7 @@ export function StyleSelector({ value, onChange }: Props) {
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {options.map((opt) => {
                 const selected = opt.key === selectedKey;
+                const image = STYLE_IMAGES[opt.key];
                 return (
                   <button
                     key={opt.id}
@@ -62,11 +89,17 @@ export function StyleSelector({ value, onChange }: Props) {
                         <Check className="h-3 w-3" />
                       </span>
                     )}
-                    <span
-                      className="h-10 w-16 text-muted-foreground [&_svg]:h-full [&_svg]:w-full"
-                      style={{ color: selected ? "hsl(var(--primary))" : undefined }}
-                      dangerouslySetInnerHTML={{ __html: opt.preview_svg }}
-                    />
+                    {image ? (
+                      <span className="relative h-16 w-full overflow-hidden rounded-lg bg-muted/30">
+                        <Image src={image} alt={lang === "ar" ? opt.label_ar : opt.label_en} fill sizes="(max-width: 640px) 42vw, 140px" className="object-contain p-1" />
+                      </span>
+                    ) : (
+                      <span
+                        className="h-16 w-full text-muted-foreground [&_svg]:h-full [&_svg]:w-full"
+                        style={{ color: selected ? "hsl(var(--primary))" : undefined }}
+                        dangerouslySetInnerHTML={{ __html: opt.preview_svg }}
+                      />
+                    )}
                     <span className={cn("text-xs font-medium leading-tight", selected && "text-gold")}>
                       {lang === "ar" ? opt.label_ar : opt.label_en}
                     </span>

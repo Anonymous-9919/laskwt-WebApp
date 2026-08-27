@@ -95,10 +95,10 @@ const previewMap: Record<StyleKind, Record<string, string>> = {
 };
 
 export const STYLE_CATALOG: StyleOption[] = [
-  { id: "collar-classic", kind: "collar", key: "collar_classic", label_ar: "كلاسيكية", label_en: "Classic", price_addition: 0, preview_svg: collarPreviews.collar_classic, active: true, sort_order: 1 },
-  { id: "collar-high-band", kind: "collar", key: "collar_high_band", label_ar: "ياقة عالية", label_en: "High Band", price_addition: 2, preview_svg: collarPreviews.collar_high_band, active: true, sort_order: 2 },
-  { id: "collar-masri", kind: "collar", key: "collar_masri", label_ar: "ياقة مصري", label_en: "Masri Ribbon", price_addition: 3, preview_svg: collarPreviews.collar_masri, active: true, sort_order: 3 },
-  { id: "collar-none", kind: "collar", key: "collar_none", label_ar: "بدون", label_en: "None", price_addition: 0, preview_svg: collarPreviews.collar_none, active: true, sort_order: 4 },
+  { id: "collar-classic", kind: "collar", key: "collar_classic", label_ar: "كولر قلابي", label_en: "Turn-Down Collar", price_addition: 0, preview_svg: collarPreviews.collar_classic, active: true, sort_order: 1 },
+  { id: "collar-high-band", kind: "collar", key: "collar_high_band", label_ar: "كولر واقف", label_en: "Standing Collar", price_addition: 2, preview_svg: collarPreviews.collar_high_band, active: true, sort_order: 2 },
+  { id: "collar-masri", kind: "collar", key: "collar_masri", label_ar: "كولر صيني", label_en: "Chinese Collar", price_addition: 3, preview_svg: collarPreviews.collar_masri, active: true, sort_order: 3 },
+  { id: "collar-none", kind: "collar", key: "collar_none", label_ar: "كولر خفيف", label_en: "Light Collar", price_addition: 0, preview_svg: collarPreviews.collar_none, active: true, sort_order: 4 },
 
   { id: "cuff-plain", kind: "cuff", key: "cuff_plain", label_ar: "سادة", label_en: "Plain", price_addition: 0, preview_svg: cuffPreviews.cuff_plain, active: true, sort_order: 1 },
   { id: "cuff-button", kind: "cuff", key: "cuff_button", label_ar: "بزر", label_en: "Button Cuff", price_addition: 1, preview_svg: cuffPreviews.cuff_button, active: true, sort_order: 2 },
@@ -106,9 +106,13 @@ export const STYLE_CATALOG: StyleOption[] = [
   { id: "cuff-cufflinks", kind: "cuff", key: "cuff_cufflinks", label_ar: "كفلكس", label_en: "Cufflinks", price_addition: 3, preview_svg: cuffPreviews.cuff_cufflinks, active: true, sort_order: 4 },
 
   { id: "pocket-none", kind: "pocket", key: "pocket_none", label_ar: "بدون", label_en: "None", price_addition: 0, preview_svg: pocketPreviews.pocket_none, active: true, sort_order: 1 },
-  { id: "pocket-single", kind: "pocket", key: "pocket_single", label_ar: "جيب يسار", label_en: "Single Left", price_addition: 0, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 2 },
-  { id: "pocket-double", kind: "pocket", key: "pocket_double", label_ar: "جيبان", label_en: "Double", price_addition: 2, preview_svg: pocketPreviews.pocket_double, active: true, sort_order: 3 },
-  { id: "pocket-hidden", kind: "pocket", key: "pocket_hidden", label_ar: "جيب مخفي", label_en: "Hidden", price_addition: 2, preview_svg: pocketPreviews.pocket_hidden, active: true, sort_order: 4 },
+  { id: "pocket-single", kind: "pocket", key: "pocket_single", label_ar: "جيب مربع", label_en: "Square Pocket", price_addition: 0, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 2 },
+  { id: "pocket-double", kind: "pocket", key: "pocket_double", label_ar: "جيب مدور", label_en: "Round Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_double, active: true, sort_order: 3 },
+  { id: "pocket-hidden", kind: "pocket", key: "pocket_hidden", label_ar: "جيب جانبي مخفي", label_en: "Hidden Side Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_hidden, active: true, sort_order: 4 },
+  { id: "pocket-angle", kind: "pocket", key: "pocket_angle", label_ar: "جيب بزاوية", label_en: "Angled Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_hidden, active: true, sort_order: 5 },
+  { id: "pocket-flap", kind: "pocket", key: "pocket_flap", label_ar: "جيب بغطاء", label_en: "Flap Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 6 },
+  { id: "pocket-pen", kind: "pocket", key: "pocket_pen", label_ar: "جيب قلم", label_en: "Pen Pocket", price_addition: 1, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 7 },
+  { id: "pocket-mobile", kind: "pocket", key: "pocket_mobile", label_ar: "جيب موبايل", label_en: "Mobile Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 8 },
 
   { id: "front-flat-flat", kind: "front", key: "front_flat_flat", label_ar: "مسطح/مسطح", label_en: "Flat / Flat", price_addition: 0, preview_svg: frontPreviews.front_flat_flat, active: true, sort_order: 1 },
   { id: "front-flat-leaf", kind: "front", key: "front_flat_leaf", label_ar: "مسطح/وريقة", label_en: "Flat / Leaf", price_addition: 1, preview_svg: frontPreviews.front_flat_leaf, active: true, sort_order: 2 },
