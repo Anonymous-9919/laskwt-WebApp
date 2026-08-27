@@ -75,6 +75,9 @@ export function ReviewStep(props: Props) {
   const fabric = getOption("fabric", props.styles.fabric);
   const fabricPrice = fabric ? props.customStylePrices?.[fabric.key] ?? fabric.price_addition : 0;
   const otherPrice = props.customStylePrices?.other ?? 0;
+  const fabricLabel = !fabric || fabric.key === "fabric_without"
+    ? (lang === "ar" ? "بدون خام" : "Without Fabrics")
+    : `${lang === "ar" ? "القماش" : "Fabric"} - ${lang === "ar" ? fabric.label_ar : fabric.label_en}`;
 
   const check = canCompleteOrder({
     measurements: props.measurements,
@@ -328,12 +331,12 @@ export function ReviewStep(props: Props) {
           <div className="pt-1">
             <p className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
               <ClipboardList className="h-3.5 w-3.5" />
-              Design - ديزاين
+              {lang === "ar" ? "ديزاين" : "Design"}
             </p>
             <div className="space-y-2">
-              <SummaryPriceRow label="Classic - كلاسيك" value={props.customBasePrice ?? BASE_PRICES[props.productType]} onChange={props.onCustomBasePriceChange} />
-              <SummaryPriceRow label={`Fabric - الأقمشة: ${fabric ? (lang === "ar" ? fabric.label_ar : fabric.label_en) : (lang === "ar" ? "بدون خام" : "Without Fabrics")}`} value={fabricPrice} onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)} />
-              <SummaryPriceRow label="Others - اخرى" value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
+              <SummaryPriceRow label={lang === "ar" ? "كلاسيك" : "Classic"} value={props.customBasePrice ?? BASE_PRICES[props.productType]} onChange={props.onCustomBasePriceChange} />
+              <SummaryPriceRow label={fabricLabel} value={fabricPrice} onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)} />
+              <SummaryPriceRow label={lang === "ar" ? "اخرى" : "Others"} value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
             </div>
           </div>
 
