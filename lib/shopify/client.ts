@@ -22,6 +22,10 @@ export function hasShopifyConfig(): boolean {
   return getShopifyEnv() !== null;
 }
 
+export function isShopifySalesSyncEnabled(): boolean {
+  return process.env.SHOPIFY_SALES_SYNC_ENABLED === "true";
+}
+
 function stripKwd(value: number): string {
   return value.toFixed(3);
 }

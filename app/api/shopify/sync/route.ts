@@ -3,6 +3,7 @@ import { getRepository } from "@/lib/data/repository";
 import {
   getShopifyEnv,
   hasShopifyConfig,
+  isShopifySalesSyncEnabled,
   pushOrderToShopify,
 } from "@/lib/shopify/client";
 
@@ -41,6 +42,11 @@ export async function POST(req: NextRequest) {
 
   if (!hasShopifyConfig()) {
     return NextResponse.json({ notConfigured: true });
+  }
+
+  // Keep trial stores connected but prevent any order from being created.
+  if (!isShopifySalesSyncEnabled()) {
+    return NextResponse.json({ salesSyncDisabled: true });
   }
 
   const customer = order.customer_id

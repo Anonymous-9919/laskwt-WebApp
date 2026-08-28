@@ -36,6 +36,8 @@ export function SyncToShopifyButton({
       const data = await res.json().catch(() => ({}));
       if (data.notConfigured) {
         setError(t.order.shopifyNotConfigured);
+      } else if (data.salesSyncDisabled) {
+        setError(lang === "ar" ? "ربط شوبيفاي جاهز، لكن مزامنة المبيعات متوقفة أثناء الفترة التجريبية." : "Shopify is connected, but sale sync is disabled during the trial period.");
       } else if (!res.ok) {
         setError(data.error ?? "Sync failed");
       } else {
