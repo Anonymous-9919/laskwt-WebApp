@@ -91,13 +91,12 @@ export function StyleSelector({ value, onChange }: Props) {
                       </span>
                     )}
                     {image ? (
-                      <span className="relative h-16 w-full overflow-hidden rounded-lg bg-muted/30">
+                      <span className="relative h-16 w-full overflow-hidden rounded-lg">
                         <Image src={image} alt={lang === "ar" ? opt.label_ar : opt.label_en} fill sizes="(max-width: 640px) 42vw, 140px" className="object-contain p-1" />
                       </span>
                     ) : (
                       <span
-                        className="h-16 w-full text-muted-foreground [&_svg]:h-full [&_svg]:w-full"
-                        style={{ color: selected ? "hsl(var(--primary))" : undefined }}
+                        className="h-16 w-full text-foreground [&_svg]:h-full [&_svg]:w-full"
                         dangerouslySetInnerHTML={{ __html: opt.preview_svg }}
                       />
                     )}

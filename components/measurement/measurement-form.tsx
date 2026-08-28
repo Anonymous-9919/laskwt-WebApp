@@ -110,6 +110,7 @@ export function MeasurementForm({
                 value={currentLabel}
                 onChange={(e) => setLabel(e.target.value)}
                 placeholder={t.measurement.labelHint}
+                className="text-base sm:text-sm"
               />
             </div>
 
@@ -149,7 +150,7 @@ export function MeasurementForm({
                         max={field.max}
                         dir="ltr"
                         placeholder={`— ${field.required ? "*" : ""}`}
-                        className="ltr-num pe-8 text-sm"
+                        className="ltr-num pe-8 text-base sm:text-sm"
                         value={values[field.key] ?? ""}
                         onChange={(e) => setField(field.key, e.target.value)}
                       />
