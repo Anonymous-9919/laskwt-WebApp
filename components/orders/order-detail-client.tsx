@@ -117,7 +117,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
             }}
           >
             <Printer className="h-4 w-4" />
-            {t.order.print}
+            {t.order.print} {t.invoice.invoice}
           </Button>
           <Button
             variant="outline"
@@ -132,7 +132,7 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
             }}
           >
             <Download className="h-4 w-4" />
-            {t.order.download} PDF
+            {t.order.download} {t.invoice.invoice}
           </Button>
           <Button
             variant="outline"

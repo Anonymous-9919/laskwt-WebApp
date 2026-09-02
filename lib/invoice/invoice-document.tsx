@@ -47,9 +47,6 @@ const styles = StyleSheet.create({
   label: { color: MUTED, fontSize: 7, letterSpacing: 1.1, textTransform: "uppercase" },
   labelAr: { color: MUTED, fontFamily: "Cairo", fontSize: 8 },
   metaValue: { fontSize: 10.5, fontWeight: 600, marginTop: 4 },
-  quote: { borderLeftWidth: 5, borderLeftColor: GOLD, marginTop: 18, paddingLeft: 12 },
-  quoteTitle: { fontFamily: "Times-Bold", fontSize: 18 },
-  quoteBody: { color: MUTED, fontSize: 9.5, marginTop: 4 },
   split: { flexDirection: "row", gap: 10, marginTop: 18 },
   customerCard: { width: "52%", backgroundColor: SOFT, borderLeftWidth: 3, borderLeftColor: INK, padding: 12 },
   orderCard: { width: "48%", backgroundColor: SOFT, padding: 12 },
@@ -119,8 +116,6 @@ export function InvoiceDocument({ order, customer, lang, business, baseUrl }: { 
         <View><Text style={isAr ? styles.labelAr : styles.label}>{t.order.dueDate}</Text><Text style={[styles.metaValue, fontStyle]}>{order.due_date ? dateFormat.format(new Date(order.due_date)) : "-"}</Text></View>
         <View><Text style={isAr ? styles.labelAr : styles.label}>{t.common.status}</Text><Text style={[styles.metaValue, fontStyle]}>{t.order[`status_${order.status}` as keyof typeof t.order]}</Text></View>
       </View>
-
-      <View style={styles.quote}><Text style={[styles.quoteTitle, fontStyle]}>{isAr ? "تفاصيل مصممة بعناية." : "Crafted for the details that matter."}</Text><Text style={[styles.quoteBody, fontStyle]}>{isAr ? "يتم الاحتفاظ بملف الثوب لطلباتكم المستقبلية." : "Your garment profile is retained for effortless future orders."}</Text></View>
 
       <View style={styles.split}>
         <View style={styles.customerCard}><Text style={isAr ? styles.labelAr : styles.label}>{t.invoice.customer}</Text><Text style={[styles.cardValue, fontStyle]}>{customer?.full_name ?? "-"}</Text><Text style={[styles.cardSub, fontStyle]}>{customer?.phone ?? ""}{customer?.email ? `  |  ${customer.email}` : ""}</Text></View>
