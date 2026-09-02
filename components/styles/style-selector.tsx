@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { Check, Plus } from "lucide-react";
 import Image, { type StaticImageData } from "next/image";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { STYLE_KINDS, optionsForKind, getOption } from "@/lib/styles/catalog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { SelectedStyles, StyleKind } from "@/types";
 import collarClassic from "@/ICONS/كولر قلابي.png";
 import collarHighBand from "@/ICONS/كولر واقف.png";
@@ -49,6 +51,9 @@ const STYLE_IMAGES: Record<string, StaticImageData> = {
 
 export function StyleSelector({ value, onChange }: Props) {
   const { lang } = useLanguage();
+  const [fabricSelectionEnabled, setFabricSelectionEnabled] = useState(
+    value.fabric !== "" && value.fabric !== "fabric_without"
+  );
 
   return (
     <div className="space-y-8">
@@ -56,6 +61,8 @@ export function StyleSelector({ value, onChange }: Props) {
         const options = optionsForKind(kind);
         const selectedKey = value[kind];
         const selectedOpt = getOption(kind, selectedKey);
+        const fabricOptions = options.filter((opt) => opt.key !== "fabric_without");
+        const hasFabric = kind === "fabric" && fabricSelectionEnabled;
         return (
           <section key={kind} className="space-y-3">
             <div className="flex items-center justify-between">
@@ -69,6 +76,53 @@ export function StyleSelector({ value, onChange }: Props) {
                 </span>
               )}
             </div>
+            {kind === "fabric" ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFabricSelectionEnabled(false);
+                      onChange({ ...value, fabric: "" });
+                    }}
+                    className={cn(
+                      "rounded-xl border bg-card p-3 text-sm font-medium transition-all",
+                      !hasFabric
+                        ? "border-gold bg-gold/10 text-gold shadow-sm ring-1 ring-gold/40"
+                        : "border-input hover:border-primary/40 hover:bg-accent/40"
+                    )}
+                  >
+                    {lang === "ar" ? "بدون خام" : "Without Fabrics"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFabricSelectionEnabled(true)}
+                    className={cn(
+                      "rounded-xl border bg-card p-3 text-sm font-medium transition-all",
+                      hasFabric
+                        ? "border-gold bg-gold/10 text-gold shadow-sm ring-1 ring-gold/40"
+                        : "border-input hover:border-primary/40 hover:bg-accent/40"
+                    )}
+                  >
+                    {lang === "ar" ? "قسم الأقمشة" : "Fabrics Section"}
+                  </button>
+                </div>
+                {hasFabric && (
+                  <Select value={selectedKey} onValueChange={(fabric) => onChange({ ...value, fabric })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={lang === "ar" ? "اختر القماش" : "Select a fabric"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {fabricOptions.map((opt) => (
+                        <SelectItem key={opt.id} value={opt.key}>
+                          {lang === "ar" ? opt.label_ar : opt.label_en} {opt.price_addition > 0 ? `(+${opt.price_addition} KWD)` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+            ) : (
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {options.map((opt) => {
                 const selected = opt.key === selectedKey;
@@ -110,6 +164,7 @@ export function StyleSelector({ value, onChange }: Props) {
                 );
               })}
             </div>
+            )}
           </section>
         );
       })}

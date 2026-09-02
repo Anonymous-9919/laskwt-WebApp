@@ -14,7 +14,7 @@ export const DEFAULT_STYLES: SelectedStyles = {
   front: "front_flat_flat",
   buttons: "buttons_plain",
   embroidery: "emb_none",
-  fabric: "fabric_without",
+  fabric: "",
 };
 
 export function customizationTotal(styles: SelectedStyles, customStylePrices?: Record<string, number>): number {
