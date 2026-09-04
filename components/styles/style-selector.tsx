@@ -64,6 +64,7 @@ export function StyleSelector({ value, onChange }: Props) {
         const selectedOpt = getOption(kind, selectedKey);
         const fabricOptions = options.filter((opt) => opt.key !== "fabric_without");
         const hasFabric = kind === "fabric" && fabricSelectionEnabled;
+        const hasCustomFabric = kind === "fabric" && Boolean(value.fabric_other?.trim());
         return (
           <section key={kind} className="space-y-3">
             <div className="flex items-center justify-between">
@@ -110,7 +111,7 @@ export function StyleSelector({ value, onChange }: Props) {
                 </div>
                 {hasFabric && (
                   <div className="grid gap-2 sm:grid-cols-2">
-                    <Select value={selectedKey} onValueChange={(fabric) => onChange({ ...value, fabric })}>
+                    <Select value={selectedKey} onValueChange={(fabric) => onChange({ ...value, fabric, fabric_other: "" })} disabled={hasCustomFabric}>
                       <SelectTrigger>
                         <SelectValue placeholder={lang === "ar" ? "اختر القماش" : "Select a fabric"} />
                       </SelectTrigger>
@@ -124,7 +125,10 @@ export function StyleSelector({ value, onChange }: Props) {
                     </Select>
                     <Input
                       value={value.fabric_other ?? ""}
-                      onChange={(event) => onChange({ ...value, fabric_other: event.target.value })}
+                      onChange={(event) => {
+                        const fabric_other = event.target.value;
+                        onChange({ ...value, fabric: fabric_other.trim() ? "" : value.fabric, fabric_other });
+                      }}
                       placeholder={lang === "ar" ? "أخرى" : "Others"}
                       aria-label={lang === "ar" ? "قماش آخر" : "Other fabric"}
                     />

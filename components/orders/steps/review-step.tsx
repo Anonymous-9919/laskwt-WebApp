@@ -73,9 +73,12 @@ export function ReviewStep(props: Props) {
     customStylePrices: props.customStylePrices,
   });
   const fabric = getOption("fabric", props.styles.fabric);
+  const customFabric = props.styles.fabric_other?.trim();
   const fabricPrice = fabric ? props.customStylePrices?.[fabric.key] ?? fabric.price_addition : 0;
   const otherPrice = props.customStylePrices?.other ?? 0;
-  const fabricLabel = !fabric || fabric.key === "fabric_without"
+  const fabricLabel = customFabric
+    ? `${lang === "ar" ? "القماش" : "Fabric"} - ${customFabric}`
+    : !fabric || fabric.key === "fabric_without"
     ? (lang === "ar" ? "بدون خام" : "Without Fabrics")
     : `${lang === "ar" ? "القماش" : "Fabric"} - ${lang === "ar" ? fabric.label_ar : fabric.label_en}`;
 
