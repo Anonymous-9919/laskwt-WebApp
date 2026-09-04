@@ -36,7 +36,9 @@ export type StyleOption = {
   sort_order: number;
 };
 
-export type SelectedStyles = Record<StyleKind, string>;
+export type SelectedStyles = Record<StyleKind, string> & {
+  fabric_other?: string;
+};
 
 export type Profile = {
   id: string;

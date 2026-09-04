@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/lib/i18n/context";
 import { STYLE_KINDS, optionsForKind, getOption } from "@/lib/styles/catalog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import type { SelectedStyles, StyleKind } from "@/types";
 import collarClassic from "@/ICONS/كولر قلابي.png";
 import collarHighBand from "@/ICONS/كولر واقف.png";
@@ -83,7 +84,7 @@ export function StyleSelector({ value, onChange }: Props) {
                     type="button"
                     onClick={() => {
                       setFabricSelectionEnabled(false);
-                      onChange({ ...value, fabric: "" });
+                      onChange({ ...value, fabric: "", fabric_other: "" });
                     }}
                     className={cn(
                       "rounded-xl border bg-card p-3 text-sm font-medium transition-all",
@@ -104,22 +105,30 @@ export function StyleSelector({ value, onChange }: Props) {
                         : "border-input hover:border-primary/40 hover:bg-accent/40"
                     )}
                   >
-                    {lang === "ar" ? "قسم الأقمشة" : "Fabrics Section"}
+                    {lang === "ar" ? "مع خام" : "With Fabrics"}
                   </button>
                 </div>
                 {hasFabric && (
-                  <Select value={selectedKey} onValueChange={(fabric) => onChange({ ...value, fabric })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={lang === "ar" ? "اختر القماش" : "Select a fabric"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {fabricOptions.map((opt) => (
-                        <SelectItem key={opt.id} value={opt.key}>
-                          {lang === "ar" ? opt.label_ar : opt.label_en} {opt.price_addition > 0 ? `(+${opt.price_addition} KWD)` : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <Select value={selectedKey} onValueChange={(fabric) => onChange({ ...value, fabric })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={lang === "ar" ? "اختر القماش" : "Select a fabric"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {fabricOptions.map((opt) => (
+                          <SelectItem key={opt.id} value={opt.key}>
+                            {lang === "ar" ? opt.label_ar : opt.label_en} {opt.price_addition > 0 ? `(+${opt.price_addition} KWD)` : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      value={value.fabric_other ?? ""}
+                      onChange={(event) => onChange({ ...value, fabric_other: event.target.value })}
+                      placeholder={lang === "ar" ? "أخرى" : "Others"}
+                      aria-label={lang === "ar" ? "قماش آخر" : "Other fabric"}
+                    />
+                  </div>
                 )}
               </div>
             ) : (
