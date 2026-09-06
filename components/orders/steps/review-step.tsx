@@ -24,7 +24,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRepository } from "@/lib/data/use-repository";
 import { useLanguage } from "@/lib/i18n/context";
 import { computeOrderTotals, canCompleteOrder, BASE_PRICES } from "@/lib/pricing/calculator";
-import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
+import { getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { cn, formatKWD } from "@/lib/utils";
 import type { Customer, DiscountType, Measurements, SelectedStyles, OrderStatus } from "@/types";
@@ -320,11 +320,6 @@ export function ReviewStep(props: Props) {
             </p>
             <div className="space-y-2">
               <SummaryPriceRow label={lang === "ar" ? "كلاسيك" : "Classic"} value={props.customBasePrice ?? BASE_PRICES[props.productType]} onChange={props.onCustomBasePriceChange} />
-              {STYLE_KINDS.map((kind) => {
-                const option = getOption(kind, props.styles[kind]);
-                if (!option || kind === "fabric") return null;
-                return <SummaryPriceRow key={kind} label={lang === "ar" ? option.label_ar : option.label_en} value={props.customStylePrices?.[option.key] ?? option.price_addition} onChange={(value) => props.onCustomStylePriceChange?.(option.key, value)} />;
-              })}
               <SummaryPriceRow label={fabricLabel} value={fabricPrice} onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)} />
               <SummaryPriceRow label={lang === "ar" ? "اخرى" : "Others"} value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
             </div>

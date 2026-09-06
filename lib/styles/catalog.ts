@@ -18,13 +18,13 @@ const collarPreviews: Record<string, string> = {
 };
 
 const collarButtonCountPreviews: Record<string, string> = {
-  collar_button_one: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`),
-  collar_button_two: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`),
+  collar_button_one: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><circle cx="40" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`),
+  collar_button_two: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><circle cx="30" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="50" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`),
 };
 
 const collarButtonTypePreviews: Record<string, string> = {
-  collar_button_press: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="40" cy="20" r="3" fill="currentColor"/></svg>`),
-  collar_button_regular: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="36" cy="16" r="1.5" fill="currentColor"/><circle cx="44" cy="16" r="1.5" fill="currentColor"/><circle cx="36" cy="24" r="1.5" fill="currentColor"/><circle cx="44" cy="24" r="1.5" fill="currentColor"/></svg>`),
+  collar_button_press: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><circle cx="40" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="40" cy="20" r="2" fill="currentColor"/></svg>`),
+  collar_button_regular: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><circle cx="40" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="36" cy="16" r="1" fill="currentColor"/><circle cx="44" cy="16" r="1" fill="currentColor"/><circle cx="36" cy="24" r="1" fill="currentColor"/><circle cx="44" cy="24" r="1" fill="currentColor"/></svg>`),
 };
 
 const cuffPreviews: Record<string, string> = {
@@ -57,19 +57,19 @@ const pocketPreviews: Record<string, string> = {
 
 const sidePocketPreviews: Record<string, string> = {
   side_pocket_none: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"></svg>`),
-  side_pocket_mobile: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="29" y="6" width="22" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="40" cy="29" r="1.5" fill="currentColor"/></svg>`),
+  side_pocket_mobile: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><rect x="29" y="6" width="22" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="40" cy="29" r="1" fill="currentColor"/></svg>`),
 };
 
 const chestPaddingPreviews: Record<string, string> = {
-  chest_padding_none: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="7" width="36" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>`),
-  chest_padding_light: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="6" width="40" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M27 20H53" stroke="currentColor" stroke-width="1.5"/></svg>`),
-  chest_padding_medium: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="5" width="44" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M25 16H55M25 24H55" stroke="currentColor" stroke-width="1.5"/></svg>`),
-  chest_padding_heavy: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="16" y="4" width="48" height="32" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M23 13H57M23 20H57M23 27H57" stroke="currentColor" stroke-width="1.5"/></svg>`),
+  chest_padding_none: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><rect x="22" y="7" width="36" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`),
+  chest_padding_light: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><rect x="20" y="6" width="40" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M27 20H53" stroke="currentColor" stroke-width="1"/></svg>`),
+  chest_padding_medium: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><rect x="18" y="5" width="44" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M25 16H55M25 24H55" stroke="currentColor" stroke-width="1"/></svg>`),
+  chest_padding_heavy: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><rect x="16" y="4" width="48" height="32" rx="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M23 13H57M23 20H57M23 27H57" stroke="currentColor" stroke-width="1"/></svg>`),
 };
 
 const chestClosurePreviews: Record<string, string> = {
-  chest_closure_zipper: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M40 4V36" stroke="currentColor" stroke-width="3"/><path d="M35 10H45M35 16H45M35 22H45M35 28H45" stroke="currentColor" stroke-width="1.5"/></svg>`),
-  chest_closure_buttons: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M40 4V36" stroke="currentColor" stroke-width="2"/><circle cx="40" cy="11" r="2.5" fill="currentColor"/><circle cx="40" cy="20" r="2.5" fill="currentColor"/><circle cx="40" cy="29" r="2.5" fill="currentColor"/></svg>`),
+  chest_closure_zipper: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><path d="M40 4V36" stroke="currentColor" stroke-width="1.5"/><path d="M35 10H45M35 16H45M35 22H45M35 28H45" stroke="currentColor" stroke-width="1"/></svg>`),
+  chest_closure_buttons: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" opacity="0.6"><path d="M40 4V36" stroke="currentColor" stroke-width="1.5"/><circle cx="40" cy="11" r="1.5" fill="currentColor"/><circle cx="40" cy="20" r="1.5" fill="currentColor"/><circle cx="40" cy="29" r="1.5" fill="currentColor"/></svg>`),
 };
 
 const frontPreviews: Record<string, string> = {
