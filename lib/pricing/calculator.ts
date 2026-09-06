@@ -9,12 +9,17 @@ export const BASE_PRICES: Record<"dascha" | "thobe", number> = {
 
 export const DEFAULT_STYLES: SelectedStyles = {
   collar: "collar_classic",
+  collar_button_count: "collar_button_one",
+  collar_button_type: "collar_button_regular",
   cuff: "cuff_plain",
   pocket: "pocket_single",
+  side_pocket: "side_pocket_none",
+  chest_padding: "chest_padding_none",
+  chest_closure: "chest_closure_buttons",
   front: "front_flat_flat",
   buttons: "buttons_plain",
   embroidery: "emb_none",
-  fabric: "",
+  fabric: "fabric_without",
 };
 
 export function customizationTotal(styles: SelectedStyles, customStylePrices?: Record<string, number>): number {

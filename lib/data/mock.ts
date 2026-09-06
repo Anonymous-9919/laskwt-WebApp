@@ -133,8 +133,13 @@ const orders: Order[] = [
         base_price: BASE_PRICES.dascha,
         styles: {
           collar: "collar_masri",
+          collar_button_count: "collar_button_one",
+          collar_button_type: "collar_button_regular",
           cuff: "cuff_button",
           pocket: "pocket_single",
+          side_pocket: "side_pocket_none",
+          chest_padding: "chest_padding_none",
+          chest_closure: "chest_closure_buttons",
           front: "front_flat_leaf",
           buttons: "buttons_pearl",
           embroidery: "emb_none",

@@ -48,8 +48,14 @@ export function buildWhatsAppMessage(
 
   const styles: string[] = [];
   for (const kind of STYLE_KINDS) {
+    const customFabric = kind === "fabric" ? item.styles?.fabric_other?.trim() : "";
+    if (customFabric) {
+      styles.push(`${isAr ? "القماش" : "Fabric"}: ${customFabric}`);
+      continue;
+    }
     const opt = getOption(kind, item.styles?.[kind]);
     if (opt) styles.push(isAr ? opt.label_ar : opt.label_en);
+    else if (kind === "fabric") styles.push(isAr ? "بدون خام" : "Without Fabrics");
   }
   if (styles.length > 0) {
     lines.push("");

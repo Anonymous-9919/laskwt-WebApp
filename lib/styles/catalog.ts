@@ -17,6 +17,16 @@ const collarPreviews: Record<string, string> = {
   ),
 };
 
+const collarButtonCountPreviews: Record<string, string> = {
+  collar_button_one: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`),
+  collar_button_two: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="2"/></svg>`),
+};
+
+const collarButtonTypePreviews: Record<string, string> = {
+  collar_button_press: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="40" cy="20" r="3" fill="currentColor"/></svg>`),
+  collar_button_regular: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="20" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="36" cy="16" r="1.5" fill="currentColor"/><circle cx="44" cy="16" r="1.5" fill="currentColor"/><circle cx="36" cy="24" r="1.5" fill="currentColor"/><circle cx="44" cy="24" r="1.5" fill="currentColor"/></svg>`),
+};
+
 const cuffPreviews: Record<string, string> = {
   cuff_plain: preview(
     `<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="6" width="60" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>`
@@ -43,6 +53,23 @@ const pocketPreviews: Record<string, string> = {
   pocket_hidden: preview(
     `<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M48 14 L72 14 L68 26 L46 26 Z" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.6"/></svg>`
   ),
+};
+
+const sidePocketPreviews: Record<string, string> = {
+  side_pocket_none: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"></svg>`),
+  side_pocket_mobile: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="29" y="6" width="22" height="28" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="40" cy="29" r="1.5" fill="currentColor"/></svg>`),
+};
+
+const chestPaddingPreviews: Record<string, string> = {
+  chest_padding_none: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="7" width="36" height="26" rx="3" fill="none" stroke="currentColor" stroke-width="2"/></svg>`),
+  chest_padding_light: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="6" width="40" height="28" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M27 20H53" stroke="currentColor" stroke-width="1.5"/></svg>`),
+  chest_padding_medium: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="18" y="5" width="44" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M25 16H55M25 24H55" stroke="currentColor" stroke-width="1.5"/></svg>`),
+  chest_padding_heavy: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><rect x="16" y="4" width="48" height="32" rx="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M23 13H57M23 20H57M23 27H57" stroke="currentColor" stroke-width="1.5"/></svg>`),
+};
+
+const chestClosurePreviews: Record<string, string> = {
+  chest_closure_zipper: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M40 4V36" stroke="currentColor" stroke-width="3"/><path d="M35 10H45M35 16H45M35 22H45M35 28H45" stroke="currentColor" stroke-width="1.5"/></svg>`),
+  chest_closure_buttons: preview(`<svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg"><path d="M40 4V36" stroke="currentColor" stroke-width="2"/><circle cx="40" cy="11" r="2.5" fill="currentColor"/><circle cx="40" cy="20" r="2.5" fill="currentColor"/><circle cx="40" cy="29" r="2.5" fill="currentColor"/></svg>`),
 };
 
 const frontPreviews: Record<string, string> = {
@@ -94,8 +121,13 @@ const fabricPreviews: Record<string, string> = {
 
 const previewMap: Record<StyleKind, Record<string, string>> = {
   collar: collarPreviews,
+  collar_button_count: collarButtonCountPreviews,
+  collar_button_type: collarButtonTypePreviews,
   cuff: cuffPreviews,
   pocket: pocketPreviews,
+  side_pocket: sidePocketPreviews,
+  chest_padding: chestPaddingPreviews,
+  chest_closure: chestClosurePreviews,
   front: frontPreviews,
   buttons: buttonPreviews,
   embroidery: embroideryPreviews,
@@ -108,6 +140,11 @@ export const STYLE_CATALOG: StyleOption[] = [
   { id: "collar-masri", kind: "collar", key: "collar_masri", label_ar: "كولر صيني", label_en: "Chinese Collar", price_addition: 3, preview_svg: collarPreviews.collar_masri, active: true, sort_order: 3 },
   { id: "collar-none", kind: "collar", key: "collar_none", label_ar: "كولر خفيف", label_en: "Light Collar", price_addition: 0, preview_svg: collarPreviews.collar_none, active: true, sort_order: 4 },
 
+  { id: "collar-button-one", kind: "collar_button_count", key: "collar_button_one", label_ar: "زر واحد", label_en: "One Button", price_addition: 0, preview_svg: collarButtonCountPreviews.collar_button_one, active: true, sort_order: 1 },
+  { id: "collar-button-two", kind: "collar_button_count", key: "collar_button_two", label_ar: "زران", label_en: "Two Buttons", price_addition: 0, preview_svg: collarButtonCountPreviews.collar_button_two, active: true, sort_order: 2 },
+  { id: "collar-button-press", kind: "collar_button_type", key: "collar_button_press", label_ar: "زر كبس", label_en: "Press Button", price_addition: 0, preview_svg: collarButtonTypePreviews.collar_button_press, active: true, sort_order: 1 },
+  { id: "collar-button-regular", kind: "collar_button_type", key: "collar_button_regular", label_ar: "زر عادي", label_en: "Regular Button", price_addition: 0, preview_svg: collarButtonTypePreviews.collar_button_regular, active: true, sort_order: 2 },
+
   { id: "cuff-plain", kind: "cuff", key: "cuff_plain", label_ar: "سادة", label_en: "Plain", price_addition: 0, preview_svg: cuffPreviews.cuff_plain, active: true, sort_order: 1 },
   { id: "cuff-button", kind: "cuff", key: "cuff_button", label_ar: "بزر", label_en: "Button Cuff", price_addition: 1, preview_svg: cuffPreviews.cuff_button, active: true, sort_order: 2 },
   { id: "cuff-tarbush", kind: "cuff", key: "cuff_tarbush", label_ar: "طربوش", label_en: "Tarbush", price_addition: 2, preview_svg: cuffPreviews.cuff_tarbush, active: true, sort_order: 3 },
@@ -116,11 +153,22 @@ export const STYLE_CATALOG: StyleOption[] = [
   { id: "pocket-none", kind: "pocket", key: "pocket_none", label_ar: "بدون", label_en: "None", price_addition: 0, preview_svg: pocketPreviews.pocket_none, active: false, sort_order: 1 },
   { id: "pocket-single", kind: "pocket", key: "pocket_single", label_ar: "جيب مربع", label_en: "Square Pocket", price_addition: 0, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 2 },
   { id: "pocket-double", kind: "pocket", key: "pocket_double", label_ar: "جيب مدور", label_en: "Round Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_double, active: true, sort_order: 3 },
-  { id: "pocket-hidden", kind: "pocket", key: "pocket_hidden", label_ar: "جيب جانبي مخفي", label_en: "Hidden Side Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_hidden, active: true, sort_order: 4 },
-  { id: "pocket-angle", kind: "pocket", key: "pocket_angle", label_ar: "جيب بزاوية", label_en: "Angled Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_hidden, active: true, sort_order: 5 },
-  { id: "pocket-flap", kind: "pocket", key: "pocket_flap", label_ar: "جيب بغطاء", label_en: "Flap Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 6 },
-  { id: "pocket-pen", kind: "pocket", key: "pocket_pen", label_ar: "جيب قلم", label_en: "Pen Pocket", price_addition: 1, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 7 },
-  { id: "pocket-mobile", kind: "pocket", key: "pocket_mobile", label_ar: "جيب موبايل", label_en: "Mobile Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 8 },
+  { id: "pocket-angle", kind: "pocket", key: "pocket_angle", label_ar: "جيب بزاوية", label_en: "Angled Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_hidden, active: true, sort_order: 4 },
+  { id: "pocket-flap", kind: "pocket", key: "pocket_flap", label_ar: "جيب بغطاء", label_en: "Flap Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 5 },
+  { id: "pocket-pen", kind: "pocket", key: "pocket_pen", label_ar: "جيب قلم", label_en: "Pen Pocket", price_addition: 1, preview_svg: pocketPreviews.pocket_single, active: true, sort_order: 6 },
+  // Retained for historical orders created before side pockets were separated.
+  { id: "pocket-hidden", kind: "pocket", key: "pocket_hidden", label_ar: "جيب جانبي مخفي", label_en: "Hidden Side Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_hidden, active: false, sort_order: 7 },
+  { id: "pocket-mobile", kind: "pocket", key: "pocket_mobile", label_ar: "جيب موبايل", label_en: "Mobile Pocket", price_addition: 2, preview_svg: pocketPreviews.pocket_single, active: false, sort_order: 8 },
+
+  { id: "side-pocket-none", kind: "side_pocket", key: "side_pocket_none", label_ar: "بدون", label_en: "None", price_addition: 0, preview_svg: sidePocketPreviews.side_pocket_none, active: true, sort_order: 1 },
+  { id: "side-pocket-mobile", kind: "side_pocket", key: "side_pocket_mobile", label_ar: "جيب موبايل", label_en: "Mobile Pocket", price_addition: 2, preview_svg: sidePocketPreviews.side_pocket_mobile, active: true, sort_order: 2 },
+
+  { id: "chest-padding-none", kind: "chest_padding", key: "chest_padding_none", label_ar: "بدون حشوة", label_en: "No Padding", price_addition: 0, preview_svg: chestPaddingPreviews.chest_padding_none, active: true, sort_order: 1 },
+  { id: "chest-padding-light", kind: "chest_padding", key: "chest_padding_light", label_ar: "حشوة خفيفة", label_en: "Light Padding", price_addition: 0, preview_svg: chestPaddingPreviews.chest_padding_light, active: true, sort_order: 2 },
+  { id: "chest-padding-medium", kind: "chest_padding", key: "chest_padding_medium", label_ar: "حشوة متوسطة", label_en: "Medium Padding", price_addition: 0, preview_svg: chestPaddingPreviews.chest_padding_medium, active: true, sort_order: 3 },
+  { id: "chest-padding-heavy", kind: "chest_padding", key: "chest_padding_heavy", label_ar: "حشوة ثقيلة", label_en: "Heavy Padding", price_addition: 0, preview_svg: chestPaddingPreviews.chest_padding_heavy, active: true, sort_order: 4 },
+  { id: "chest-closure-zipper", kind: "chest_closure", key: "chest_closure_zipper", label_ar: "سحاب", label_en: "Zipper", price_addition: 0, preview_svg: chestClosurePreviews.chest_closure_zipper, active: true, sort_order: 1 },
+  { id: "chest-closure-buttons", kind: "chest_closure", key: "chest_closure_buttons", label_ar: "أزرار", label_en: "Buttons", price_addition: 0, preview_svg: chestClosurePreviews.chest_closure_buttons, active: true, sort_order: 2 },
 
   { id: "front-flat-flat", kind: "front", key: "front_flat_flat", label_ar: "مسطح/مسطح", label_en: "Flat / Flat", price_addition: 0, preview_svg: frontPreviews.front_flat_flat, active: true, sort_order: 1 },
   { id: "front-flat-leaf", kind: "front", key: "front_flat_leaf", label_ar: "مسطح/وريقة", label_en: "Flat / Leaf", price_addition: 1, preview_svg: frontPreviews.front_flat_leaf, active: true, sort_order: 2 },
@@ -144,7 +192,7 @@ export const STYLE_CATALOG: StyleOption[] = [
   { id: "fabric-polyester-blend", kind: "fabric", key: "fabric_polyester_blend", label_ar: "بوليستر مخلوط", label_en: "Polyester Blend", price_addition: 4, preview_svg: fabricPreviews.fabric_linen, active: true, sort_order: 6 },
 ];
 
-export const STYLE_KINDS: StyleKind[] = ["collar", "pocket", "fabric"];
+export const STYLE_KINDS: StyleKind[] = ["collar", "collar_button_count", "collar_button_type", "pocket", "side_pocket", "chest_padding", "chest_closure", "fabric"];
 
 export function optionsForKind(kind: StyleKind): StyleOption[] {
   return STYLE_CATALOG.filter((o) => o.kind === kind && o.active).sort((a, b) => a.sort_order - b.sort_order);

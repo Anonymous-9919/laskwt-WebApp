@@ -28,8 +28,13 @@ type Props = {
 
 const KIND_LABEL: Record<StyleKind, { ar: string; en: string }> = {
   collar: { ar: "الياقة", en: "Collar" },
+  collar_button_count: { ar: "أزرار الياقة", en: "Collar Buttons" },
+  collar_button_type: { ar: "نوع زر الياقة", en: "Collar Button Type" },
   cuff: { ar: "الكُم", en: "Cuff" },
-  pocket: { ar: "الجيب", en: "Pocket" },
+  pocket: { ar: "الجيب الرئيسي", en: "Main Pocket" },
+  side_pocket: { ar: "الجيب الجانبي", en: "Side Pocket" },
+  chest_padding: { ar: "حشوة الصدر", en: "Chest Padding" },
+  chest_closure: { ar: "إغلاق الصدر", en: "Chest Closure" },
   front: { ar: "ديزاين", en: "Design" },
   buttons: { ar: "الأزرار", en: "Buttons" },
   embroidery: { ar: "التطريز", en: "Embroidery" },
@@ -85,7 +90,7 @@ export function StyleSelector({ value, onChange }: Props) {
                     type="button"
                     onClick={() => {
                       setFabricSelectionEnabled(false);
-                      onChange({ ...value, fabric: "", fabric_other: "" });
+                      onChange({ ...value, fabric: "fabric_without", fabric_other: "" });
                     }}
                     className={cn(
                       "rounded-xl border bg-card p-3 text-sm font-medium transition-all",

@@ -1,4 +1,5 @@
 import type { Customer, Order, OrderItem } from "@/types";
+import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 
 export type ShopifyEnv = {
   shopDomain: string;
@@ -48,9 +49,12 @@ function buildLineItem(item: OrderItem) {
     item.product_type === "dascha"
       ? "Dascha (دراعة)"
       : "Thobe (ثوب)";
-  const styleNote = Object.entries(item.styles)
-    .map(([kind, key]) => `${kind}: ${key}`)
-    .join(", ");
+  const styleNote = STYLE_KINDS.map((kind) => {
+    const customFabric = kind === "fabric" ? item.styles.fabric_other?.trim() : "";
+    if (customFabric) return `Fabric: ${customFabric}`;
+    const option = getOption(kind, item.styles[kind]);
+    return option ? `${kind.replaceAll("_", " ")}: ${option.label_en}` : null;
+  }).filter(Boolean).join(", ");
   return {
     title,
     quantity: item.quantity,
