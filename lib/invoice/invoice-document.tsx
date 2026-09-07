@@ -94,6 +94,7 @@ export function InvoiceDocument({ order, customer, lang, business, baseUrl }: { 
   const dateFormat = new Intl.DateTimeFormat(isAr ? "ar-KW" : "en-GB", { year: "numeric", month: "short", day: "2-digit" });
   const selected = STYLE_KINDS.map((kind) => getOption(kind, item.styles?.[kind])).filter(Boolean);
   const customFabric = item.styles?.fabric_other?.trim();
+  const selectedFabric = getOption("fabric", item.styles?.fabric);
   const optionPrice = (key: string, defaultPrice: number) => item.custom_style_prices?.[key] ?? defaultPrice;
   const selectedAdditions = selected.reduce((sum, option) => sum + (option ? optionPrice(option.key, option.price_addition) : 0), 0);
   const otherAdjustments = item.custom_style_prices?.other ?? Math.max(0, order.customization_total - selectedAdditions);
@@ -128,7 +129,8 @@ export function InvoiceDocument({ order, customer, lang, business, baseUrl }: { 
           <View style={styles.tile}><Text style={isAr ? styles.labelAr : styles.label}>{isAr ? "كلاسيك" : "Classic"}</Text><Text style={[styles.tileValue, fontStyle]}>{fmt(item.base_price)}</Text></View>
           {selected.map((option) => option && <View key={option.key} style={styles.tile}><Text style={isAr ? styles.labelAr : styles.label}>{isAr ? option.label_ar : option.label_en}</Text><Text style={[styles.tileValue, fontStyle]}>{optionPrice(option.key, option.price_addition) > 0 ? `+${fmt(optionPrice(option.key, option.price_addition))}` : (isAr ? "مشمول" : "Included")}</Text></View>)}
           {customFabric && <View style={styles.tile}><Text style={isAr ? styles.labelAr : styles.label}>{isAr ? "القماش" : "Fabric"}</Text><Text style={[styles.tileValue, fontStyle]}>{customFabric}</Text></View>}
-      </View>
+          {!customFabric && !selectedFabric && <View style={styles.tile}><Text style={isAr ? styles.labelAr : styles.label}>{isAr ? "القماش" : "Fabric"}</Text><Text style={[styles.tileValue, fontStyle]}>{isAr ? "بدون خام" : "Without Fabrics"}</Text></View>}
+        </View>
 
       {measurements.length > 0 && <><View style={styles.sectionHead}><Text style={[styles.sectionTitle, fontStyle]}>{t.invoice.measurements}</Text><Text style={isAr ? styles.labelAr : styles.label}>{isAr ? "تم التحقق عند القياس" : "Verified at fitting"}</Text></View><View style={styles.measurements}>{measurements.map((field, index) => <View key={field.key} style={[styles.measurement, index % 2 ? styles.measurementAlt : {}]}><Text style={[styles.tileValue, fontStyle]}>{isAr ? field.labelAr : field.labelEn} {order.measurements[field.key]} {t.common.cm}</Text></View>)}</View></>}
 

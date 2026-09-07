@@ -292,6 +292,23 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
             <ul className="space-y-1.5 text-sm">
               {STYLE_KINDS.map((kind) => {
                 const opt = getOption(kind, item.styles?.[kind]);
+                const customFabric = kind === "fabric" ? item.styles?.fabric_other?.trim() : "";
+                if (customFabric) {
+                  return (
+                    <li key={kind} className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        {lang === "ar" ? "القماش" : "Fabric"}: {customFabric}
+                      </span>
+                    </li>
+                  );
+                }
+                if (!opt && kind === "fabric") {
+                  return (
+                    <li key={kind} className="flex items-center justify-between">
+                      <span className="text-muted-foreground">{lang === "ar" ? "بدون خام" : "Without Fabrics"}</span>
+                    </li>
+                  );
+                }
                 if (!opt) return null;
                 return (
                   <li key={kind} className="flex items-center justify-between">
