@@ -16,7 +16,7 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: "Laskwt — Dascha & Thobe Tailoring",
+  title: "Laskwt — Dishdasha & Others Tailoring",
   description:
     "Tailoring management web app for Laskwt Kuwait — customers, measurements, styles, pricing, invoices and Shopify sync.",
 };

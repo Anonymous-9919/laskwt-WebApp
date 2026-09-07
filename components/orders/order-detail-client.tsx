@@ -8,6 +8,7 @@ import {
   ClipboardList,
   Download,
   Loader2,
+  Mail,
   MessageCircle,
   Package,
   Printer,
@@ -23,11 +24,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useRepository } from "@/lib/data/use-repository";
 import { useLanguage } from "@/lib/i18n/context";
 import { useSettings } from "@/lib/settings/context";
+import { useToast } from "@/components/ui/use-toast";
 import { getOrderStatusMeta, getSyncStatusMeta } from "@/lib/orders/status";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { formatKWD, formatDate } from "@/lib/utils";
-import { downloadInvoice, printInvoice, shareInvoiceViaWhatsApp } from "@/lib/invoice/generate";
+import { downloadInvoice, emailInvoice, printInvoice, shareInvoiceViaWhatsApp } from "@/lib/invoice/generate";
 import { SyncToShopifyButton } from "@/components/orders/sync-button";
 import type { Customer, Order, OrderStatus } from "@/types";
 
@@ -35,10 +37,11 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
    const { t, lang } = useLanguage();
   const { repo } = useRepository();
   const { logAudit } = useSettings();
+  const { toast } = useToast();
   const [order, setOrder] = useState<Order | null>(null);
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState<"print" | "pdf" | "whatsapp" | null>(null);
+  const [busy, setBusy] = useState<"print" | "pdf" | "whatsapp" | "email" | null>(null);
   const [statusSaving, setStatusSaving] = useState(false);
   const [newStatus, setNewStatus] = useState<OrderStatus>(order?.status ?? "confirmed");
 
@@ -134,6 +137,26 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
             <Download className="h-4 w-4" />
             {t.order.download} {t.invoice.invoice}
           </Button>
+          {customer?.email && (
+            <Button
+              variant="outline"
+              disabled={busy === "email"}
+              onClick={async () => {
+                setBusy("email");
+                try {
+                  await emailInvoice(order, customer, lang);
+                  toast({ title: t.order.emailInvoice, description: customer.email });
+                } catch (err) {
+                  toast({ variant: "destructive", title: t.order.emailInvoice, description: err instanceof Error ? err.message : "Failed" });
+                } finally {
+                  setBusy(null);
+                }
+              }}
+            >
+              {busy === "email" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+              {t.order.emailInvoice}
+            </Button>
+          )}
           <Button
             variant="outline"
             disabled={busy === "whatsapp"}

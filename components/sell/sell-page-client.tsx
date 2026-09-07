@@ -241,12 +241,12 @@ export function SellPageClient({ profile }: { profile: { id: string; full_name: 
           <div className="grid grid-cols-2 gap-3">
             <Button variant={productType === "dascha" ? "default" : "outline"} className="h-32 flex-col gap-2" onClick={() => setProductType("dascha")}>
               <Shirt className="h-10 w-10" />
-              <span className="text-lg font-medium">Dascha</span>
+              <span className="text-lg font-medium">Dishdasha</span>
               <span className="text-sm text-muted-foreground">{formatKWD(BASE_PRICES.dascha)}</span>
             </Button>
             <Button variant={productType === "thobe" ? "default" : "outline"} className="h-32 flex-col gap-2" onClick={() => setProductType("thobe")}>
               <Shirt className="h-10 w-10" />
-              <span className="text-lg font-medium">Thobe</span>
+              <span className="text-lg font-medium">Others</span>
               <span className="text-sm text-muted-foreground">{formatKWD(BASE_PRICES.thobe)}</span>
             </Button>
           </div>
@@ -527,7 +527,7 @@ function ReviewStep({
             <Shirt className="h-6 w-6" />
           </div>
           <div>
-            <p className="font-medium">{productType === "dascha" ? "Dascha" : "Thobe"}</p>
+            <p className="font-medium">{productType === "dascha" ? "Dishdasha" : "Others"}</p>
             <p className="text-sm text-muted-foreground">{customer?.full_name ?? "—"}</p>
           </div>
         </div>

@@ -173,7 +173,7 @@ export function ReviewStep(props: Props) {
                       : "border-input hover:border-primary/40"
                   )}
                 >
-                  <p className="font-medium">{lang === "ar" ? (type === "dascha" ? "درعية" : "ثوب") : type === "dascha" ? "Dascha" : "Thobe"}</p>
+                  <p className="font-medium">{lang === "ar" ? (type === "dascha" ? "دشداشة" : "أخرى") : type === "dascha" ? "Dishdasha" : "Others"}</p>
                   <p className="mt-1 text-xs text-muted-foreground">{t.order[`product_${type}`]}</p>
                   <div className="mt-2 flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                     <Input

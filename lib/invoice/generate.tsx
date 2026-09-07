@@ -34,6 +34,22 @@ export async function downloadInvoice(
   URL.revokeObjectURL(url);
 }
 
+export async function emailInvoice(
+  order: Order,
+  customer: Customer,
+  lang: InvoiceLang
+): Promise<void> {
+  const response = await fetch("/api/invoice/email", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orderId: order.id, lang }),
+  });
+  if (!response.ok) {
+    const body = await response.json().catch(() => null);
+    throw new Error(body?.error ?? "Unable to email invoice");
+  }
+}
+
 export async function printInvoice(
   order: Order,
   customer: Customer | null,

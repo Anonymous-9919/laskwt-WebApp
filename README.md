@@ -1,6 +1,6 @@
 # Las Kwt — Tailoring Management Web App
 
-A production-ready tailoring management web app for a Kuwaiti Dascha/Thobe business.
+A production-ready tailoring management web app for a Kuwaiti Dishdasha/Others business.
 Bilingual (Arabic / English) with full RTL/LTR support, dual premium themes, and
 Shopify Admin API sync for walk-in orders.
 

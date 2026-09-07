@@ -174,6 +174,7 @@ export type Dict = {
     createInvoice: string;
     generatePDF: string;
     sendWhatsApp: string;
+    emailInvoice: string;
     print: string;
     download: string;
     shopifySynced: string;
@@ -214,7 +215,7 @@ export type Dict = {
 const ar: Dict = {
   app: {
     name: "لاسكويت",
-    tagline: "إدارة تفصيل الدرعية والثوب",
+    tagline: "إدارة تفصيل الدشداشة والخيارات الأخرى",
   },
   nav: {
     dashboard: "الرئيسية",
@@ -297,7 +298,7 @@ const ar: Dict = {
     diagram: "الرسم التوضيحي",
     form: "النموذج",
     label: "وسم القياس",
-    labelHint: "مثال: الثوب الرمضاني الأول",
+    labelHint: "مثال: الدشداشة الرمضانية الأولى",
     previous: "قياسات سابقة",
     noPrevious: "لا توجد قياسات سابقة لهذا العميل",
     load: "تحميل",
@@ -388,6 +389,7 @@ order: {
     createInvoice: "إنشاء الفاتورة",
     generatePDF: "إنشاء PDF",
     sendWhatsApp: "إرسال عبر واتساب",
+    emailInvoice: "إرسال الفاتورة بالبريد",
     print: "طباعة",
     download: "تحميل",
     shopifySynced: "تمت المزامنة مع شوبيفاي",
@@ -399,8 +401,8 @@ order: {
     shopifyNotConfigured: "شوبيفاي غير مهيأ بعد — أضف بيانات الاعتماد في الإعدادات",
     shopifySyncSuccess: "تمت مزامنة الطلب مع شوبيفاي",
     productType: "نوع المنتج",
-    product_dascha: "درعية",
-    product_thobe: "ثوب",
+    product_dascha: "دشداشة",
+    product_thobe: "أخرى",
     dueDate: "تاريخ التسليم",
     notes: "ملاحظات",
     noOrders: "لا توجد طلبات بعد",
@@ -428,7 +430,7 @@ order: {
 const en: Dict = {
   app: {
     name: "Laskwt",
-    tagline: "Dascha & Thobe tailoring management",
+    tagline: "Dishdasha & Others tailoring management",
   },
   nav: {
     dashboard: "Dashboard",
@@ -602,6 +604,7 @@ const en: Dict = {
     createInvoice: "Create Invoice",
     generatePDF: "Generate PDF",
     sendWhatsApp: "Send via WhatsApp",
+    emailInvoice: "Email Invoice",
     print: "Print",
     download: "Download",
     shopifySynced: "Synced with Shopify",
@@ -613,8 +616,8 @@ const en: Dict = {
     shopifyNotConfigured: "Shopify not configured — add credentials in Settings",
     shopifySyncSuccess: "Order synced with Shopify",
     productType: "Product type",
-    product_dascha: "Dascha",
-    product_thobe: "Thobe",
+    product_dascha: "Dishdasha",
+    product_thobe: "Others",
     dueDate: "Due date",
     notes: "Notes",
     noOrders: "No orders yet",

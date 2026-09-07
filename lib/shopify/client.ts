@@ -46,8 +46,8 @@ function buildCustomerBody(customer: Customer | null) {
 function buildLineItem(item: OrderItem) {
   const title =
     item.product_type === "dascha"
-      ? "Dascha (دراعة)"
-      : "Thobe (ثوب)";
+      ? "Dishdasha (دشداشة)"
+      : "Others (أخرى)";
   const styleNote = Object.entries(item.styles)
     .map(([kind, key]) => `${kind}: ${key}`)
     .join(", ");

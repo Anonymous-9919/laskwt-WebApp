@@ -67,7 +67,7 @@ const measurements: Measurement[] = [
     id: "meas_1",
     customer_id: "cust_1",
     created_by: MOCK_ADMIN_ID,
-    label: "ثوب العيد الأول",
+    label: "دشداشة العيد الأولى",
     values: {
       length: 150,
       shoulder: 46,
@@ -91,7 +91,7 @@ const measurements: Measurement[] = [
     id: "meas_2",
     customer_id: "cust_1",
     created_by: MOCK_ADMIN_ID,
-    label: "درعية صيفية",
+    label: "دشداشة صيفية",
     values: {
       length: 148,
       shoulder: 45,
