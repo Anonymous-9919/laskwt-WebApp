@@ -23,11 +23,19 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { useRepository } from "@/lib/data/use-repository";
 import { useLanguage } from "@/lib/i18n/context";
-import { computeOrderTotals, canCompleteOrder, BASE_PRICES } from "@/lib/pricing/calculator";
+import {
+  computeOrderTotals,
+  canCompleteOrder,
+  BASE_PRICES,
+  getFabricSelections,
+  hasFabricSelection,
+  normalizeFabricSelection,
+  withFabricSelections,
+} from "@/lib/pricing/calculator";
 import { getOption } from "@/lib/styles/catalog";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
 import { cn, formatKWD } from "@/lib/utils";
-import type { Customer, DiscountType, Measurements, SelectedStyles, OrderStatus } from "@/types";
+import type { Customer, DiscountType, FabricSelection, Measurements, SelectedStyles, OrderStatus } from "@/types";
 import type { OrderItemInput } from "@/lib/data/types";
 
 type Props = {
@@ -54,6 +62,7 @@ type Props = {
   onCustomBasePriceChange?: (v: number) => void;
   customStylePrices?: Record<string, number>;
   onCustomStylePriceChange?: (key: string, v: number) => void;
+  onStylesChange?: (styles: SelectedStyles) => void;
 };
 
 export function ReviewStep(props: Props) {
@@ -62,11 +71,14 @@ export function ReviewStep(props: Props) {
   const router = useRouter();
   const { repo } = useRepository();
   const [creating, setCreating] = useState(false);
+  const orderStyles = Array.isArray(props.styles.fabrics)
+    ? withFabricSelections(props.styles, getFabricSelections(props.styles))
+    : props.styles;
 
   const totals = computeOrderTotals({
     productType: props.productType,
     quantity: props.quantity,
-    styles: props.styles,
+    styles: orderStyles,
     discountType: props.discountType,
     discountValue: props.discountValue,
     customBasePrice: props.customBasePrice,
@@ -75,6 +87,11 @@ export function ReviewStep(props: Props) {
   const fabric = getOption("fabric", props.styles.fabric);
   const customFabric = props.styles.fabric_other?.trim();
   const fabricPrice = fabric ? props.customStylePrices?.[fabric.key] ?? fabric.price_addition : 0;
+  const fabricSelections = getFabricSelections(props.styles, props.customStylePrices);
+  const selectedFabrics = fabricSelections
+    .map((selection, index) => ({ selection, index }))
+    .filter(({ selection }) => hasFabricSelection(selection));
+  const hasFabricDetails = Array.isArray(props.styles.fabrics);
   const otherPrice = props.customStylePrices?.other ?? 0;
   const fabricLabel = customFabric
     ? `${lang === "ar" ? "القماش" : "Fabric"} - ${customFabric}`
@@ -91,6 +108,13 @@ export function ReviewStep(props: Props) {
   const missingRequired = MEASUREMENT_FIELDS.filter(
     (f) => f.required && (props.measurements[f.key] === undefined || props.measurements[f.key] === null)
   );
+
+  function updateFabricPrice(index: number, price_per_meter: number) {
+    const next = fabricSelections.map((selection, currentIndex) =>
+      currentIndex === index ? normalizeFabricSelection({ ...selection, price_per_meter }) : selection
+    );
+    props.onStylesChange?.(withFabricSelections(props.styles, next));
+  }
 
   async function handleCreate() {
     if (!repo || !props.customer) return;
@@ -109,7 +133,7 @@ export function ReviewStep(props: Props) {
         product_type: props.productType,
         quantity: props.quantity,
         base_price: totals.basePrice,
-        styles: props.styles,
+        styles: orderStyles,
         custom_style_prices: props.customStylePrices,
         customization_total: totals.customization,
         line_total: totals.total,
@@ -320,7 +344,22 @@ export function ReviewStep(props: Props) {
             </p>
             <div className="space-y-2">
               <SummaryPriceRow label={lang === "ar" ? "كلاسيك" : "Classic"} value={props.customBasePrice ?? BASE_PRICES[props.productType]} onChange={props.onCustomBasePriceChange} />
-              <SummaryPriceRow label={fabricLabel} value={fabricPrice} onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)} />
+              {hasFabricDetails ? (
+                selectedFabrics.length > 0 ? (
+                  selectedFabrics.map(({ selection, index }) => (
+                    <FabricSummaryPriceRow
+                      key={`${selection.fabric}-${selection.fabric_other}-${index}`}
+                      fabric={selection}
+                      lang={lang}
+                      onPricePerMeterChange={(value) => updateFabricPrice(index, value)}
+                    />
+                  ))
+                ) : (
+                  <SummaryPriceRow label={lang === "ar" ? "بدون خام" : "Without Fabrics"} value={0} />
+                )
+              ) : (
+                <SummaryPriceRow label={fabricLabel} value={fabricPrice} onChange={(value) => props.onCustomStylePriceChange?.(fabric?.key ?? "fabric_without", value)} />
+              )}
               <SummaryPriceRow label={lang === "ar" ? "اخرى" : "Others"} value={otherPrice} onChange={(value) => props.onCustomStylePriceChange?.("other", value)} />
             </div>
           </div>
@@ -377,12 +416,55 @@ function SummaryPriceRow({ label, value, onChange }: { label: string; value: num
           dir="ltr"
           className="h-7 w-20 px-2 py-0 text-xs font-medium"
           value={value}
+          disabled={!onChange}
           onChange={(event) => {
             const next = parseFloat(event.target.value);
             if (!Number.isNaN(next) && next >= 0) onChange?.(next);
           }}
         />
         <span className="text-xs text-muted-foreground">KWD</span>
+      </div>
+    </div>
+  );
+}
+
+function FabricSummaryPriceRow({
+  fabric,
+  lang,
+  onPricePerMeterChange,
+}: {
+  fabric: FabricSelection;
+  lang: "ar" | "en";
+  onPricePerMeterChange: (value: number) => void;
+}) {
+  const option = getOption("fabric", fabric.fabric);
+  const name = fabric.fabric_other?.trim() || (option ? (lang === "ar" ? option.label_ar : option.label_en) : lang === "ar" ? "قماش" : "Fabric");
+
+  return (
+    <div className="space-y-1 rounded-md bg-accent/30 px-2 py-1.5">
+      <div className="flex items-center justify-between gap-3 text-sm">
+        <span className="text-muted-foreground">
+          {name} <span dir="ltr">({fabric.meters}m)</span>
+        </span>
+        <div className="flex items-center gap-1">
+          <Input
+            type="number"
+            min={0}
+            step={0.1}
+            dir="ltr"
+            className="h-7 w-20 px-2 py-0 text-xs font-medium"
+            value={fabric.price_per_meter}
+            onChange={(event) => {
+              const next = parseFloat(event.target.value);
+              if (!Number.isNaN(next) && next >= 0) onPricePerMeterChange(next);
+            }}
+          />
+          <span className="text-xs text-muted-foreground">KWD/m</span>
+        </div>
+      </div>
+      <div className="flex justify-between text-xs text-muted-foreground">
+        <span>{lang === "ar" ? "إجمالي القماش" : "Fabric total"}</span>
+        <span dir="ltr">{formatKWD(fabric.total_price)}</span>
       </div>
     </div>
   );

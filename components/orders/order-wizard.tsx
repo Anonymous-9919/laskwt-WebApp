@@ -302,6 +302,7 @@ export function OrderWizard({ userId, userRole = "admin", defaultStatus = "confi
           onCustomStylePriceChange={(key, val) =>
             setCustomStylePrices((prev) => ({ ...prev, [key]: val }))
           }
+          onStylesChange={setStyles}
         />
       )}
 

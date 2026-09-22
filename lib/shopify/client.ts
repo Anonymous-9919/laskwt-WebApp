@@ -1,4 +1,5 @@
 import type { Customer, Order, OrderItem } from "@/types";
+import { getFabricSelections, hasFabricSelection } from "@/lib/pricing/calculator";
 
 export type ShopifyEnv = {
   shopDomain: string;
@@ -49,14 +50,19 @@ function buildLineItem(item: OrderItem) {
       ? "Dishdasha (دشداشة)"
       : "Others (أخرى)";
   const styleNote = Object.entries(item.styles)
+    .filter(([kind]) => kind !== "fabric" && kind !== "fabric_other" && kind !== "fabrics")
     .map(([kind, key]) => `${kind}: ${key}`)
+    .join(", ");
+  const fabricNote = getFabricSelections(item.styles, item.custom_style_prices)
+    .filter(hasFabricSelection)
+    .map((fabric) => `${fabric.fabric_other?.trim() || fabric.fabric}: ${fabric.meters}m @ ${stripKwd(fabric.price_per_meter)} KWD/m`)
     .join(", ");
   return {
     title,
     quantity: item.quantity,
     price: stripKwd(item.line_total),
     product_type: item.product_type,
-    variant_title: styleNote || undefined,
+    variant_title: [styleNote, fabricNote].filter(Boolean).join(", ") || undefined,
   };
 }
 

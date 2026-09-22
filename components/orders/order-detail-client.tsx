@@ -11,10 +11,13 @@ import {
   Mail,
   MessageCircle,
   Package,
+  Pencil,
   Printer,
   ReceiptText,
   Ruler,
+  Save,
   UserRound,
+  X,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,11 +30,13 @@ import { useSettings } from "@/lib/settings/context";
 import { useToast } from "@/components/ui/use-toast";
 import { getOrderStatusMeta, getSyncStatusMeta } from "@/lib/orders/status";
 import { STYLE_KINDS, getOption } from "@/lib/styles/catalog";
+import { FabricSelector } from "@/components/styles/fabric-selector";
 import { MEASUREMENT_FIELDS } from "@/lib/measurements/fields";
+import { computeOrderTotals, DEFAULT_STYLES, getFabricSelections, hasFabricSelection, withFabricSelections } from "@/lib/pricing/calculator";
 import { formatKWD, formatDate } from "@/lib/utils";
 import { downloadInvoice, emailInvoice, printInvoice, shareInvoiceViaWhatsApp } from "@/lib/invoice/generate";
 import { SyncToShopifyButton } from "@/components/orders/sync-button";
-import type { Customer, Order, OrderStatus } from "@/types";
+import type { Customer, Order, OrderStatus, SelectedStyles } from "@/types";
 
 export function OrderDetailClient({ orderId }: { orderId: string }) {
    const { t, lang } = useLanguage();
@@ -44,6 +49,9 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
   const [busy, setBusy] = useState<"print" | "pdf" | "whatsapp" | "email" | null>(null);
   const [statusSaving, setStatusSaving] = useState(false);
   const [newStatus, setNewStatus] = useState<OrderStatus>(order?.status ?? "confirmed");
+  const [editingFabrics, setEditingFabrics] = useState(false);
+  const [fabricStyles, setFabricStyles] = useState<SelectedStyles | null>(null);
+  const [fabricSaving, setFabricSaving] = useState(false);
 
   useEffect(() => {
     if (!repo) return;
@@ -83,10 +91,70 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
     );
   }
 
-  const item = order.items?.[0] ?? { product_type: "dascha", quantity: 1, styles: {} };
+  const currentOrder = order;
+  const currentItem = currentOrder.items?.[0];
+  const item = currentItem ?? { product_type: "dascha" as const, quantity: 1, styles: DEFAULT_STYLES };
+  const savedFabrics = getFabricSelections(item.styles, currentItem?.custom_style_prices).filter(hasFabricSelection);
   const filledMeasurements = MEASUREMENT_FIELDS.filter(
     (f) => order.measurements && order.measurements[f.key] !== undefined && order.measurements[f.key] !== null
   );
+
+  function beginFabricEdit() {
+    if (!currentItem) return;
+    setFabricStyles({ ...DEFAULT_STYLES, ...currentItem.styles });
+    setEditingFabrics(true);
+  }
+
+  async function saveFabricDetails() {
+    if (!repo || !currentItem || !fabricStyles) return;
+
+    setFabricSaving(true);
+    try {
+      const stylesToSave = Array.isArray(fabricStyles.fabrics)
+        ? withFabricSelections(fabricStyles, getFabricSelections(fabricStyles))
+        : fabricStyles;
+      const totals = computeOrderTotals({
+        productType: currentItem.product_type,
+        quantity: currentItem.quantity,
+        styles: stylesToSave,
+        discountType: currentOrder.discount_type,
+        discountValue: currentOrder.discount_value,
+        customBasePrice: currentItem.base_price,
+        customStylePrices: currentItem.custom_style_prices,
+      });
+      const items = [
+        {
+          ...currentItem,
+          styles: stylesToSave,
+          customization_total: totals.customization,
+          line_total: totals.total,
+        },
+        ...currentOrder.items.slice(1),
+      ];
+      const updated = await repo.updateOrder(currentOrder.id, {
+        items,
+        subtotal: totals.subtotal,
+        customization_total: totals.customization,
+        discount_amount: totals.discountAmount,
+        total: totals.total,
+      });
+
+      if (!updated) throw new Error("Order not found");
+      setOrder(updated);
+      setEditingFabrics(false);
+      setFabricStyles(null);
+      await logAudit("fabric_update", "order", currentOrder.id, { fabric_count: getFabricSelections(stylesToSave).filter(hasFabricSelection).length });
+      toast({ title: lang === "ar" ? "تم تحديث الأقمشة" : "Fabrics updated" });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: lang === "ar" ? "تعذر تحديث الأقمشة" : "Unable to update fabrics",
+        description: err instanceof Error ? err.message : "Failed",
+      });
+    } finally {
+      setFabricSaving(false);
+    }
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -311,27 +379,10 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
               {t.invoice.styles}
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <ul className="space-y-1.5 text-sm">
-              {STYLE_KINDS.map((kind) => {
-                const opt = getOption(kind, item.styles?.[kind]);
-                const customFabric = kind === "fabric" ? item.styles?.fabric_other?.trim() : "";
-                if (customFabric) {
-                  return (
-                    <li key={kind} className="flex items-center justify-between">
-                      <span className="text-muted-foreground">
-                        {lang === "ar" ? "القماش" : "Fabric"}: {customFabric}
-                      </span>
-                    </li>
-                  );
-                }
-                if (!opt && kind === "fabric") {
-                  return (
-                    <li key={kind} className="flex items-center justify-between">
-                      <span className="text-muted-foreground">{lang === "ar" ? "بدون خام" : "Without Fabrics"}</span>
-                    </li>
-                  );
-                }
+              {STYLE_KINDS.filter((kind) => kind !== "fabric").map((kind) => {
+                const opt = getOption(kind, item.styles[kind]);
                 if (!opt) return null;
                 return (
                   <li key={kind} className="flex items-center justify-between">
@@ -347,6 +398,63 @@ export function OrderDetailClient({ orderId }: { orderId: string }) {
                 );
               })}
             </ul>
+
+            <div className="border-t pt-4">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="text-sm font-medium">{lang === "ar" ? "الأقمشة" : "Fabrics"}</p>
+                {!editingFabrics && currentItem && (
+                  <Button type="button" variant="outline" size="sm" onClick={beginFabricEdit}>
+                    <Pencil className="h-3.5 w-3.5" />
+                    {lang === "ar" ? "تعديل" : "Edit"}
+                  </Button>
+                )}
+              </div>
+
+              {editingFabrics && fabricStyles ? (
+                <div className="space-y-3">
+                  <FabricSelector value={fabricStyles} onChange={setFabricStyles} />
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={fabricSaving}
+                      onClick={() => {
+                        setEditingFabrics(false);
+                        setFabricStyles(null);
+                      }}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                      {t.common.cancel}
+                    </Button>
+                    <Button type="button" size="sm" disabled={fabricSaving} onClick={saveFabricDetails}>
+                      {fabricSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                      {fabricSaving ? t.common.saving : t.common.save}
+                    </Button>
+                  </div>
+                </div>
+              ) : savedFabrics.length > 0 ? (
+                <ul className="space-y-2 text-sm">
+                  {savedFabrics.map((fabric, index) => {
+                    const option = getOption("fabric", fabric.fabric);
+                    const name = fabric.fabric_other?.trim() || (option ? (lang === "ar" ? option.label_ar : option.label_en) : lang === "ar" ? "قماش" : "Fabric");
+                    return (
+                      <li key={`${fabric.fabric}-${fabric.fabric_other}-${index}`} className="rounded-md bg-accent/40 px-3 py-2">
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="font-medium">{name}</span>
+                          <span className="font-medium text-gold" dir="ltr">{formatKWD(fabric.total_price)}</span>
+                        </div>
+                        <p className="mt-0.5 text-xs text-muted-foreground" dir="ltr">
+                          {fabric.meters}m x {formatKWD(fabric.price_per_meter)}/m
+                        </p>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="text-sm text-muted-foreground">{lang === "ar" ? "بدون خام" : "Without Fabrics"}</p>
+              )}
+            </div>
           </CardContent>
         </Card>
 

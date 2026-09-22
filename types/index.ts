@@ -43,13 +43,23 @@ export type StyleOption = {
   label_ar: string;
   label_en: string;
   price_addition: number;
+  price_per_meter?: number;
   preview_svg: string;
   active: boolean;
   sort_order: number;
 };
 
+export type FabricSelection = {
+  fabric: string;
+  fabric_other?: string;
+  meters: number;
+  price_per_meter: number;
+  total_price: number;
+};
+
 export type SelectedStyles = Record<StyleKind, string> & {
   fabric_other?: string;
+  fabrics?: FabricSelection[];
 };
 
 export type Profile = {

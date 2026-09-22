@@ -64,6 +64,7 @@ export type OrderUpdate = Partial<
     | "total"
     | "measurement_id"
     | "measurements"
+    | "items"
     | "notes"
     | "due_date"
   >
